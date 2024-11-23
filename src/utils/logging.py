@@ -8,7 +8,7 @@ import traceback
 from pathlib import Path
 from typing import Dict, Union
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from config import settings
 

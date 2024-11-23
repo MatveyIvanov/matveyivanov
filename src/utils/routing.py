@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Callable, Dict, List, Sequence, Set
 
-from fastapi import Depends, params, FastAPI
+from fastapi import Depends, FastAPI, params
 from fastapi.datastructures import Default, DefaultPlaceholder
 from fastapi.exceptions import FastAPIError
 from fastapi.responses import JSONResponse
