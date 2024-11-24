@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+
+html, body {
+    height: 100%;
+}
+
+body {
+    width:  50vw;
+    margin: 0 auto;
+    font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px;
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.avatar {
+    padding-top: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    border-radius: 50%;
+    clip-path: circle();
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.socials {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.socials a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+.socials img {
+    width: 25px;
+    height: 25px;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer {
+    display: flexbox;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 25px;
+}
+
+.footer a,p {
+    display: block;
+    color: rgb(94, 94, 94);
+    text-align: center;
+    text-decoration: none;
+}
+
+.footer p a {
+    display: inline;
+    text-decoration: underline;
+}
+
+.footer img {
+    width: 25px;
+    height: 25px;
+}

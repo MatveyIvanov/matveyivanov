@@ -1,5 +1,8 @@
 import os
 
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+STATIC_PATH = os.environ.get("STATIC_PATH", "")
+
 DB_USER: str = os.environ.get("DB_USER", "")
 DB_PASSWORD: str = os.environ.get("DB_PASSWORD", "")
 DB_NAME: str = os.environ.get("DB_NAME", "")
@@ -19,3 +22,4 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 LOGGING_PATH = os.environ.get("LOG_PATH")
 
 PORT = os.environ.get("ASGI_PORT")
+ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{PORT}")

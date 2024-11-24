@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }}{% endblock title %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/base.css') }}">
+</head>
+<body>
+    <div class="avatar">
+        <picture>
+            <source srcset="{{ url_for('static', path='/img/avatar.webp') }}" type="image/webp">
+            <source srcset="{{ url_for('static', path='/img/avatar.png') }}" type="image/png"> 
+            <img src="{{ url_for('static', path='/img/avatar.png') }}">
+        </picture>
+    </div>
+    <div class="name">
+        <h1>Matvey Ivanov</h1>
+    </div>
+    <div class="socials">
+        <a href="#"><img src="{{ url_for('static', path='/svg/discord.svg') }}" alt=""></a>
+        <a href="#"><img src="{{ url_for('static', path='/svg/github.svg') }}" alt=""></a>
+        <a href="#"><img src="{{ url_for('static', path='/svg/gmail.svg') }}" alt=""></a>
+        <a href="#"><img src="{{ url_for('static', path='/svg/telegram.svg') }}" alt=""></a>
+        <a href="#"><img src="{{ url_for('static', path='/svg/vk.svg') }}" alt=""></a>
+    </div>
+    <div class="navbar">
+        <a href="#">About</a>
+        <a href="#">Experience</a>
+        <a href="#">Stack</a>
+        <a href="#">Python</a>
+    </div>
+    <div class="container">
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+    <div class="footer">
+        <p>
+            This page is built with
+            <a href="https://github.com/fastapi/fastapi" target="_blank">FastAPI</a>
+            and
+            <a href="https://github.com/pallets/jinja" target="_blank">Jinja</a>
+        </p>
+        <a href="https://github.com/MatveyIvanov/matveyivanov" target="_blank">
+            <img src="{{ url_for('static', path='/svg/github.svg') }}" alt="">
+        </a>
+    </div>
+</body>
+</html>

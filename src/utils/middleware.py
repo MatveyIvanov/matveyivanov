@@ -67,7 +67,7 @@ class LoggingMiddleware:
         return await request.json()
 
     async def __call__(self, request: Request, call_next, *args, **kwargs):
-        if "docs" in str(request.url):
+        if "api" not in str(request.url):
             return await call_next(request)
         start_time = time.time()
         exception_object = None

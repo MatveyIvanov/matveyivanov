@@ -2,6 +2,7 @@ import logging
 
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi_versioning import VersionedFastAPI
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
@@ -40,7 +41,6 @@ __app.container = container
 for router in endpoints.get_routers():
     __app.include_router(router, tags=router.tags)
 
-
 add_pagination(__app)
 
 
@@ -56,6 +56,11 @@ __app = VersionedFastAPI(
     prefix_format="/api/v{major}",
     default_version=(0, 0),
     enable_latest=True,
+)
+__app.mount(
+    settings.STATIC_URL,
+    StaticFiles(directory="static"),
+    name="static",
 )
 __app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
 __app.add_middleware(TranslationMiddleware)

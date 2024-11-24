@@ -2,7 +2,7 @@
 name = "Matvey Ivanov Website"
 version = "0.1.0"
 description = ""
-authors = ["cool.matvey250301@gmail.com"]
+authors = []
 
 [tool.poetry.dependencies]
 python = "^3.11"
