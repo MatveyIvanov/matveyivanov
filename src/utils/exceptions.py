@@ -13,8 +13,19 @@ from starlette.status import (
 )
 
 from config.i18n import _
+from utils.templates import templates
 
 logger = logging.getLogger("exceptions")
+
+
+SHORT_DESCRIPTION_BY_STATUS_CODE: Dict[int, str] = {
+    404: "Looks like you're lost",
+    429: "Too Many Requests",
+}
+LONG_DESCRIPTION_BY_STATUS_CODE: Dict[int, str] = {
+    404: "The page you're looking for is not available!",
+    429: "You've made too many requests recently. Please, try again later!",
+}
 
 
 class CustomException(HTTPException):
@@ -49,17 +60,38 @@ class Custom404Exception(CustomException):
         super().__init__(status.HTTP_404_NOT_FOUND, detail, headers)
 
 
-def custom_exception_handler(request: Request, exc: HTTPException) -> Response:
+def http_exception_handler(request: Request, exc: HTTPException) -> Response:
     headers = getattr(exc, "headers", None)
     if not is_body_allowed_for_status_code(exc.status_code):
         return Response(status_code=exc.status_code, headers=headers)
-    return JSONResponse(
-        {"detail": exc.detail}, status_code=exc.status_code, headers=headers
-    )
+    try:
+        return templates.TemplateResponse(
+            request=request,
+            name="error.html",
+            status_code=exc.status_code,
+            headers=headers,
+            context={
+                "status_code": exc.status_code,
+                "short_description": SHORT_DESCRIPTION_BY_STATUS_CODE.get(
+                    exc.status_code, "Oops..."
+                ),
+                "long_description": LONG_DESCRIPTION_BY_STATUS_CODE.get(
+                    exc.status_code,
+                    "Unexpected error just happened. Please, try again later!",
+                ),
+            },
+        )
+    except Exception:
+        return JSONResponse(
+            {"detail": exc.detail},
+            status_code=exc.status_code,
+            headers=headers,
+        )
 
 
 async def request_validation_exception_handler(
-    request: Request, exc: RequestValidationError
+    request: Request,
+    exc: RequestValidationError,
 ) -> JSONResponse:
     errors = {}
     for error in exc._errors:
@@ -80,7 +112,12 @@ async def internal_exception_handler(request: Request, exc: Exception):
         f"An internal error has occured - {str(exc)}",
         exc_info=exc,
     )
-    return JSONResponse(
+    return templates.TemplateResponse(
+        request=request,
+        name="500.html",
         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": _("An internal error has occurred.")},
     )
+    # return JSONResponse(
+    #     status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+    #     content={"detail": _("An internal error has occurred.")},
+    # )

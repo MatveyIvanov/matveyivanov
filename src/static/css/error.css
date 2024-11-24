@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+
+html, body {
+    height: 100%;
+}
+
+body {
+    width:  50vw;
+    margin: 0 auto;
+    font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
+}
+
+.error { 
+    background-image: url("../gif/error.gif");
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: 400px;
+    background-position: center;
+}
+
+.error h1 {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    font-size: 80px;
+}
+
+.error h3 {
+    width: 100%;
+    margin: 0;
+    padding-top: 275px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 26px;
+}
+
+.error p {
+    width: 100%;
+    margin: 25px 0;
+    text-align: center;
+    font-size: 18px;
+}

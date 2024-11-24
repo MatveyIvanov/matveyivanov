@@ -6,6 +6,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_versioning import VersionedFastAPI
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.exceptions import HTTPException
 
 import endpoints
 from config import settings
@@ -13,7 +14,7 @@ from config.di import get_di_container
 from utils.app import FastAPI
 from utils.exceptions import (
     CustomException,
-    custom_exception_handler,
+    http_exception_handler,
     internal_exception_handler,
     request_validation_exception_handler,
 )
@@ -32,7 +33,8 @@ logging.config.dictConfig(  # type: ignore[attr-defined]
 __app = FastAPI(
     debug=True,
     exception_handlers={
-        CustomException: custom_exception_handler,
+        CustomException: http_exception_handler,
+        HTTPException: http_exception_handler,
         RequestValidationError: request_validation_exception_handler,
         HTTP_500_INTERNAL_SERVER_ERROR: internal_exception_handler,
     },

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ status_code }}{% endblock title %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/error.css') }}">
+{% endblock css %}
+
+{% block content %}
+    <div class="error">
+        <h1>{{ status_code }}</h1>
+        <h3>{{ short_description }}</h3>
+        <p>{{ long_description }}</p>
+    </div>
+{% endblock content %}
