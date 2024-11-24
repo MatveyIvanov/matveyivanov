@@ -4,7 +4,6 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from config import settings
 from utils.routing import APIRouter
 from utils.uri import build_absolute_uri
 
