@@ -12,7 +12,6 @@ from starlette.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
-from config.i18n import _
 from utils.templates import templates
 
 logger = logging.getLogger("exceptions")

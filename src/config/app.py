@@ -5,8 +5,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_versioning import VersionedFastAPI
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.exceptions import HTTPException
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 import endpoints
 from config import settings
