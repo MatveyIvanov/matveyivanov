@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Experience{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/experience.css') }}">
+{% endblock css %}
+
+{% block content %}
+<ul class="timeline">
+    {% for item in timeline %}
+        {% if item.direction == 'right' %}
+            <li>
+                <div class="direction-r">
+                    <div class="flag-wrapper">
+                        <span class="flag">{{ item.place }}</span>
+                        <span class="time-wrapper"><span class="time">{{ item.from }} - {{ item.to }}</span></span>
+                    </div>
+                    <div class="desc">{{ item.description }}</div>
+                </div>
+            </li>
+        {% else %}
+            <li>
+                <div class="direction-l">
+                    <div class="flag-wrapper">
+                        <span class="flag">{{ item.place }}</span>
+                        <span class="time-wrapper"><span class="time">{{ item.from }} - {{ item.to }}</span></span>
+                    </div>
+                    <div class="desc">{{ item.description }}</div>
+                </div>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endblock content %}

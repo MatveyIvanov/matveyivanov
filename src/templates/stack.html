@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Stack{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/stack.css') }}">
+{% endblock css %}
+
+{% block content %}
+<section>
+    {% for skill in stack %}
+        <div class="parent-skill">
+            <div class="skill">
+                <div class="progress" data-progress="{{ skill.progress }}">
+                    <span class="progress-number">{{ skill.name }}</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</section>
+{% endblock content %}
+
+{% block js %}
+<script src="{{ url_for('static', path='/js/stack.js') }}"></script>
+{% endblock js %}

@@ -1,100 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap");
 
-html, body {
-    height: 100%;
+html,
+body {
+  height: 100%;
 }
 
 body {
-    width:  50vw;
-    margin: 0 auto;
-    font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
+  width: 50vw;
+  margin: 0 auto;
+  font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
+  font-size: 16px;
 }
 
 .navbar {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar a {
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px;
-    text-decoration: underline;
-    font-weight: bold;
-    font-size: 20px;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: underline;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .avatar {
-    padding-top: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  padding-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar img {
-    border-radius: 50%;
-    clip-path: circle();
+  border-radius: 50%;
+  clip-path: circle();
 }
 
 .name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .socials {
-    display: flex;
-    overflow: hidden;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
 }
 
 .socials a {
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px;
-    text-decoration: none;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
 }
 
 .socials img {
-    width: 25px;
-    height: 25px;
+  width: 25px;
+  height: 25px;
 }
 
 .container {
-    min-height: calc(100% - 445px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  min-height: calc(100% - 445px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer {
-    margin-top: 0;
-    height: 100px;
-    display: flexbox;
-    overflow: hidden;
-    align-items: center;
-    justify-content: center;
+  margin-top: 0;
+  height: 100px;
+  display: flexbox;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
 }
 
-.footer a,p {
-    display: block;
-    color: rgb(94, 94, 94);
-    text-align: center;
-    text-decoration: none;
+.footer a,
+p {
+  display: block;
+  color: rgb(94, 94, 94);
+  text-align: center;
+  text-decoration: none;
 }
 
 .footer p a {
-    display: inline;
-    text-decoration: underline;
+  display: inline;
+  text-decoration: underline;
 }
 
 .footer img {
-    width: 25px;
-    height: 25px;
+  width: 25px;
+  height: 25px;
 }
