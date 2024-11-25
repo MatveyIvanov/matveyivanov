@@ -1,0 +1,29 @@
+.books {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.books ul {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-around;
+
+  font-size: 22px;
+
+  list-style-type: circle;
+}
+
+.books li {
+  margin: 10px 100px;
+}
+
+.books li a {
+  color: black;
+}

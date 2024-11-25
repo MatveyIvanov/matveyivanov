@@ -10,6 +10,12 @@ body {
   margin: 0 auto;
   font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
   font-size: 16px;
+
+  overflow: -moz-scrollbars-none; /* Hides the scrollbar */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
 }
 
 .navbar {
@@ -73,6 +79,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  animation: fadeInAnimation ease 2s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .footer {

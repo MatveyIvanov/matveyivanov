@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Books{% endblock title %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/books.css') }}">
+{% endblock css %}
+
+{% block content %}
+<div class="books">
+    <h2>The list below contains books that I've read and would advice others to read.</h3>
+    <ul>
+        {% for book in books %}
+            <li class="book">
+                {{ book.name }}
+                {% if book.url %}
+                    - <a href="{{ book.url }}" target="_blank">click</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

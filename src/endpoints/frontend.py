@@ -55,13 +55,13 @@ async def stack(request: Request):
         name="stack.html",
         context={
             "stack": [
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
-                {"name": "Python", "progress": "60"},
+                {"name": "Python", "progress": "20%"},
+                {"name": "Python", "progress": "45%"},
+                {"name": "Python", "progress": "55%"},
+                {"name": "Python", "progress": "75%"},
+                {"name": "Python", "progress": "80%"},
+                {"name": "Python", "progress": "60%"},
+                {"name": "Python", "progress": "60%"},
             ]
         },
     )
@@ -72,4 +72,25 @@ async def python(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="python.html",
+        context={
+            "libraries": [
+                {"name": "Django", "progress": "80%"},
+                {"name": "Django", "progress": "20%"},
+                {"name": "Django", "progress": "80%"},
+                {"name": "Django", "progress": "20%"},
+                {"name": "Django", "progress": "80%"},
+                {"name": "Django", "progress": "20%"},
+                {"name": "Django", "progress": "80%"},
+                {"name": "Django", "progress": "20%"},
+            ]
+        },
+    )
+
+
+@router.get("/books", response_class=HTMLResponse)
+async def books(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="books.html",
+        context={"books": [{"name": "Книга"}, {"name": "Kniga", "url": "url"}]},
     )

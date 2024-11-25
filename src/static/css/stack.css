@@ -1,53 +1,85 @@
-section {
+.stack {
+  width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
-  font-size: 30px;
 }
 
-.parent-skill {
-  width: 200px;
-  height: auto;
-}
-
-.skill {
-  width: 200px;
-  height: 200px;
-  border-radius: 100%;
-  margin: 25px 0;
-  -webkit-border-radius: 100%;
-  -moz-border-radius: 100%;
-  -ms-border-radius: 100%;
-  -o-border-radius: 100%;
-  box-shadow: 10px 10px 19px #1c1e22, -10px -10px 19px #00000051;
-  background-color: conic-gradient(rgb(98, 0, 178), 10%, black 0);
+.technology {
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  transition: transform 0.5s ease;
+}
+
+.technology:hover {
+  transform: scale(1.02);
+}
+
+.technology .name {
+  font-size: 24px;
+  color: black;
+  align-self: flex-start;
+  margin: 25px;
+  text-decoration: underline;
+}
+
+.bar {
+  background-color: #d4e6b5;
+  width: 100%;
+  height: 35px;
+  border-radius: 35px;
 }
 
 .progress {
-  width: 97%;
-  height: 97%;
-  border-radius: 100%;
-  -webkit-border-radius: 100%;
-  -moz-border-radius: 100%;
-  -ms-border-radius: 100%;
-  -o-border-radius: 100%;
-  background: linear-gradient(280deg, white, white);
+  position: relative;
+  top: -35px;
+  width: 0%;
+  height: 35px;
+  background-color: #0cce6b;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  color: black;
+  font-size: 25px;
+  font-weight: 500;
+  border-radius: 35px;
+  transition: 1s ease;
 }
 
-.progress-number {
+.point {
+  width: 3px;
+  height: 20px;
+  background-color: #483d3f;
+  border-radius: 10px;
+}
+
+.milestones {
+  position: relative;
+  top: -35px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  column-gap: 100px;
+  padding-left: 50px;
+}
+
+.milestone {
+  display: flex;
+  text-align: left;
   color: black;
 }
 
-.title {
-  display: block;
-  text-align: center;
-  margin-top: 20px;
+.milestone p {
+  position: static;
+  max-width: 125px;
+}
+
+.technology hr {
+  width: 100%;
+  size: 2px;
+  color: black;
 }
