@@ -4,6 +4,11 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from config import settings
+from models.book import book_table
+from models.experience import experience_table
+from models.project import project_table
+from models.python import python_table
+from models.stack import stack_table
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,7 +30,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-tables = []
+tables = [book_table, experience_table, project_table, python_table, stack_table]
 target_metadata = list(table.metadata for table in tables)
 
 
