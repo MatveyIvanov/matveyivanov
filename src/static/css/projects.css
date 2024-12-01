@@ -1,4 +1,4 @@
-.books {
+.projects {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -7,11 +7,11 @@
   justify-content: space-around;
 }
 
-.books ul {
+.projects ul {
   width: 100%;
   display: flex;
-  flex-direction: column;
   flex-wrap: wrap;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: space-around;
 
@@ -20,12 +20,12 @@
   list-style-type: circle;
 }
 
-.books li {
+.projects li {
   width: 80%;
   word-wrap: break-word;
   margin: 10px 100px;
 }
 
-.books li a {
+.projects li a {
   color: black;
 }

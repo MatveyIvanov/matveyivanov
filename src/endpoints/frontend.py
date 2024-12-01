@@ -94,3 +94,21 @@ async def books(request: Request):
         name="books.html",
         context={"books": [{"name": "Книга"}, {"name": "Kniga", "url": "url"}]},
     )
+
+
+@router.get("/projects", response_class=HTMLResponse)
+async def books(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="projects.html",
+        context={
+            "projects": [
+                {
+                    "name": "Книга",
+                    "description": "some long sentence some long sentence some long sentence some long sentence some long sentence some long sentence ",
+                    "url": "",
+                },
+                {"name": "Книга", "description": "", "url": ""},
+            ]
+        },
+    )
