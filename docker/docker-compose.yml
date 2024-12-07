@@ -16,7 +16,7 @@ services:
       - ${MEDIA_PATH}:/media
       - ${LOG_PATH}:/logs
     ports:
-      - ${ASGI_PORT}:${ASGI_PORT}
+      - ${PORT}:${PORT}
     networks:
       - network
     restart: ${RESTART_POLICY:-unless-stopped}

@@ -29,9 +29,9 @@ LOGGING_MAX_BYTES = int(os.environ.get("LOGGING_MAX_BYTES", 1024 * 3))
 LOGGING_BACKUP_COUNT = int(os.environ.get("LOGGING_BACKUP_COUNT", 1))
 LOGGING_LOGGERS = os.environ.get("LOGGING_LOGGERS", "").split(",")
 LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(",")
-LOGGING_PATH = os.environ.get("LOG_PATH")
+LOGGING_PATH = "/logs/"
 
-PORT = os.environ.get("ASGI_PORT")
+PORT = os.environ.get("PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{PORT}")
 
 BIRTH_DATE = datetime(2001, 3, 25)

@@ -7,4 +7,5 @@ services:
     extends:
       file: docker-compose.yml
       service: asgi
-    image: ${REGISTRY}/asgi:${CI_COMMIT_TAG:-latest}
+    image: ${REGISTRY}/web:${CI_COMMIT_TAG:-latest}
+    platform: linux/amd64

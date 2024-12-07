@@ -12,6 +12,8 @@ mainup:
 	docker compose -f docker/docker-compose.main.yml -p matveyivanov up --remove-orphans
 mainbuild:
 	docker compose -f docker/docker-compose.main.yml -p matveyivanov build --no-cache
+mainpush:
+	docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 test:
 	docker exec -it $(PROJECT_NAME)-asgi pytest .
 lint:
@@ -22,7 +24,3 @@ black:
 	docker exec -it $(PROJECT_NAME)-asgi black .
 isort:
 	docker exec -it $(PROJECT_NAME)-asgi isort . --profile black --filter-files
-migration:
-	docker exec -it $(PROJECT_NAME)-asgi alembic revision --autogenerate -m "$(MESSAGE)"
-migrate:
-	docker exec -it $(PROJECT_NAME)-asgi alembic upgrade head

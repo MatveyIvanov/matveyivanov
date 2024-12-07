@@ -10,11 +10,7 @@
 </head>
 <body>
     <div class="avatar">
-        <picture>
-            <source srcset="{{ url_for('static', path='/img/avatar.webp') }}" type="image/webp">
-            <source srcset="{{ url_for('static', path='/img/avatar.png') }}" type="image/png"> 
-            <img src="{{ url_for('static', path='/img/avatar.png') }}">
-        </picture>
+        <img src="{{ url_for('static', path='/img/avatar.png') }}">
     </div>
     <div class="name">
         <h1>Matvey Ivanov</h1>
