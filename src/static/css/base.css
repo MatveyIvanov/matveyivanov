@@ -75,7 +75,7 @@ body::-webkit-scrollbar {
 }
 
 .container {
-  min-height: calc(100% - 445px);
+  min-height: calc(100% - 470px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +97,7 @@ body::-webkit-scrollbar {
 
 .footer {
   margin-top: 0;
-  height: 100px;
+  height: 125px;
   display: flexbox;
   overflow: hidden;
   align-items: center;

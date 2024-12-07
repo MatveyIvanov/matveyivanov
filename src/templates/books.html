@@ -7,9 +7,20 @@
 
 {% block content %}
 <div class="books">
-    <h2>The list below contains books that I've read and would advice others to read.</h3>
+    <h2>The list below contains work-related books that I've read and would advice others to read.</h3>
     <ul>
-        {% for book in books %}
+        {% for book in work_books %}
+            <li class="book">
+                {{ book.name }}
+                {% if book.url %}
+                    - <a href="{{ book.url }}" target="_blank">click</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <h2>The list below contains my top off-work-related books.</h3>
+    <ul>
+        {% for book in off_work_books %}
             <li class="book">
                 {{ book.name }}
                 {% if book.url %}

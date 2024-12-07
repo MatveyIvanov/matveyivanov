@@ -2,86 +2,12 @@ networks:
   network:
     name: ${PROJECT_NAME}-network
 
-volumes:
-  db-data:
-    name: ${PROJECT_NAME}-db-data
-  redis-data:
-    name: ${PROJECT_NAME}-redis-data
-
 services:
-  nginx:
-    container_name: ${PROJECT_NAME}-nginx
-    build:
-      context: ../
-      dockerfile: docker/nginx/Dockerfile
-      args:
-        NGINX_VERSION: ${NGINX_VERSION}
-    ports:
-      - ${NGINX_OUTER_PORT}:${NGINX_INNER_PORT}
-    volumes:
-      - ${STATIC_PATH}:/static
-      - ${MEDIA_PATH}:/media
-    depends_on:
-      - asgi
-    networks:
-      - network
-    restart: ${RESTART_POLICY:-unless-stopped}
-    cpus: ${NGINX_CPUS:-0.000}
-    mem_limit: ${NGINX_MEM_LIMIT:-1G}
-    mem_reservation: ${NGINX_MEM_RESERVATION:-500M}
-
-  db:
-    container_name: ${PROJECT_NAME}-db
-    image: postgres:${POSTGRES_VERSION}
-    command: -c config_file=/etc/postgresql.conf
-    volumes:
-      - ../postgresql/postgresql.conf:/etc/postgresql.conf
-      - ../postgresql/pg_hba.conf:/etc/pg_hba.conf
-      - db-data:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_PORT: ${DB_PORT}
-      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
-    networks:
-      - network
-    expose:
-      - ${DB_PORT}
-    restart: ${RESTART_POLICY:-unless-stopped}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -p $$POSTGRES_PORT"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    cpus: ${DB_CPUS:-0.000}
-    mem_limit: ${DB_MEM_LIMIT:-1G}
-    mem_reservation: ${DB_MEM_RESERVATION:-500M}
-
-  redis:
-    container_name: ${PROJECT_NAME}-redis
-    image: redis:${REDIS_VERSION}
-    command:
-      - "--requirepass ${REDIS_PASSWORD}"
-    volumes:
-      - redis-data:/data
-    networks:
-      - network
-    restart: ${RESTART_POLICY:-unless-stopped}
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    cpus: ${REDIS_CPUS:-0.000}
-    mem_limit: ${REDIS_MEM_LIMIT:-1G}
-    mem_reservation: ${REDIS_MEM_RESERVATION:-500M}
-
   asgi:
     container_name: ${PROJECT_NAME}-asgi
     build:
       context: ../
-      dockerfile: docker/backend/Dockerfile
+      dockerfile: docker/Dockerfile
       target: ${ASGI_TARGET}
     env_file:
       - .env
@@ -89,13 +15,8 @@ services:
       - ${STATIC_PATH}:/static
       - ${MEDIA_PATH}:/media
       - ${LOG_PATH}:/logs
-    depends_on:
-      redis:
-        condition: service_healthy
-      db:
-        condition: service_healthy
-    expose:
-      - ${ASGI_PORT}
+    ports:
+      - ${ASGI_PORT}:${ASGI_PORT}
     networks:
       - network
     restart: ${RESTART_POLICY:-unless-stopped}

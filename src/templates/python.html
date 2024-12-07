@@ -10,7 +10,11 @@
 <div class="python">
     {% for lib in libraries %}
         <div class="lib">
-            <a class="name" href="{{ lib.url }}" target="_blank">{{ lib.name }}</a>
+            {% if lib.url %}
+                <a class="name" href="{{ lib.url }}" target="_blank">{{ lib.name }}</a>
+            {% else %}
+                <p class="name">{{ lib.name }}</p>
+            {% endif %}
             <div class="bar"></div>
             <div class="progress">{{ lib.progress }}</div>
             <div class="milestones">

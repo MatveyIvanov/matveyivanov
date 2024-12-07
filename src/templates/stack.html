@@ -10,23 +10,13 @@
 <div class="stack">
     {% for technology in stack %}
         <div class="technology">
-            <a class="name" href="{{ technology.url }}" target="_blank">{{ technology.name }}</a>
+            {% if technology.url %}
+                <a class="name" href="{{ technology.url }}" target="_blank">{{ technology.name }}</a>
+            {% else %}
+                <p class="name">{{ technology.name }}</p>
+            {% endif %}
             <div class="bar"></div>
             <div class="progress">{{ technology.progress }}</div>
-            <div class="milestones">
-                <div class="milestone">
-                    <div class="point"></div>
-                    <p>Used in pet projects</p>
-                </div>
-                <div class="milestone">
-                    <div class="point"></div>
-                    <p>Used in production once</p>
-                </div>
-                <div class="milestone">
-                    <div class="point"></div>
-                    <p>Used in production many times</p>
-                </div>
-            </div>
             <hr>
         </div>
     {% endfor %}

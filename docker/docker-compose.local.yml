@@ -2,28 +2,7 @@ networks:
   network:
     name: ${PROJECT_NAME}-network
 
-volumes:
-  db-data:
-    name: ${PROJECT_NAME}-db-data
-  redis-data:
-    name: ${PROJECT_NAME}-redis-data
-
 services:
-  nginx:
-    extends:
-      file: docker-compose.yml
-      service: nginx
-
-  db:
-    extends:
-      file: docker-compose.yml
-      service: db
-
-  redis:
-    extends:
-      file: docker-compose.yml
-      service: redis
-
   asgi:
     extends:
       file: docker-compose.yml

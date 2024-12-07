@@ -50,34 +50,6 @@
   transition: 1s ease;
 }
 
-.point {
-  width: 3px;
-  height: 20px;
-  background-color: #483d3f;
-  border-radius: 10px;
-}
-
-.milestones {
-  position: relative;
-  top: -35px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  column-gap: 100px;
-  padding-left: 50px;
-}
-
-.milestone {
-  display: flex;
-  text-align: left;
-  color: black;
-}
-
-.milestone p {
-  position: static;
-  max-width: 125px;
-}
-
 .technology hr {
   width: 100%;
   size: 2px;

@@ -89,7 +89,7 @@ FROM prod-base AS prod-asgi
 
 WORKDIR /apps/
 
-COPY ./docker/backend/asgi/entrypoint.sh entrypoint.sh
+COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["bash", "entrypoint.sh"]
 
@@ -100,6 +100,6 @@ FROM dev-base AS dev-asgi
 
 WORKDIR /apps/
 
-COPY ./docker/backend/asgi/entrypoint.local.sh /entrypoint.sh
+COPY ./docker/entrypoint.local.sh /entrypoint.sh
 
 ENTRYPOINT ["bash", "/entrypoint.sh"]

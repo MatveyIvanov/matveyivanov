@@ -2,6 +2,14 @@
 
 {% block title %}Home{% endblock title %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/home.css') }}">
+{% endblock css %}
+
 {% block content %}
-<h1>This is a home page</h1>
+    <div class="home">
+        {% for line in lines %}
+            <p>{{ line }}</p>
+        {% endfor %}
+    </div>
 {% endblock content %}
