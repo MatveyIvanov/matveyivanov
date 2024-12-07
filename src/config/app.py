@@ -19,7 +19,6 @@ from utils.exceptions import (
 from utils.logging import get_config
 from utils.middleware import LoggingMiddleware, TranslationMiddleware
 
-
 logging.config.dictConfig(  # type: ignore[attr-defined]
     get_config(settings.LOGGING_PATH)
 )
