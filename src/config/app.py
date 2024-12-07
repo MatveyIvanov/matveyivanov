@@ -45,7 +45,10 @@ __app.mount(
     StaticFiles(directory="static"),
     name="static",
 )
-# __app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost"])
+__app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["127.0.0.1", "localhost", "matveyivanov.com"],
+)
 __app.add_middleware(TranslationMiddleware)
 
 
