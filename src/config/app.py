@@ -47,7 +47,7 @@ __app.mount(
 )
 __app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["127.0.0.1", "localhost", "matveyivanov.com"],
+    allowed_hosts=["127.0.0.1", "localhost", "matveyivanov.tech"],
 )
 __app.add_middleware(TranslationMiddleware)
 
