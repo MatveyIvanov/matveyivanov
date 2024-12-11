@@ -3,6 +3,6 @@
 
 I am a full-time Python backend developer. I am passionate about technologies and love to learn new things.
 
-### 🔭 Have a look at my [website](https://matveyivanov.com/).
+### 🔭 Have a look at my [website](https://matveyivanov.tech).
 
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=MatveyIvanov/matveyivanov)
