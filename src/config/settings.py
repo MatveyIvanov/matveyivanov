@@ -44,9 +44,15 @@ HOME: Tuple[str] = (
 )
 EXPERIENCE = [
     Experience(
+        place="Yandex",
+        from_="2025",
+        to_="today",
+        description="Middle Python Backend Developer",
+    ),
+    Experience(
         place="Sixhands",
         from_="2024",
-        to_="today",
+        to_="2025",
         description="Middle Python Backend Developer",
     ),
     Experience(
