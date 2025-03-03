@@ -17,12 +17,12 @@ jobs:
 
       - name: Build, tag, and push image to Yandex Cloud Container Registry
         env:
-          CR_REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
-          CR_REPOSITORY: ${{ secrets.YC_CR_REPOSITORY }}
+          REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
+          IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t cr.yandex/$CR_REGISTRY/$CR_REPOSITORY:$IMAGE_TAG .
-          docker push cr.yandex/$CR_REGISTRY/$CR_REPOSITORY:$IMAGE_TAG
+          docker compose -f docker/docker-compose.main.yml -p matveyivanov build
+          docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 
       - name: Deploy Serverless Container
         id: deploy-sls-container
@@ -36,6 +36,6 @@ jobs:
           revision-memory: ${{ secrets.YC_REVISION_MEMORY }}
           revision-core-fraction: ${{ secrets.YC_REVISION_CORE_FRACTION }}
           revision-concurrency: ${{ secrets.YC_REVISION_CONCURRENCY }}
-          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.sha }}
+          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:latest
           revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
           revision-env: ${{ secrets.YC_REVISION_ENV }}
