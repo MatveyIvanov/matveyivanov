@@ -25,7 +25,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           ENV: ${{ secrets.YC_REVISION_ENV }}
         run: |
-          echo $ENV > .env
+          echo $ENV > docker/.env
           docker compose -f docker/docker-compose.main.yml -p matveyivanov build
           docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 
