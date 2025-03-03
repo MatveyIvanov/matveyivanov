@@ -23,7 +23,7 @@ jobs:
           REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
           IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
-          ENV: ${{ secrets.BUILD_ENV }}
+          ENV: ${{ env.BUILD_ENV }}
         run: |
           cat $ENV >> docker/.env
           docker compose -f docker/docker-compose.main.yml -p matveyivanov build
