@@ -7,6 +7,8 @@ services:
     extends:
       file: docker-compose.yml
       service: asgi
+    env_file:
+      - .env
     volumes:
       - ${STATIC_PATH}:/static
       - ${MEDIA_PATH}:/media
