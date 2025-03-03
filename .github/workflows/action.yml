@@ -42,6 +42,6 @@ jobs:
           revision-memory: ${{ secrets.YC_REVISION_MEMORY }}
           revision-core-fraction: ${{ secrets.YC_REVISION_CORE_FRACTION }}
           revision-concurrency: ${{ secrets.YC_REVISION_CONCURRENCY }}
-          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:latest
+          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.sha }}
           revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
           revision-env: ${{ secrets.YC_REVISION_ENV }}

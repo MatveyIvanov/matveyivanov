@@ -167,8 +167,9 @@ PROJECTS = [
     Project(
         name="Repository",
         description=(
-            "My upcoming first open-source package that will allow "
-            "to work with databases via repository pattern abstraction."
+            "My first open-source package that will allow "
+            "to work with databases via repository pattern abstraction "
+            "using standardized interface."
         ),
         url="https://github.com/MatveyIvanov/repository",
     ),
