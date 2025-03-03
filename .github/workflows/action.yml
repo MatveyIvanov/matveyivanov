@@ -25,8 +25,8 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           ENV: ${{ env.BUILD_ENV }}
         run: |
-          cat $ENV >> docker/.env
-          cat docker/.env
+          cat ${{ env.BUILD_ENV }} >> docker/.env
+          echo "ENV=$(cat docker/.env)" >> $GITHUB_OUTPUT
           docker compose -f docker/docker-compose.main.yml -p matveyivanov build
           docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 
