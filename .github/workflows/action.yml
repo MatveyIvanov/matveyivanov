@@ -25,11 +25,9 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           ENV: ${{ env.BUILD_ENV }}
         run: |
-          cat ${{ env.BUILD_ENV }} >> docker/.env
-          echo "ENV=$(cat docker/.env)" >> $GITHUB_OUTPUT
-          echo "ASDASDASD=ASDASDASDASD" >> $GITHUB_OUTPUT
-      # docker compose -f docker/docker-compose.main.yml -p matveyivanov build
-      # docker compose -f docker/docker-compose.main.yml -p matveyivanov push
+          echo $ENV | base64 --decode > docker/.env
+          docker compose -f docker/docker-compose.main.yml -p matveyivanov build
+          docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 
       - name: Test output
         run: echo ${{ steps.vars.outputs.ASDASDASD }}
