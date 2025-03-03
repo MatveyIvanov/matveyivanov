@@ -165,11 +165,12 @@ PROJECTS = [
         url="https://github.com/MatveyIvanov/HuffmanArchiver",
     ),
     Project(
-        name="Repositories",
+        name="Repository",
         description=(
             "My upcoming first open-source package that will allow "
             "to work with databases via repository pattern abstraction."
         ),
+        url="https://github.com/MatveyIvanov/repository",
     ),
     Project(
         name="Web templates",
