@@ -26,6 +26,7 @@ jobs:
           ENV: ${{ env.BUILD_ENV }}
         run: |
           cat $ENV >> docker/.env
+          cat docker/.env
           docker compose -f docker/docker-compose.main.yml -p matveyivanov build
           docker compose -f docker/docker-compose.main.yml -p matveyivanov push
 
