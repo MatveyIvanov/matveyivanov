@@ -27,8 +27,8 @@ jobs:
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           PORT: ${{ secrets.PORT }}
         run: |
-          docker compose -f docker/docker-compose.main.yml -p matveyivanov build
-          docker compose -f docker/docker-compose.main.yml -p matveyivanov push
+          make mainbuild
+          make mainpush
 
       - name: Deploy Serverless Container
         id: deploy-sls-container
