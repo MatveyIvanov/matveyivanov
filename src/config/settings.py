@@ -47,7 +47,7 @@ EXPERIENCE = [
         place="Yandex",
         from_="2025",
         to_="today",
-        description="Middle Python Backend Developer",
+        description="Software Developer",
     ),
     Experience(
         place="Sixhands",
@@ -140,6 +140,15 @@ PROJECTS = [
         url="https://github.com/MatveyIvanov/matveyivanov",
     ),
     Project(
+        name="dbrepos",
+        description=(
+            "My first open-source package that helps "
+            "to work with databases via repository pattern abstraction "
+            "using standardized interface."
+        ),
+        url="https://github.com/MatveyIvanov/repository",
+    ),
+    Project(
         name="File upload microservice",
         description=(
             "This was a test task for job appliance, "
@@ -163,15 +172,6 @@ PROJECTS = [
             "to compress text with a compression ratio up to 2 units."
         ),
         url="https://github.com/MatveyIvanov/HuffmanArchiver",
-    ),
-    Project(
-        name="Repository",
-        description=(
-            "My first open-source package that will allow "
-            "to work with databases via repository pattern abstraction "
-            "using standardized interface."
-        ),
-        url="https://github.com/MatveyIvanov/repository",
     ),
     Project(
         name="Web templates",
