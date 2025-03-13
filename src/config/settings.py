@@ -146,7 +146,7 @@ PROJECTS = [
             "to work with databases via repository pattern abstraction "
             "using standardized interface."
         ),
-        url="https://github.com/MatveyIvanov/repository",
+        url="https://github.com/MatveyIvanov/dbrepos",
     ),
     Project(
         name="File upload microservice",
