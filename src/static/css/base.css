@@ -1,43 +1,57 @@
 @import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap");
 
+/* Base styles */
 html,
 body {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  width: 50vw;
+  /* Change from fixed 50vw to responsive width with padding */
+  width: 90%;
+  max-width: 800px;
   margin: 0 auto;
   font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
   font-size: 16px;
-
   overflow: -moz-scrollbars-none; /* Hides the scrollbar */
+  box-sizing: border-box;
+}
+
+/* Apply box-sizing to all elements */
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 body::-webkit-scrollbar {
   display: none; /* Hides the scrollbar */
 }
 
+/* Navigation */
 .navbar {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  padding: 10px 0;
 }
 
 .navbar a {
   display: block;
   color: black;
   text-align: center;
-  padding: 14px;
+  padding: 10px;
   text-decoration: underline;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 18px; /* Slightly smaller for mobile */
 }
 
+/* Avatar section */
 .avatar {
-  padding-top: 25px;
+  padding-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,26 +60,32 @@ body::-webkit-scrollbar {
 .avatar img {
   border-radius: 50%;
   clip-path: circle();
+  max-width: 100%; /* Ensure images don't overflow */
+  height: auto; /* Maintain aspect ratio */
 }
 
 .name {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  padding: 10px;
 }
 
+/* Social links */
 .socials {
   display: flex;
-  overflow: hidden;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
   align-items: center;
   justify-content: center;
+  padding: 5px 0;
 }
 
 .socials a {
   display: block;
   color: black;
   text-align: center;
-  padding: 14px;
+  padding: 10px;
   text-decoration: none;
 }
 
@@ -74,12 +94,13 @@ body::-webkit-scrollbar {
   height: 25px;
 }
 
+/* Main content */
 .container {
   min-height: calc(100% - 470px);
   display: flex;
   align-items: center;
   justify-content: center;
-
+  padding: 20px 10px;
   animation: fadeInAnimation ease 2s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
@@ -89,27 +110,28 @@ body::-webkit-scrollbar {
   0% {
     opacity: 0;
   }
-
   100% {
     opacity: 1;
   }
 }
 
+/* Footer */
 .footer {
   margin-top: 0;
-  height: 125px;
-  display: flexbox;
-  overflow: hidden;
+  padding: 15px 10px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 .footer a,
-p {
+.footer p {
   display: block;
   color: rgb(94, 94, 94);
   text-align: center;
   text-decoration: none;
+  margin: 5px 0;
 }
 
 .footer p a {
@@ -120,4 +142,37 @@ p {
 .footer img {
   width: 25px;
   height: 25px;
+}
+
+/* Media Queries for different screen sizes */
+@media screen and (max-width: 768px) {
+  body {
+    width: 95%;
+  }
+
+  .navbar a {
+    padding: 8px;
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar a {
+    padding: 8px 5px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .container {
+    min-height: calc(100% - 520px); /* Adjust for potential wrapping */
+  }
 }

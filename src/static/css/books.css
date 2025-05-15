@@ -2,30 +2,65 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
+  padding: 10px 0;
 }
 
 .books ul {
   width: 100%;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-around;
-
   font-size: 22px;
-
   list-style-type: circle;
+  padding-left: 20px; /* Reduce default padding */
+  margin: 0; /* Reset default margins */
 }
 
 .books li {
-  width: 80%;
+  width: 100%; /* Full width instead of 80% */
   word-wrap: break-word;
-  margin: 10px 100px;
+  margin: 10px 0; /* Remove horizontal margins */
+  padding-right: 10px; /* Add some right padding */
 }
 
 .books li a {
   color: black;
+  text-decoration: underline;
+  display: inline-block; /* Better tap targets on mobile */
+  padding: 2px 0; /* Slightly increase tap area */
+}
+
+/* Media queries for responsive adjustments */
+@media screen and (min-width: 768px) {
+  /* For tablets and larger */
+  .books li {
+    width: 80%; /* Return to 80% width on larger screens */
+    margin: 10px 0 10px 30px; /* Add some margin on the left */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* For mobile phones */
+  .books ul {
+    font-size: 18px; /* Smaller font size on mobile */
+    padding-left: 15px; /* Further reduce padding */
+  }
+
+  .books li {
+    margin: 8px 0; /* Smaller margins on mobile */
+  }
+
+  .books li a {
+    padding: 4px 0; /* Larger tap area on mobile */
+  }
+}
+
+/* Optional: For larger screens with more space */
+@media screen and (min-width: 1200px) {
+  .books ul {
+    max-width: 900px; /* Limit maximum width for better readability */
+  }
 }

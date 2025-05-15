@@ -1,85 +1,179 @@
 .python {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column; /* Column on mobile by default */
   align-items: center;
   justify-content: space-around;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .lib {
   width: 100%;
+  max-width: 800px; /* Limit maximum width on large screens */
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  margin-bottom: 25px;
   transition: transform 0.5s ease;
 }
 
-.lib:hover {
-  transform: scale(1.02);
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) {
+  .lib:hover {
+    transform: scale(1.02);
+  }
 }
 
 .lib .name {
-  font-size: 24px;
+  font-size: 20px; /* Smaller on mobile */
   color: black;
   align-self: flex-start;
-  margin: 25px;
+  margin: 15px;
   text-decoration: underline;
+  font-weight: bold;
 }
 
 .bar {
   background-color: #d4e6b5;
   width: 100%;
-  height: 35px;
-  border-radius: 35px;
+  height: 30px; /* Slightly smaller on mobile */
+  border-radius: 30px;
 }
 
 .progress {
   position: relative;
-  top: -35px;
+  top: -30px; /* Match bar height */
   width: 0%;
-  height: 35px;
+  height: 30px; /* Match bar height */
   background-color: #0cce6b;
   display: flex;
   justify-content: center;
   align-items: center;
   color: black;
-  font-size: 25px;
+  font-size: 18px; /* Smaller font on mobile */
   font-weight: 500;
-  border-radius: 35px;
+  border-radius: 30px;
   transition: 1s ease;
 }
 
 .point {
   width: 3px;
-  height: 20px;
+  height: 18px; /* Slightly smaller */
   background-color: #483d3f;
   border-radius: 10px;
 }
 
 .milestones {
   position: relative;
-  top: -35px;
+  top: -30px; /* Match bar height */
   width: 100%;
   display: flex;
   justify-content: space-around;
-  column-gap: 100px;
-  padding-left: 50px;
+  column-gap: 0; /* Remove fixed column gap on mobile */
+  padding-left: 0; /* No left padding on mobile */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .milestone {
   display: flex;
   text-align: left;
   color: black;
+  margin: 5px 10px;
+  font-size: 14px; /* Smaller font on mobile */
+  align-items: center;
 }
 
 .milestone p {
   position: static;
-  max-width: 125px;
+  max-width: 100px;
+  margin: 0 0 0 5px;
+  line-height: 1.2;
 }
 
 .lib hr {
   width: 100%;
-  size: 2px;
-  color: black;
+  height: 2px; /* Use height instead of deprecated size */
+  background-color: black; /* Use background-color instead of color */
+  border: none;
+  margin: 15px 0;
+}
+
+/* Media queries for larger screens */
+@media screen and (min-width: 480px) {
+  .milestone p {
+    max-width: 110px;
+    font-size: 14px;
+  }
+
+  .progress {
+    font-size: 20px;
+  }
+
+  .milestones {
+    column-gap: 20px;
+    padding-left: 20px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .python {
+    flex-direction: row; /* Row layout on tablets and up */
+    flex-wrap: wrap;
+  }
+
+  .lib {
+    width: 90%;
+  }
+
+  .lib .name {
+    font-size: 22px;
+    margin: 20px;
+  }
+
+  .bar, .progress {
+    height: 35px; /* Back to original */
+  }
+
+  .progress {
+    top: -35px;
+    font-size: 22px;
+  }
+
+  .point {
+    height: 20px; /* Back to original */
+  }
+
+  .milestones {
+    top: -35px;
+    column-gap: 50px;
+    padding-left: 30px;
+  }
+
+  .milestone {
+    font-size: 16px;
+  }
+
+  .milestone p {
+    max-width: 120px;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .lib {
+    width: 80%;
+  }
+
+  .lib .name {
+    font-size: 24px; /* Back to original */
+    margin: 25px; /* Back to original */
+  }
+
+  .milestones {
+    column-gap: 100px; /* Back to original */
+    padding-left: 50px; /* Back to original */
+  }
+
+  .milestone p {
+    max-width: 125px; /* Back to original */
+  }
 }
