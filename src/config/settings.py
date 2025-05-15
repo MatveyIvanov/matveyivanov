@@ -140,6 +140,16 @@ PROJECTS = [
         url="https://github.com/MatveyIvanov/matveyivanov",
     ),
     Project(
+        name="eventscore",
+        description=(
+            "Open-source Python package that allows to build "
+            "event-driven monolith backend applications "
+            "using same architecture patterns and semantics "
+            "as microservices."
+        ),
+        url="https://github.com/MatveyIvanov/eventscore",
+    ),
+    Project(
         name="dbrepos",
         description=(
             "My first open-source package that helps "
