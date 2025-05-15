@@ -1,76 +1,131 @@
+/* Python section styling */
 .python {
   width: 100%;
   display: flex;
-  flex-direction: column; /* Column on mobile by default */
+  flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  padding: 10px;
+  padding: 15px;
   box-sizing: border-box;
+  background: rgba(15, 32, 39, 0.3);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(70, 252, 241, 0.1);
+  margin-bottom: 20px;
 }
 
 .lib {
   width: 100%;
-  max-width: 800px; /* Limit maximum width on large screens */
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   margin-bottom: 25px;
-  transition: transform 0.5s ease;
+  transition: all 0.5s ease;
+  padding: 10px;
+  border-radius: 8px;
 }
 
-/* Only apply hover effects on devices that support hover */
+/* Hover effect with subtle glow */
 @media (hover: hover) {
   .lib:hover {
     transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(70, 252, 241, 0.2);
+    background: rgba(15, 32, 39, 0.2);
   }
 }
 
 .lib .name {
-  font-size: 20px; /* Smaller on mobile */
+  font-size: 20px;
   align-self: flex-start;
   margin: 15px;
-  text-decoration: underline;
   font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(70, 252, 241, 0.5);
+  border-bottom: 1px solid rgba(70, 252, 241, 0.5);
+  text-decoration: none;
+  padding-bottom: 3px;
 }
 
 .bar {
-  background-color: rgba(15, 32, 39, 0.6); /* Dark transparent background */
-  border: 1px solid rgba(70, 252, 241, 0.3); /* Cyan border */
+  background-color: rgba(15, 32, 39, 0.6);
   width: 100%;
-  height: 30px; /* Slightly smaller on mobile */
+  height: 30px;
   border-radius: 30px;
+  border: 1px solid rgba(70, 252, 241, 0.3);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Progress bar base styles */
 .progress {
   position: relative;
-  top: -30px; /* Match bar height */
+  top: -30px;
   width: 0%;
-  height: 30px; /* Match bar height */
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(70, 252, 241, 0.7); /* Cyan progress bar */
-  color: #0f2027; /* Dark text on light background */
-  font-size: 18px; /* Smaller font on mobile */
-  font-weight: 500;
+  color: rgba(15, 32, 39, 0.9);
+  font-size: 18px;
+  font-weight: 700;
   border-radius: 30px;
   transition: 1s ease;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(70, 252, 241, 0.4);
+}
+
+/* Different progress bar colors based on value */
+/* Green for high values */
+.progress[style*="width: 8"],
+.progress[style*="width: 9"],
+.progress[style*="width: 100"] {
+  background: linear-gradient(to right, rgba(12, 206, 107, 0.7), rgba(0, 255, 128, 0.9));
+  border: 1px solid rgba(0, 255, 128, 0.4);
+}
+
+/* Orange for medium values */
+.progress[style*="width: 4"],
+.progress[style*="width: 5"],
+.progress[style*="width: 6"],
+.progress[style*="width: 7"] {
+  background: linear-gradient(to right, rgba(255, 153, 0, 0.7), rgba(255, 173, 51, 0.9));
+  border: 1px solid rgba(255, 173, 51, 0.4);
+}
+
+/* Red for low values */
+.progress[style*="width: 1"],
+.progress[style*="width: 2"],
+.progress[style*="width: 3"] {
+  background: linear-gradient(to right, rgba(255, 61, 61, 0.7), rgba(255, 102, 102, 0.9));
+  border: 1px solid rgba(255, 102, 102, 0.4);
+}
+
+/* Add a subtle shine effect */
+.progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  border-radius: 30px 30px 0 0;
 }
 
 .point {
   width: 3px;
-  height: 18px; /* Slightly smaller for proportionality */
-  background-color: rgba(70, 252, 241, 0.8); /* Cyan color to match cosmic theme */
+  height: 18px;
+  background-color: rgba(70, 252, 241, 0.8);
   border-radius: 10px;
-  box-shadow: 0 0 5px rgba(70, 252, 241, 0.5); /* Add glow effect */
+  box-shadow: 0 0 5px rgba(70, 252, 241, 0.5);
 }
 
 .milestones {
   position: relative;
-  top: -30px; /* Match your bar height */
+  top: -30px;
   width: 100%;
   display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping on larger screens */
-  justify-content: space-between; /* Distribute items evenly */
+  flex-wrap: nowrap;
+  justify-content: space-between;
   padding: 0;
   box-sizing: border-box;
 }
@@ -79,11 +134,11 @@
   display: flex;
   text-align: left;
   color: #c9f0ff;
-  margin: 5px 5px; /* Reduce horizontal margins */
+  margin: 5px 5px;
   font-size: 14px;
   align-items: center;
-  flex: 1; /* Allow items to grow/shrink */
-  max-width: 33%; /* Limit maximum width to 1/3 of container */
+  flex: 1;
+  min-width: auto;
 }
 
 .milestone p {
@@ -91,16 +146,15 @@
   margin: 0 0 0 5px;
   line-height: 1.2;
   font-size: 13px;
-  white-space: normal;
-  overflow-wrap: normal; /* Changed from break-word */
-  word-break: keep-all; /* Changed from break-word */
-  hyphens: none; /* Prevent hyphenation */
-  max-width: 120px; /* Ensure there's enough space for complete words */
+  white-space: nowrap;
+  overflow: visible;
+  hyphens: none;
 }
 
 .lib hr {
   width: 100%;
-  height: 2px; /* Use height instead of deprecated size */
+  height: 1px;
+  background: linear-gradient(to right, rgba(70, 252, 241, 0), rgba(70, 252, 241, 0.7), rgba(70, 252, 241, 0));
   border: none;
   margin: 15px 0;
 }
@@ -108,18 +162,17 @@
 /* For smaller screens: allow wrapping to two lines */
 @media screen and (max-width: 600px) {
   .milestones {
-    flex-wrap: wrap; /* Allow wrapping on small screens */
+    flex-wrap: wrap;
   }
 
   .milestone:nth-child(1) {
     order: 1;
-    max-width: 45%;
     flex: 0 0 auto;
+    min-width: 45%;
   }
 
   .milestone:nth-child(2) {
-    order: 3; /* Push to next line */
-    max-width: 100%;
+    order: 3;
     flex: 0 0 100%;
     justify-content: center;
     margin: 8px auto;
@@ -128,16 +181,28 @@
 
   .milestone:nth-child(3) {
     order: 2;
-    max-width: 45%;
     flex: 0 0 auto;
+    min-width: 45%;
     margin-left: auto;
+  }
+
+  .milestone p {
+    white-space: normal;
   }
 }
 
 /* For larger screens: ensure they all stay on one line */
 @media screen and (min-width: 768px) {
+  .python {
+    padding: 20px;
+  }
+
+  .lib {
+    padding: 12px;
+  }
+
   .milestones {
-    top: -35px; /* Adjust for larger bar height on desktop */
+    top: -35px;
     padding: 0 10px;
   }
 
@@ -149,42 +214,9 @@
   .milestone p {
     font-size: 14px;
   }
-}
-
-/* Media queries for larger screens */
-@media screen and (min-width: 480px) {
-  .milestone p {
-    max-width: 110px;
-    font-size: 14px;
-  }
-
-  .progress {
-    font-size: 20px;
-  }
-
-  .milestones {
-    column-gap: 20px;
-    padding-left: 20px;
-  }
-}
-
-@media screen and (min-width: 768px) {
-  .python {
-    flex-direction: row; /* Row layout on tablets and up */
-    flex-wrap: wrap;
-  }
-
-  .lib {
-    width: 90%;
-  }
-
-  .lib .name {
-    font-size: 22px;
-    margin: 20px;
-  }
 
   .bar, .progress {
-    height: 35px; /* Back to original */
+    height: 35px;
   }
 
   .progress {
@@ -193,40 +225,34 @@
   }
 
   .point {
-    height: 20px; /* Back to original */
-  }
-
-  .milestones {
-    top: -35px;
-    column-gap: 50px;
-    padding-left: 30px;
-  }
-
-  .milestone {
-    font-size: 16px;
-  }
-
-  .milestone p {
-    max-width: 120px;
+    height: 20px;
   }
 }
 
+/* Large screens */
 @media screen and (min-width: 992px) {
+  .python {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
   .lib {
     width: 80%;
   }
 
   .lib .name {
-    font-size: 24px; /* Back to original */
-    margin: 25px; /* Back to original */
+    font-size: 24px;
+    margin: 25px;
+  }
+}
+
+/* Extra large screens */
+@media screen and (min-width: 1200px) {
+  .python {
+    padding: 25px;
   }
 
-  .milestones {
-    column-gap: 100px; /* Back to original */
-    padding-left: 50px; /* Back to original */
-  }
-
-  .milestone p {
-    max-width: 125px; /* Back to original */
+  .lib {
+    padding: 15px;
   }
 }
