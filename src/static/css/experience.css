@@ -98,11 +98,12 @@
 .flag {
   position: relative;
   display: inline;
-  background: rgb(248, 248, 248);
   padding: 6px 10px;
   border-radius: 5px;
   font-weight: 600;
   text-align: left;
+  background: rgba(15, 32, 39, 0.8); /* Dark semi-transparent background */
+  color: #e0e0ff; /* Light blue-tinted text */
 }
 
 .direction-l .flag {
@@ -148,9 +149,9 @@
   width: 0;
   margin-top: -8px;
   border: solid transparent;
-  border-left-color: rgb(248, 248, 248);
   border-width: 8px;
   pointer-events: none;
+  border-left-color: rgba(15, 32, 39, 0.8);
 }
 
 .direction-r .flag:after {
@@ -162,7 +163,7 @@
   width: 0;
   margin-top: -8px;
   border: solid transparent;
-  border-right-color: rgb(248, 248, 248);
+  border-right-color: rgba(15, 32, 39, 0.8);
   border-width: 8px;
   pointer-events: none;
 }
@@ -171,7 +172,7 @@
   display: inline;
   line-height: 1em;
   font-size: 0.66666em;
-  color: rgb(250, 80, 80);
+  color: rgb(70, 252, 241); /* Cyan */
   vertical-align: middle;
 }
 
@@ -186,7 +187,7 @@
 .time {
   display: inline-block;
   padding: 4px 6px;
-  background: rgb(248, 248, 248);
+  background: rgba(15, 32, 39, 0.8);
 }
 
 .desc {

@@ -1,12 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap");
 
 /* Base styles */
-html,
-body {
+html {
   height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: auto; /* Allow vertical scrolling */
+  position: relative;
+}
+
+body {
+  background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
 body {
@@ -18,7 +25,139 @@ body {
   font-size: 16px;
   overflow: -moz-scrollbars-none; /* Hides the scrollbar */
   box-sizing: border-box;
+  color: #e0e0ff;
 }
+
+h1, h2, h3 {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
+}
+
+hr {
+  background: linear-gradient(to right, rgba(70, 252, 241, 0), rgba(70, 252, 241, 0.7), rgba(70, 252, 241, 0));
+  border: none;
+  height: 1px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 210px 180px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 230px 230px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 270px 130px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 300px 90px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 350px 50px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 400px 200px, #ffffff, rgba(0, 0, 0, 0));
+  background-repeat: no-repeat;
+  animation: movingStars 200s linear infinite;
+}
+
+/* Moving stars animation (slow drift) */
+@keyframes movingStars {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 1000px 1000px;
+  }
+}
+
+/* Add shimmer effect to some stars */
+.shooting-star {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  height: 2px;
+  width: 100px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+  animation: shootingStars 6s linear infinite;
+  z-index: -1;
+  opacity: 0;
+  transform: rotate(45deg);
+}
+
+.shooting-star:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.shooting-star:nth-child(2) {
+  left: 20%;
+  top: 30%;
+  width: 150px;
+  animation-delay: 3s;
+  transform: rotate(35deg);
+}
+
+.shooting-star:nth-child(3) {
+  left: 80%;
+  top: 10%;
+  width: 120px;
+  animation-delay: 5s;
+  transform: rotate(55deg);
+}
+
+@keyframes shootingStars {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(-400px) translateY(400px) rotate(45deg);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Add a subtle nebula effect */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(63, 94, 251, 0.1) 0%, rgba(0, 0, 0, 0) 30%),
+    radial-gradient(circle at 80% 20%, rgba(252, 70, 107, 0.1) 0%, rgba(0, 0, 0, 0) 40%),
+    radial-gradient(circle at 40% 70%, rgba(70, 252, 241, 0.08) 0%, rgba(0, 0, 0, 0) 40%);
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Adjust the content container to ensure content is visible against the background */
+.container, .name, .navbar, .avatar, .socials, .home, .books, .python, .stack,
+.projects, .timeline, .error, .footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Make text more visible against cosmic background */
+body {
+  color: #f0f0f0;
+}
+
+a, p, .navbar a, .footer a, .footer p, .lib .name, .technology .name,
+.projects li a, .books li a, .home p {
+  color: #c9f0ff; /* Light blue */
+}
+
 
 /* Apply box-sizing to all elements */
 *, *:before, *:after {
@@ -41,12 +180,17 @@ body::-webkit-scrollbar {
 
 .navbar a {
   display: block;
-  color: black;
+  color: #c9f0ff; /* Light blue instead of black */
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 240, 255, 0.4);
   text-align: center;
   padding: 10px;
-  text-decoration: underline;
   font-weight: bold;
   font-size: 18px; /* Slightly smaller for mobile */
+}
+
+.navbar a:hover {
+  text-shadow: 0 0 8px rgba(201, 240, 255, 0.7);
 }
 
 /* Avatar section */
@@ -83,7 +227,7 @@ body::-webkit-scrollbar {
 
 .socials a {
   display: block;
-  color: black;
+  color: #c9f0ff; /* Light blue instead of black */
   text-align: center;
   padding: 10px;
   text-decoration: none;
@@ -92,6 +236,7 @@ body::-webkit-scrollbar {
 .socials img {
   width: 25px;
   height: 25px;
+  filter: brightness(1.2); /* Make icons more visible */
 }
 
 /* Main content */
@@ -128,7 +273,7 @@ body::-webkit-scrollbar {
 .footer a,
 .footer p {
   display: block;
-  color: rgb(94, 94, 94);
+  color: #9fb4c7; /* Lighter gray that's visible on dark background */
   text-align: center;
   text-decoration: none;
   margin: 5px 0;
@@ -137,6 +282,7 @@ body::-webkit-scrollbar {
 .footer p a {
   display: inline;
   text-decoration: underline;
+  color: #c9f0ff; /* Light blue for links */
 }
 
 .footer img {
@@ -176,3 +322,13 @@ body::-webkit-scrollbar {
     min-height: calc(100% - 520px); /* Adjust for potential wrapping */
   }
 }
+
+.home, .books, .python, .stack, .projects, .timeline {
+  background: rgba(15, 32, 39, 0.3);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(70, 252, 241, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+

@@ -3,8 +3,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  padding: 10px 0;
+  justify-content: center;
+  padding: 15px;
+  background: rgba(15, 32, 39, 0.3);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(70, 252, 241, 0.1);
+  margin-bottom: 20px;
 }
 
 .projects ul {
@@ -12,66 +17,99 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-around;
-  font-size: 22px;
+  justify-content: flex-start;
+  font-size: 20px;
   list-style-type: circle;
-  padding-left: 25px; /* Reduced default padding */
-  margin: 0; /* Reset default margins */
-  box-sizing: border-box;
+  padding-left: 30px;
+  margin: 10px 0;
+  color: #e0e0ff;
 }
 
 .projects li {
-  width: 100%; /* Full width on mobile by default */
+  width: 100%;
   word-wrap: break-word;
-  margin: 12px 0; /* Vertical margins only */
-  padding-right: 10px;
-  line-height: 1.4; /* Better readability */
+  margin: 12px 0;
+  padding: 0;
+  line-height: 1.4;
+  position: relative;
+}
+
+.projects li::marker {
+  color: rgba(70, 252, 241, 0.8);
 }
 
 .projects li a {
-  color: black;
-  text-decoration: underline;
-  display: inline-block; /* Better tap targets */
-  padding: 2px 0; /* Slightly increase tap area */
+  color: #c9f0ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 240, 255, 0.4);
+  display: inline-block;
+  padding: 2px 0;
+  transition: all 0.2s ease;
 }
 
-/* Media queries for larger screens */
+.projects li a:hover {
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 8px rgba(201, 240, 255, 0.7);
+}
+
+/* Media queries for responsive adjustments */
 @media screen and (min-width: 480px) {
   .projects ul {
     padding-left: 30px;
-    font-size: 20px; /* Slightly smaller than desktop */
+    font-size: 19px;
   }
 
   .projects li {
-    width: 90%;
-    margin: 10px 0 10px 10px;
+    padding-left: 5px;
   }
 }
 
 @media screen and (min-width: 768px) {
+  .projects {
+    padding: 20px;
+  }
+
   .projects ul {
-    padding-left: 40px;
-    font-size: 22px; /* Back to original size */
-    max-width: 900px; /* Limit width on larger screens */
-    margin: 0 auto;
+    width: 90%;
+    margin: 10px auto;
+    font-size: 21px;
+    padding-left: 35px;
   }
 
   .projects li {
-    width: 80%; /* As in original */
-    margin: 10px 0 10px 20px;
+    margin: 14px 0;
   }
 }
 
+@media screen and (max-width: 480px) {
+  .projects {
+    padding: 12px 10px;
+  }
+
+  .projects ul {
+    font-size: 18px;
+    padding-left: 25px;
+  }
+
+  .projects li {
+    margin: 10px 0;
+  }
+
+  .projects li a {
+    padding: 3px 0;
+  }
+}
+
+/* For larger screens */
 @media screen and (min-width: 992px) {
-  .projects li {
-    margin: 10px 0 10px 50px; /* More indentation on large screens */
+  .projects ul {
+    width: 85%;
+    max-width: 900px;
+    margin: 15px auto;
   }
-}
 
-/* Adding hover effects for desktop */
-@media (hover: hover) {
-  .projects li a:hover {
-    opacity: 0.8;
-    text-decoration: none;
+  .projects li {
+    margin: 16px 0;
   }
 }
