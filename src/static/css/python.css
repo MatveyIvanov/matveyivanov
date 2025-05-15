@@ -58,35 +58,44 @@
 
 .point {
   width: 3px;
-  height: 18px; /* Slightly smaller */
-  background-color: #483d3f;
+  height: 18px; /* Slightly smaller for proportionality */
+  background-color: rgba(70, 252, 241, 0.8); /* Cyan color to match cosmic theme */
   border-radius: 10px;
+  box-shadow: 0 0 5px rgba(70, 252, 241, 0.5); /* Add glow effect */
 }
 
 .milestones {
   position: relative;
-  top: -30px; /* Match bar height */
+  top: -30px; /* Match your bar height */
   width: 100%;
   display: flex;
-  justify-content: space-around;
-  column-gap: 0; /* Remove fixed column gap on mobile */
-  padding-left: 0; /* No left padding on mobile */
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  flex-wrap: nowrap; /* Prevent wrapping on larger screens */
+  justify-content: space-between; /* Distribute items evenly */
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .milestone {
   display: flex;
   text-align: left;
-  margin: 5px 10px;
-  font-size: 14px; /* Smaller font on mobile */
+  color: #c9f0ff;
+  margin: 5px 5px; /* Reduce horizontal margins */
+  font-size: 14px;
   align-items: center;
+  flex: 1; /* Allow items to grow/shrink */
+  max-width: 33%; /* Limit maximum width to 1/3 of container */
 }
 
 .milestone p {
   position: static;
-  max-width: 100px;
   margin: 0 0 0 5px;
   line-height: 1.2;
+  font-size: 13px;
+  white-space: normal;
+  overflow-wrap: normal; /* Changed from break-word */
+  word-break: keep-all; /* Changed from break-word */
+  hyphens: none; /* Prevent hyphenation */
+  max-width: 120px; /* Ensure there's enough space for complete words */
 }
 
 .lib hr {
@@ -94,6 +103,52 @@
   height: 2px; /* Use height instead of deprecated size */
   border: none;
   margin: 15px 0;
+}
+
+/* For smaller screens: allow wrapping to two lines */
+@media screen and (max-width: 600px) {
+  .milestones {
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+  }
+
+  .milestone:nth-child(1) {
+    order: 1;
+    max-width: 45%;
+    flex: 0 0 auto;
+  }
+
+  .milestone:nth-child(2) {
+    order: 3; /* Push to next line */
+    max-width: 100%;
+    flex: 0 0 100%;
+    justify-content: center;
+    margin: 8px auto;
+    text-align: center;
+  }
+
+  .milestone:nth-child(3) {
+    order: 2;
+    max-width: 45%;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+}
+
+/* For larger screens: ensure they all stay on one line */
+@media screen and (min-width: 768px) {
+  .milestones {
+    top: -35px; /* Adjust for larger bar height on desktop */
+    padding: 0 10px;
+  }
+
+  .milestone {
+    font-size: 15px;
+    margin: 5px 8px;
+  }
+
+  .milestone p {
+    font-size: 14px;
+  }
 }
 
 /* Media queries for larger screens */
