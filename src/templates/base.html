@@ -9,46 +9,52 @@
     {% block css %}{% endblock css %}
 </head>
 <body>
-    <div class="shooting-star"></div>
-    <div class="shooting-star"></div>
-    <div class="shooting-star"></div>
-    <div class="avatar">
-        <img src="{{ url_for('static', path='/img/avatar.png') }}">
+    <div class="cosmic-background">
+      <div class="stars"></div>
+      <div class="nebula"></div>
+      <div class="shooting-star" style="top: 50%; left: 50%;"></div>
+      <div class="shooting-star" style="top: 30%; left: 20%; width: 150px; transform: rotate(35deg);"></div>
+      <div class="shooting-star" style="top: 10%; left: 80%; width: 120px; transform: rotate(55deg);"></div>
     </div>
-    <div class="name">
-        <h1>Matvey Ivanov</h1>
-    </div>
-    <div class="socials">
-        <a href="https://discordapp.com/users/_rey25" target="_blank"><img src="{{ url_for('static', path='/svg/discord.svg') }}" alt=""></a>
-        <a href="https://github.com/MatveyIvanov" target="_blank"><img src="{{ url_for('static', path='/svg/github.svg') }}" alt=""></a>
-        <a href="mailto:cool.matvey250301@gmail.com" target="_blank"><img src="{{ url_for('static', path='/svg/gmail.svg') }}" alt=""></a>
-        <a href="https://t.me/Rey25" target="_blank"><img src="{{ url_for('static', path='/svg/telegram.svg') }}" alt=""></a>
-        <a href="https://leetcode.com/u/Reyy/" target="_blank"><img src="{{ url_for('static', path='/svg/leetcode.svg') }}" alt=""></a>
-    </div>
-    <div class="navbar">
-        <a href="home">Home</a>
-        <a href="experience">Experience</a>
-        <a href="stack">Stack</a>
-        <a href="python">Python</a>
-        <a href="books">Books</a>
-        <a href="projects">Projects</a>
-    </div>
-    <div class="container">
-        {% block content %}
+    <div id="content-wrapper">
+        <div class="avatar">
+            <img src="{{ url_for('static', path='/img/avatar.png') }}">
+        </div>
+        <div class="name">
+            <h1>Matvey Ivanov</h1>
+        </div>
+        <div class="socials">
+            <a href="https://discordapp.com/users/_rey25" target="_blank"><img src="{{ url_for('static', path='/svg/discord.svg') }}" alt=""></a>
+            <a href="https://github.com/MatveyIvanov" target="_blank"><img src="{{ url_for('static', path='/svg/github.svg') }}" alt=""></a>
+            <a href="mailto:cool.matvey250301@gmail.com" target="_blank"><img src="{{ url_for('static', path='/svg/gmail.svg') }}" alt=""></a>
+            <a href="https://t.me/Rey25" target="_blank"><img src="{{ url_for('static', path='/svg/telegram.svg') }}" alt=""></a>
+            <a href="https://leetcode.com/u/Reyy/" target="_blank"><img src="{{ url_for('static', path='/svg/leetcode.svg') }}" alt=""></a>
+        </div>
+        <div class="navbar">
+            <a href="home">Home</a>
+            <a href="experience">Experience</a>
+            <a href="stack">Stack</a>
+            <a href="python">Python</a>
+            <a href="books">Books</a>
+            <a href="projects">Projects</a>
+        </div>
+        <div class="container">
+            {% block content %}
 
-        {% endblock content %}
-    </div>
-    <div class="footer">
-        <p>
-            This page is built with
-            <a href="https://github.com/fastapi/fastapi" target="_blank">FastAPI</a>
-            and
-            <a href="https://github.com/pallets/jinja" target="_blank">Jinja</a>
-        </p>
-        <p>Hosted by <a href="https://yandex.cloud" target="_blank">Yandex Cloud</a></p>
-        <a href="https://github.com/MatveyIvanov/matveyivanov" target="_blank">
-            <img src="{{ url_for('static', path='/svg/github.svg') }}" alt="">
-        </a>
+            {% endblock content %}
+        </div>
+        <div class="footer">
+            <p>
+                This page is built with
+                <a href="https://github.com/fastapi/fastapi" target="_blank">FastAPI</a>
+                and
+                <a href="https://github.com/pallets/jinja" target="_blank">Jinja</a>
+            </p>
+            <p>Hosted by <a href="https://yandex.cloud" target="_blank">Yandex Cloud</a></p>
+            <a href="https://github.com/MatveyIvanov/matveyivanov" target="_blank">
+                <img src="{{ url_for('static', path='/svg/github.svg') }}" alt="">
+            </a>
+        </div>
     </div>
     {% block js %}{% endblock js %}
 </body>
