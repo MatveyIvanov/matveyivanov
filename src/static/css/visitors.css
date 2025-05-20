@@ -1,0 +1,217 @@
+/* Visitors Widget Styles */
+.visitors-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  background: rgba(15, 32, 39, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  border: 1px solid rgba(70, 252, 241, 0.3);
+  padding: 0;
+  box-shadow: 0 0 15px rgba(70, 252, 241, 0.15);
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  z-index: 100;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.visitors-widget:hover, .visitors-widget:focus {
+  border-color: rgba(70, 252, 241, 0.6);
+  box-shadow: 0 0 20px rgba(70, 252, 241, 0.25);
+  border-radius: 12px;
+  width: 190px;
+  padding: 8px 12px;
+}
+
+.visitors-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: rgba(70, 252, 241, 0.9);
+  min-width: 24px;
+  opacity: 0; /* Hide by default in circle form */
+  transition: all 0.3s ease;
+}
+
+.visitors-widget:hover .visitors-icon,
+.visitors-widget:focus .visitors-icon {
+  opacity: 1; /* Show icon on hover/focus */
+}
+
+.visitors-icon svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 0 3px rgba(70, 252, 241, 0.7));
+}
+
+.visitors-counter {
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease;
+  width: 0;
+  overflow: hidden;
+}
+
+.visitors-widget:hover .visitors-counter,
+.visitors-widget:focus .visitors-counter {
+  opacity: 1;
+  transform: translateX(0);
+  width: auto;
+}
+
+.visitors-label {
+  font-size: 12px;
+  color: #a9c7fe;
+  margin-bottom: 2px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.visitors-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(70, 252, 241, 0.7);
+  transition: all 0.3s ease;
+}
+
+/* Pulse animation when count updates */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.visitors-count.pulse {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Show circle count for mobile */
+.visitors-circle-count {
+  /* Absolute positioning with perfect centering */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+
+  /* Remove transform which can cause subpixel rendering issues */
+  transform: none;
+
+  /* Set fixed width and height to match parent (circle) */
+  width: 100%;
+  height: 100%;
+
+  /* Perfect centering with flexbox */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Prevent text wrapping */
+  white-space: nowrap;
+
+  /* Font styling */
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+
+  /* Consistent text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent text selection */
+  user-select: none;
+
+  /* Prevent subpixel rendering issues */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+
+  /* Transition only opacity, not position or dimensions */
+  transition: opacity 0.2s ease;
+
+  /* Glow effect */
+  text-shadow: 0 0 8px rgba(70, 252, 241, 0.7);
+
+  /* Ensure the number stays above background but below hover content */
+  z-index: 2;
+
+  /* Add a slight offset to adjust for optical centering if needed */
+  /* padding-bottom: 1px; */
+}
+
+.visitors-widget:hover .visitors-circle-count,
+.visitors-widget:focus .visitors-circle-count {
+  opacity: 0;
+}
+
+/* Touch device specific styles */
+.visitors-widget.touch-device.expanded {
+  border-radius: 12px;
+  width: 190px;
+  padding: 8px 12px;
+}
+
+.visitors-widget.touch-device.expanded .visitors-icon {
+  opacity: 1;
+}
+
+.visitors-widget.touch-device.expanded .visitors-counter {
+  opacity: 1;
+  transform: translateX(0);
+  width: auto;
+}
+
+.visitors-widget.touch-device.expanded .visitors-circle-count {
+  opacity: 0;
+}
+
+/* Keyboard focus styles (for accessibility) */
+.visitors-widget.keyboard-focus {
+  border-radius: 12px;
+  width: 190px;
+  padding: 8px 12px;
+}
+
+.visitors-widget.keyboard-focus .visitors-icon {
+  opacity: 1;
+}
+
+.visitors-widget.keyboard-focus .visitors-counter {
+  opacity: 1;
+  transform: translateX(0);
+  width: auto;
+}
+
+.visitors-widget.keyboard-focus .visitors-circle-count {
+  opacity: 0;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 480px) {
+  .visitors-widget {
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .visitors-widget:hover,
+  .visitors-widget:focus {
+    width: 170px;
+  }
+}

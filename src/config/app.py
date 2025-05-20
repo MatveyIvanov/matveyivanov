@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Request
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -8,8 +8,7 @@ from starlette.exceptions import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 import endpoints
-from config import settings
-from utils.app import FastAPI
+from config import di, settings
 from utils.exceptions import (
     CustomException,
     http_exception_handler,
@@ -23,6 +22,7 @@ logging.config.dictConfig(  # type: ignore[attr-defined]
     get_config(settings.LOGGING_PATH)
 )
 
+container = di.Container()
 
 __app = FastAPI(
     debug=True,
@@ -33,6 +33,7 @@ __app = FastAPI(
         HTTP_500_INTERNAL_SERVER_ERROR: internal_exception_handler,
     },
 )
+__app.container = container
 for router in endpoints.get_routers():
     __app.include_router(router, tags=router.tags)
 
@@ -50,19 +51,6 @@ __app.add_middleware(
     allowed_hosts=["127.0.0.1", "localhost", "matveyivanov.tech"],
 )
 __app.add_middleware(TranslationMiddleware)
-
-
-@__app.middleware("http")
-async def logging_middleware(request: Request, call_next):
-    return await LoggingMiddleware()(request, call_next)
-
-
-# custom exception handlers do not work w/o this
-# because of versioned fastapi
-for sub_app in __app.routes:
-    if hasattr(sub_app.app, "add_exception_handler"):
-        for exception, handler in handlers_to_apply.items():
-            sub_app.app.add_exception_handler(exception, handler)
 
 
 def get_fastapi_app() -> FastAPI:

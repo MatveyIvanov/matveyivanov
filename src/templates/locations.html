@@ -1,0 +1,20 @@
+{% macro visitors_locations_widget(max_locations=5) %}
+<div class="visitors-locations-widget" aria-label="Latest visitors locations">
+  <div class="locations-circle-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+      <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </svg>
+  </div>
+  <div class="locations-count-circle" id="locationsCount">0</div>
+  
+  <div class="locations-expanded">
+    <div class="locations-header">
+      <div class="locations-title">Recent Visitors</div>
+      <div class="locations-subtitle">Latest {{ max_locations }} locations</div>
+    </div>
+    <ul class="locations-list" id="locationsList">
+      <li class="location-placeholder">Connecting...</li>
+    </ul>
+  </div>
+</div>
+{% endmacro %}

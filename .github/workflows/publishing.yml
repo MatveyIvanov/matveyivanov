@@ -1,9 +1,10 @@
 name: Website
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   build:
@@ -22,13 +23,12 @@ jobs:
         env:
           REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
           IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.ref_name }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           PORT: ${{ secrets.PORT }}
         run: |
-          make mainbuild
-          make mainpush
+          make publish
 
       - name: Deploy Serverless Container
         id: deploy-sls-container
@@ -42,6 +42,7 @@ jobs:
           revision-memory: ${{ secrets.YC_REVISION_MEMORY }}
           revision-core-fraction: ${{ secrets.YC_REVISION_CORE_FRACTION }}
           revision-concurrency: ${{ secrets.YC_REVISION_CONCURRENCY }}
-          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.sha }}
+          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.ref_name }}
           revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
           revision-env: ${{ secrets.YC_REVISION_ENV }}
+          revision-provisioned: ${{ secrets.YC_REVISION_PROVISIONED }}

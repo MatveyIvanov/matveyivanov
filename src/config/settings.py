@@ -13,12 +13,9 @@ from schemas.stack import Stack
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATIC_PATH = os.environ.get("STATIC_PATH", "")
 
-DB_USER: str = os.environ.get("DB_USER", "")
-DB_PASSWORD: str = os.environ.get("DB_PASSWORD", "")
-DB_NAME: str = os.environ.get("DB_NAME", "")
-DB_HOST: str = os.environ.get("DB_HOST", "")
-DB_PORT: str = os.environ.get("DB_PORT", "")
-DATABASE_URL: str = os.environ.get("DATABASE_URL", "")
+REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
+REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
+REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD", "password")
 
 TIMEZONE = os.environ.get("TIMEZONE")
 

@@ -4,23 +4,33 @@ localup:
 	docker compose -f docker/docker-compose.local.yml -p matveyivanov up --remove-orphans
 localbuild:
 	docker compose -f docker/docker-compose.local.yml -p matveyivanov build --no-cache
-developup:
-	docker compose -f docker/docker-compose.yml -p matveyivanov up --remove-orphans
-developbuild:
-	docker compose -f docker/docker-compose.yml -p matveyivanov build --no-cache
+
 mainup:
 	docker compose -f docker/docker-compose.main.yml -p matveyivanov up --remove-orphans
 mainbuild:
 	docker compose -f docker/docker-compose.main.yml -p matveyivanov build --no-cache
 mainpush:
 	docker compose -f docker/docker-compose.main.yml -p matveyivanov push
+publish:
+	$(MAKE) mainbuild
+	$(MAKE) mainpush
+
 test:
-	docker exec -it $(PROJECT_NAME)-asgi pytest .
+	cd src && poetry run pytest $(OPTS) .
 lint:
-	docker exec -it $(PROJECT_NAME)-asgi flake8 .
-typecheck:
-	docker exec -it $(PROJECT_NAME)-asgi mypy .
-black:
-	docker exec -it $(PROJECT_NAME)-asgi black .
-isort:
-	docker exec -it $(PROJECT_NAME)-asgi isort . --profile black --filter-files
+	cd src && poetry run flake8 $(OPTS) .
+analyze:
+	cd src && poetry run mypy $(OPTS) .
+format:
+	cd src && poetry run black $(OPTS) .
+formatcheck:
+	$(MAKE) format OPTS="--check"
+sort:
+	cd src && poetry run isort --profile black --filter-files $(OPTS) .
+sortcheck:
+	$(MAKE) sort OPTS="--check"
+
+install-git-hooks:
+	cd src && poetry run pre-commit install --hook-type pre-commit
+uninstall-git-hooks:
+	cd src && poetry run pre-commit uninstall -t pre-commit
