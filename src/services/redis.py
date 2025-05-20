@@ -1,6 +1,4 @@
-import json
 import pickle
-from typing import cast
 
 from redis.asyncio import Redis
 from redis.commands.core import AsyncScript
@@ -9,15 +7,6 @@ from services.interfaces import IRingBuffer, ISerializer, T
 
 
 class RedisRingBuffer(IRingBuffer[T]):
-    """
-    An asynchronous ring buffer implementation using Redis as a storage backend.
-
-    Features:
-    - Atomic write operations using transactions
-    - Non-atomic read operations
-    - Configurable ring size
-    """
-
     def __init__(
         self,
         redis: Redis,
@@ -52,8 +41,9 @@ class RedisRingBuffer(IRingBuffer[T]):
     async def _initialize(self) -> None:
         if self.__initialized:
             return
-        if not await self.redis.exists(self.head_key):
-            await self.redis.set(self.head_key, 0)
+
+        if not await self.__redis.exists(self.__head_key):
+            await self.__redis.set(self.__head_key, 0)
 
         self.__write = self.__redis.register_script(
             """
@@ -116,14 +106,14 @@ class RedisRingBuffer(IRingBuffer[T]):
             local head = tonumber(redis.call('GET', KEYS[1]) or "0")
             local max_size = tonumber(ARGV[1])
             local result = {}
-            
+
             -- Get actual size (min of head or max_size)
             local size = math.min(head, max_size)
-            
+
             -- If buffer has wrapped, get items in correct order (oldest to newest)
             if head > max_size then
                 local start_pos = head % max_size
-                
+
                 -- First collect from start_pos to max_size - 1
                 for i = start_pos, max_size - 1 do
                     local value = redis.call('HGET', KEYS[2], tostring(i))
@@ -131,7 +121,7 @@ class RedisRingBuffer(IRingBuffer[T]):
                         table.insert(result, {tostring(i), value})
                     end
                 end
-                
+
                 -- Then collect from 0 to start_pos - 1
                 for i = 0, start_pos - 1 do
                     local value = redis.call('HGET', KEYS[2], tostring(i))
@@ -148,7 +138,7 @@ class RedisRingBuffer(IRingBuffer[T]):
                     end
                 end
             end
-            
+
             return result
             """
         )
@@ -156,7 +146,7 @@ class RedisRingBuffer(IRingBuffer[T]):
         self.__initialized = True
 
     async def _head(self) -> int:
-        head = await self.redis.get(self.head_key)
+        head = await self.__redis.get(self.__head_key)
         return int(head) if head else 0
 
     async def put(self, value: T) -> bool:
@@ -165,8 +155,8 @@ class RedisRingBuffer(IRingBuffer[T]):
         serialized = self.__serializer.dumps(value)
 
         await self.__write(
-            keys=[self.head_key, self.data_key],
-            args=[self.max_size, serialized],
+            keys=[self.__head_key, self.__data_key],
+            args=[self.__max_size, serialized],
         )
         return True
 
@@ -181,30 +171,31 @@ class RedisRingBuffer(IRingBuffer[T]):
             # buffer has wrapped around, so
             # we need to get items in the correct order
             pairs = await self.__all_ordered(
-                keys=[self.head_key, self.data_key],
-                args=[self.max_size],
+                keys=[self.__head_key, self.__data_key],
+                args=[self.__max_size],
             )
             return list(self.__serializer.loads(value) for _, value in pairs)
         else:
             # buffer has not wrapped around,
             # so we can simply get all values and
             # sort them
-            values = await self.__redis.hgetall(self.data_key)
-            positions = [
-                (key.decode()) if isinstance(key, bytes) else int(key)
+            values = await self.__redis.hgetall(self.__data_key)
+            positions: list[int] = [
+                int(key.decode()) if isinstance(key, bytes) else int(key)
                 for key in values.keys()
             ]
             positions = sorted(positions)
             return list(
-                self.__serializer.loads(values[position]) for position in positions
+                self.__serializer.loads(values[str(position).encode()])
+                for position in positions
             )
 
     async def latest(self, n: int) -> list[T]:
         await self._initialize()
 
         values = await self.__latest(
-            keys=[self.head_key, self.data_key],
-            args=[self.max_size, n],
+            keys=[self.__head_key, self.__data_key],
+            args=[self.__max_size, n],
         )
         return list(self.__serializer.loads(value) for value in values)
 
@@ -212,7 +203,7 @@ class RedisRingBuffer(IRingBuffer[T]):
         await self._initialize()
 
         await self.__clear(
-            keys=[self.head_key, self.data_key],
+            keys=[self.__head_key, self.__data_key],
             args=[],
         )
         return True
@@ -221,7 +212,7 @@ class RedisRingBuffer(IRingBuffer[T]):
         await self._initialize()
 
         size = await self.__size(
-            keys=[self.head_key],
-            args=[self.max_size],
+            keys=[self.__head_key],
+            args=[self.__max_size],
         )
         return int(size) if size else 0

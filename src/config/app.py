@@ -16,7 +16,7 @@ from utils.exceptions import (
     request_validation_exception_handler,
 )
 from utils.logging import get_config
-from utils.middleware import LoggingMiddleware, TranslationMiddleware
+from utils.middleware import TranslationMiddleware
 
 logging.config.dictConfig(  # type: ignore[attr-defined]
     get_config(settings.LOGGING_PATH)

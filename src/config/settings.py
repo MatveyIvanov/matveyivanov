@@ -17,6 +17,8 @@ REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD", "password")
 
+GITHUB_CREATE_WEBHOOK_TOKEN: str = os.environ.get("GITHUB_CREATE_WEBHOOK_TOKEN", "")
+
 TIMEZONE = os.environ.get("TIMEZONE")
 
 DEBUG = bool(int(os.environ.get("DEBUG", 0)))
@@ -33,7 +35,7 @@ ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{PORT}")
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
-HOME: Tuple[str] = (
+HOME: Tuple[str, ...] = (
     "Hello, my name is Matvey Ivanov",
     f"I'm {relativedelta(datetime.now(), BIRTH_DATE).years} y.o.",
     "Currently living in Saint-Petersburg",

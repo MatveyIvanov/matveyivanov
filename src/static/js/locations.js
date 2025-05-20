@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/locations/recent', // Endpoint for initial locations data
-    SSE_STREAM: '/api/v1/streams/locations'   // Endpoint for SSE updates
+    INITIAL_DATA: '/api/v1/locations', // Endpoint for initial locations data
+    SSE_STREAM: '/api/v1/locations/stream'   // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {

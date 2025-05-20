@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from config import settings
 from utils.templates import templates
 
-router = APIRouter()
+router = APIRouter(tags=["pages"])
 
 
 @router.get("/", response_class=HTMLResponse)

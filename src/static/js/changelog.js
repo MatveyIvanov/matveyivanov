@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/changelog/recent', // Endpoint for initial changelog data
-    SSE_STREAM: '/api/v1/streams/changelog'   // Endpoint for SSE updates
+    INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial changelog data
+    SSE_STREAM: '/api/v1/changelog/stream'   // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== UTILITY FUNCTIONS =====
   function formatDate(dateString) {
-    const date = new Date(dateString);
+    const date = new Date(parseInt(dateString) * 1000);
     const now = new Date();
     const diffMs = now - date;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));

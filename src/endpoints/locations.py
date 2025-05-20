@@ -8,15 +8,16 @@ from redis.asyncio import Redis
 from sse_starlette.sse import EventSourceResponse
 
 from config.di import Container
-from schemas.locations import Location, Locations
+from schemas.locations import Locations
 
-router = APIRouter(prefix="/api/v1/locations")  # FIXME: вынести префикс апи выше
+router = APIRouter(prefix="/locations", tags=["locations"])
 
 MESSAGE_STREAM_DELAY = 1  # second
 LOCATIONS_KEY = "LOCATIONS"
 
 
 @router.get("", response_model=Locations)
+@inject
 async def locations(redis: Redis = Depends(Provide[Container.redis])):
     locations = await redis.get(LOCATIONS_KEY)
     locations = pickle.loads(locations) if locations else []
@@ -24,6 +25,7 @@ async def locations(redis: Redis = Depends(Provide[Container.redis])):
 
 
 @router.get("/stream")
+@inject
 async def stream(request: Request, redis: Redis = Depends(Provide[Container.redis])):
     async def generator():
         while True:

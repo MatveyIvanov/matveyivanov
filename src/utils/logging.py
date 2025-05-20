@@ -182,12 +182,12 @@ def get_config(log_path: str) -> Dict:
     }
     handlers = {
         "uvicorn": {
-            "level": "ERROR",
-            "filename": os.path.join(log_path, "uvicorn.log"),
-            "formatter": "json",
-            **default_hanlder_settings,
+            "level": "DEBUG" if settings.DEBUG else "ERROR",
+            "formatter": "verbose",
+            "class": "logging.StreamHandler",
         },
         "console": {
+            "level": "DEBUG" if settings.DEBUG else "ERROR",
             "formatter": "verbose",
             "class": "logging.StreamHandler",
         },

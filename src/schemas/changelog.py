@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class ChangelogItem(BaseModel):
-    id: int = Field(..., description="Changelog ID")
+    id: str = Field(..., description="Changelog ID")
     title: str = Field(..., description="Changelog title")
     type: str = Field(..., description="Changelog type")
     description: str = Field(..., description="Changelog description")

@@ -8,22 +8,22 @@ from sse_starlette.sse import EventSourceResponse
 
 from config.di import Container
 
-router = APIRouter(prefix="/api/v1/visitors")  # FIXME: вынести префикс апи выше
+router = APIRouter(prefix="/visitors", tags=["visitors"])
 
 MESSAGE_STREAM_DELAY = 1  # second
 VISITORS_COUNTER_KEY = "VISITORS_COUNTER"
 
 
-@inject
 @router.get("")
+@inject
 async def count(redis: Redis = Depends(Provide[Container.redis])):
     count = await redis.get(VISITORS_COUNTER_KEY)
     count = int(count) if count else 0
     return {"count": count}
 
 
-@inject
 @router.get("/stream")
+@inject
 async def stream(request: Request, redis: Redis = Depends(Provide[Container.redis])):
     async def update(increment: int = 0) -> int:
         pipe = redis.pipeline(transaction=True)

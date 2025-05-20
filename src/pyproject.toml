@@ -84,7 +84,6 @@ omit = [
     "*utils/serializers.py",
     "*utils/pagination.py",
     "*utils/openapi_examples.py",
-    "*utils/logging.py",
     "*utils/exceptions.py",
     "*utils/admin.py",
     "*__init__*",

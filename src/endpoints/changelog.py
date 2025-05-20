@@ -1,34 +1,34 @@
 import asyncio
 import json
-import pickle
+import re
 from datetime import datetime
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Request
-from redis.asyncio import Redis
+from fastapi import APIRouter, Depends, Request, Response
 from sse_starlette.sse import EventSourceResponse
 
 from config.di import Container
 from schemas.changelog import Changelog, ChangelogItem
 from schemas.webhooks import GitHubCreateHook
-from src.services.interfaces import IRingBuffer
+from services.interfaces import IHashAndCompare, IRingBuffer
 
-router = APIRouter(prefix="/api/v1/changelog")  # FIXME: вынести префикс апи выше
+router = APIRouter(prefix="/changelog", tags=["changelog"])
 
 MESSAGE_STREAM_DELAY = 1  # second
 CHANGELOG_KEY = "CHANGELOG"
+GITHUB_TAG_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 
 
-@inject
 @router.get("", response_model=Changelog)
+@inject
 async def changelog(
     ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
 ):
     return {"updates": await ring_buffer.all()}
 
 
-@inject
 @router.get("/stream")
+@inject
 async def stream(
     request: Request,
     ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
@@ -48,13 +48,23 @@ async def stream(
     return EventSourceResponse(generator())
 
 
-@inject
 @router.post("/webhook")
+@inject
 async def webhook(
+    request: Request,
     hook: GitHubCreateHook,
     ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
+    hash_n_compare: IHashAndCompare = Depends(
+        Provide[Container.hash_n_compare_github_payload_on_create.provider]
+    ),
 ):
-    if hook.ref_type != "tag":
+    if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
+        value=await request.body(),
+        expected=request.headers["X-Hub-Signature-256"],
+    ):
+        return Response("Unauthorized", status_code=401)
+
+    if hook.ref_type != "tag" or not re.match(GITHUB_TAG_PATTERN, hook.ref):
         return "OK"
 
     latest_item = await ring_buffer.latest(n=1)
@@ -64,14 +74,17 @@ async def webhook(
         last_major, last_feature, last_bugfix = (
             latest_item[0].get("version", "0.0.0").split(".")
         )
+    if major == last_major and feature == last_feature and bugfix == last_bugfix:
+        return "OK"
 
-    item = ChangelogItem(
-        id=hook.ref,
-        title=hook.ref,
-        type="release" if major != last_major or feature != last_feature else "bugfix",
-        description=hook.description,
-        version=hook.ref,
-        date=datetime.now(),
+    await ring_buffer.put(
+        ChangelogItem(
+            id=hook.ref,
+            title=hook.ref,
+            type="feature" if major != last_major or feature != last_feature else "fix",
+            description=hook.description or "No description provided :(",
+            version=hook.ref,
+            date=str(datetime.now().timestamp()),
+        ).model_dump()
     )
-    await ring_buffer.put(item.model_dump())
     return "OK"

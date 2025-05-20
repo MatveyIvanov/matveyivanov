@@ -1,7 +1,7 @@
 PROJECT_NAME=matveyivanov
 
 localup:
-	docker compose -f docker/docker-compose.local.yml -p matveyivanov up --remove-orphans
+	docker compose -f docker/docker-compose.local.yml -p matveyivanov up --remove-orphans $(OPTS)
 localbuild:
 	docker compose -f docker/docker-compose.local.yml -p matveyivanov build --no-cache
 

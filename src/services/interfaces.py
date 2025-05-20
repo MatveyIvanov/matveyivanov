@@ -78,3 +78,20 @@ class ISerializer(Protocol[T]):
         :rtype: T
         """
         ...
+
+
+class IHashAndCompare(Protocol):
+    def __call__(self, value: bytes | str, expected: str, key: str = ...) -> str:
+        """
+        Hash value and compare to provided hash.
+
+        :param value: Value to hash
+        :type value: T
+        :param expected: Hashed value to compare to
+        :type expected: str
+        :param key: Key to compute hash with
+        :type key: str
+        :return: Hashed value
+        :rtype: str
+        """
+        ...
