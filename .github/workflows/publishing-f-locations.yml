@@ -11,12 +11,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: f-locations
     steps:
       - name: Checkout to root of repo
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            f-locations
+
+      - name: Prepare directory structure for deploy
+        run: |
+          cp -R f-locations .
+          rm -rf f-locations
 
       - name: Deploy Function
         id: sls-func
@@ -43,3 +48,5 @@ jobs:
             IPINFO_ACCESS_TOKEN=${{ secrets.IPINFO_ACCESS_TOKEN }}
           include: |
             ./
+          exclude: |
+            .git
