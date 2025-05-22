@@ -2,12 +2,12 @@ import ipinfo
 from dependency_injector import containers, providers
 from redis.asyncio import Redis, StrictRedis
 
-from locationsfunc.src import config
-from locationsfunc.src.redis import RedisRingBuffer
+from src import config
+from src.redis import RedisRingBuffer
 
 
 class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(packages=["locationsfunc.src"])
+    wiring_config = containers.WiringConfiguration(packages=["src"])
 
     redis: providers.Singleton[Redis] = providers.Singleton(
         StrictRedis,

@@ -9,5 +9,5 @@ class IPEvent:
 
 @dataclass
 class Location:
-    name: str
+    location: str
     timestamp: str
