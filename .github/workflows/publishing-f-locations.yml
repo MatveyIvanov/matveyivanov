@@ -20,8 +20,9 @@ jobs:
 
       - name: Prepare directory structure for deploy
         run: |
-          cp -R f-locations/ .
-          rm -rf f-locations
+          mv f-locations f-locations-tmp
+          cp -R f-locations-tmp/* .
+          rm -rf f-locations-tmp
 
       - name: Deploy Function
         id: sls-func
