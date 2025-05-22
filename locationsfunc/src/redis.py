@@ -3,7 +3,7 @@ import pickle
 from redis.asyncio import Redis
 from redis.commands.core import AsyncScript
 
-from src.interfaces import IRingBuffer, ISerializer, T
+from locationsfunc.src.interfaces import IRingBuffer, ISerializer, T
 
 
 class RedisRingBuffer(IRingBuffer[T]):

@@ -4,9 +4,9 @@ from dependency_injector.wiring import Provide, inject
 from ipinfo import AsyncHandler
 from redis.asyncio import Redis
 
-from src.di import Container
-from src.interfaces import IRingBuffer
-from src.types import IPEvent, Location
+from locationsfunc.src.di import Container
+from locationsfunc.src.interfaces import IRingBuffer
+from locationsfunc.src.types import IPEvent, Location
 
 HASHSET_NAME = "hashset:locations"
 
