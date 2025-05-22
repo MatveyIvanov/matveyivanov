@@ -28,7 +28,7 @@ jobs:
           IMAGE_TAG: ${{ github.ref_name }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
-          PORT: ${{ secrets.PORT }}
+          ASGI_PORT: ${{ secrets.ASGI_PORT }}
         run: |
           make publish
 

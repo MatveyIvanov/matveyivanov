@@ -18,14 +18,12 @@ from utils.exceptions import (
 from utils.logging import get_config
 from utils.middleware import TranslationMiddleware
 
-logging.config.dictConfig(  # type: ignore[attr-defined]
-    get_config(settings.LOGGING_PATH)
-)
+logging.config.dictConfig(get_config())  # type: ignore[attr-defined]
 
 container = di.Container()
 
 __app = FastAPI(
-    debug=True,
+    debug=settings.DEBUG,
     exception_handlers={
         CustomException: http_exception_handler,
         HTTPException: http_exception_handler,

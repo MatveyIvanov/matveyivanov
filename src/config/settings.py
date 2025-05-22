@@ -11,7 +11,6 @@ from schemas.python import Python
 from schemas.stack import Stack
 
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-STATIC_PATH = os.environ.get("STATIC_PATH", "")
 
 REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
@@ -25,19 +24,15 @@ YMQ_LOCATIONS_REGION_NAME = os.environ.get("YMQ_LOCATIONS_REGION_NAME")
 
 GITHUB_CREATE_WEBHOOK_TOKEN: str = os.environ.get("GITHUB_CREATE_WEBHOOK_TOKEN", "")
 
-TIMEZONE = os.environ.get("TIMEZONE")
+TIMEZONE = os.environ.get("TIMEZONE", "Europe/Moscow")
 
 DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 PROD = bool(int(os.environ.get("PROD", 1)))
 
-LOGGING_MAX_BYTES = int(os.environ.get("LOGGING_MAX_BYTES", 1024 * 3))
-LOGGING_BACKUP_COUNT = int(os.environ.get("LOGGING_BACKUP_COUNT", 1))
-LOGGING_LOGGERS = os.environ.get("LOGGING_LOGGERS", "").split(",")
 LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(",")
-LOGGING_PATH = "/logs/"
 
-PORT = os.environ.get("PORT")
-ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{PORT}")
+ASGI_PORT = os.environ.get("ASGI_PORT")
+ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
