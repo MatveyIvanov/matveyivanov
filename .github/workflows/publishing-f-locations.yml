@@ -6,7 +6,7 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
-      - "f-locations/**"
+      - "locationsfunc/**"
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
         uses: yc-actions/yc-sls-function@v3
         with:
           runtime: 'python312'
-          entrypoint: 'main.handler'
+          entrypoint: 'locationsfunc.main.handler'
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           memory: ${{ secrets.YC_F_LOCATIONS_MEMORY }}
           execution-timeout: ${{ secrets.YC_F_LOCATIONS_EXECUTION_TIMEOUT }}
@@ -39,6 +39,4 @@ jobs:
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             IPINFO_ACCESS_TOKEN=${{ secrets.IPINFO_ACCESS_TOKEN }}
           include: |
-            ./f-locations/src
-            ./f-locations/main.py
-            ./f-locations/requirements.txt
+            ./locationsfunc
