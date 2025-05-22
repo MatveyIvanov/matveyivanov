@@ -48,3 +48,4 @@ jobs:
           revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
           revision-env: ${{ secrets.YC_REVISION_ENV }}
           revision-provisioned: ${{ secrets.YC_REVISION_PROVISIONED }}
+          revision-network-id: ${{ secrets.YC_REVISION_NETWORK_ID }}
