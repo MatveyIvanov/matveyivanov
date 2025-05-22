@@ -11,32 +11,32 @@ from schemas.python import Python
 from schemas.stack import Stack
 
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-STATIC_PATH = os.environ.get("STATIC_PATH", "")
 
-DB_USER: str = os.environ.get("DB_USER", "")
-DB_PASSWORD: str = os.environ.get("DB_PASSWORD", "")
-DB_NAME: str = os.environ.get("DB_NAME", "")
-DB_HOST: str = os.environ.get("DB_HOST", "")
-DB_PORT: str = os.environ.get("DB_PORT", "")
-DATABASE_URL: str = os.environ.get("DATABASE_URL", "")
+REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
+REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
+REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD", "password")
 
-TIMEZONE = os.environ.get("TIMEZONE")
+YMQ_LOCATIONS_ACCESS_KEY = os.environ.get("YMQ_LOCATIONS_ACCESS_KEY")
+YMQ_LOCATIONS_SECRET_KEY = os.environ.get("YMQ_LOCATIONS_SECRET_KEY")
+YMQ_LOCATIONS_ENDPOINT_URL = os.environ.get("YMQ_LOCATIONS_ENDPOINT_URL")
+YMQ_LOCATIONS_QUEUE_URL = os.environ.get("YMQ_LOCATIONS_QUEUE_URL")
+YMQ_LOCATIONS_REGION_NAME = os.environ.get("YMQ_LOCATIONS_REGION_NAME")
+
+GITHUB_CREATE_WEBHOOK_TOKEN: str = os.environ.get("GITHUB_CREATE_WEBHOOK_TOKEN", "")
+
+TIMEZONE = os.environ.get("TIMEZONE", "Europe/Moscow")
 
 DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 PROD = bool(int(os.environ.get("PROD", 1)))
 
-LOGGING_MAX_BYTES = int(os.environ.get("LOGGING_MAX_BYTES", 1024 * 3))
-LOGGING_BACKUP_COUNT = int(os.environ.get("LOGGING_BACKUP_COUNT", 1))
-LOGGING_LOGGERS = os.environ.get("LOGGING_LOGGERS", "").split(",")
 LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(",")
-LOGGING_PATH = "/logs/"
 
-PORT = os.environ.get("PORT")
-ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{PORT}")
+ASGI_PORT = os.environ.get("ASGI_PORT")
+ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
-HOME: Tuple[str] = (
+HOME: Tuple[str, ...] = (
     "Hello, my name is Matvey Ivanov",
     f"I'm {relativedelta(datetime.now(), BIRTH_DATE).years} y.o.",
     "Currently living in Saint-Petersburg",

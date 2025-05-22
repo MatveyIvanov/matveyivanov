@@ -1,0 +1,4 @@
+boto3==1.35.99
+redis==6.1.0
+dependency-injector==4.46.0
+ipinfo==5.1.1

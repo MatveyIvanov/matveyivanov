@@ -1,3 +1,7 @@
+{% from "visitors.html" import visitors_widget %}
+{% from "locations.html" import visitors_locations_widget %}
+{% from "changelog.html" import changelog_widget %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +10,9 @@
     <title>{% block title %}{{ title }}{% endblock title %}</title>
     <link rel="shortcut icon" href="{{ url_for('static', path='/img/favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/visitors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/locations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/changelog.css') }}">
     {% block css %}{% endblock css %}
 </head>
 <body>
@@ -56,6 +63,12 @@
             </a>
         </div>
     </div>
+    {{ changelog_widget() }}
+    {{ visitors_locations_widget() }}
+    {{ visitors_widget() }}
+    <script src="{{ url_for('static', path='/js/visitors.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/locations.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/changelog.js') }}"></script>
     {% block js %}{% endblock js %}
 </body>
 </html>

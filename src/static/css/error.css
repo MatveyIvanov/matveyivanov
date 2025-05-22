@@ -1,127 +1,119 @@
 @import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
 
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    width: 90%; /* Changed from fixed 50vw to responsive percentage */
-    max-width: 800px; /* Add maximum width for larger screens */
-    margin: 0 auto;
-    font-family: "Domine", "Cambria", "Georgia", "Times New Roman", serif;
-    box-sizing: border-box;
-}
-
 /* Apply box-sizing to all elements */
 *, *:before, *:after {
     box-sizing: inherit;
 }
 
 .error {
-    background-image: url("../gif/error.gif");
-    background-repeat: no-repeat;
-    background-size: contain; /* Ensure background image scales properly */
     display: flex;
-    flex-direction: column; /* Changed to column for better mobile layout */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%; /* Changed from fit-content to full width */
-    max-width: 600px; /* Maximum width to maintain quality */
-    height: 400px;
-    background-position: center;
-    margin: 0 auto; /* Center the error container */
-    padding: 10px;
-    position: relative; /* For absolute positioning of elements if needed */
+    width: 100%;
+    max-width: 600px;
+    min-height: 400px; /* Changed from fixed height to min-height */
+    margin: 50px auto; /* Increased margin to add spacing from other elements */
+    padding: 30px 20px; /* Added more padding for better spacing */
+    position: relative;
+    /* Added cosmic styling to match site theme */
+    background-color: rgba(15, 32, 39, 0.3);
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
+    border: 1px solid rgba(70, 252, 241, 0.1);
 }
 
 .error h1 {
     width: 100%;
-    margin: 0;
+    margin: 0 0 20px 0; /* Added bottom margin for spacing */
     text-align: center;
     font-size: 80px;
-    line-height: 1.1; /* Add line height for better text spacing */
+    line-height: 1.1;
+    /* Match cosmic styles */
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
 }
 
 .error h3 {
     width: 100%;
-    margin: 0;
-    padding-top: 275px;
+    margin: 0 0 30px 0; /* Added bottom margin for spacing */
     text-align: center;
     font-weight: bold;
     font-size: 26px;
     line-height: 1.2;
+    /* Match cosmic styles */
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
+    /* Removed absolute positioning padding */
+    padding-top: 0;
 }
 
 .error p {
     width: 100%;
-    margin: 25px 0;
+    margin: 0 0 25px 0; /* Adjusted margins */
     text-align: center;
     font-size: 18px;
     line-height: 1.4;
+    /* Match cosmic styles */
+    color: #c9f0ff;
 }
 
 /* Media queries for responsive design */
 @media screen and (max-width: 768px) {
-    body {
-        width: 95%; /* Slightly wider on tablets */
-    }
-
     .error {
-        height: 350px; /* Slightly reduced height */
+        min-height: 350px;
+        margin: 40px auto;
     }
 
     .error h1 {
-        font-size: 60px; /* Smaller heading on tablets */
+        font-size: 60px;
+        margin-bottom: 15px;
     }
 
     .error h3 {
-        padding-top: 240px; /* Adjusted padding to match reduced height */
+        margin-bottom: 25px;
         font-size: 22px;
     }
 }
 
 @media screen and (max-width: 480px) {
-    body {
-        width: 100%;
-        padding: 0 15px;
-    }
-
     .error {
-        height: 300px; /* Further reduced height for mobile */
-        background-size: cover; /* Alternative background sizing */
+        min-height: 300px;
+        margin: 30px auto;
+        padding: 20px 15px;
     }
 
     .error h1 {
-        font-size: 40px; /* Much smaller heading on phones */
-        margin-top: 20px; /* Add some top margin */
+        font-size: 40px;
+        margin-bottom: 15px;
     }
 
     .error h3 {
-        padding-top: 200px; /* Adjusted padding for mobile */
+        margin-bottom: 20px;
         font-size: 18px;
     }
 
     .error p {
         font-size: 16px;
-        margin: 15px 0;
+        margin-bottom: 15px;
     }
 }
 
 /* For very small screens */
 @media screen and (max-width: 320px) {
     .error {
-        height: 250px;
+        min-height: 250px;
+        margin: 20px auto;
+        padding: 15px 10px;
     }
 
     .error h1 {
         font-size: 36px;
+        margin-bottom: 10px;
     }
 
     .error h3 {
-        padding-top: 160px;
+        margin-bottom: 15px;
         font-size: 16px;
     }
 }

@@ -10,7 +10,7 @@ services:
       dockerfile: docker/Dockerfile
       target: ${ASGI_TARGET}
     ports:
-      - ${PORT}:${PORT}
+      - ${ASGI_PORT}:${ASGI_PORT}
     networks:
       - network
     restart: ${RESTART_POLICY:-unless-stopped}

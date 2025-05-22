@@ -1,0 +1,45 @@
+name: Locations Function
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+    paths:
+      - "f-locations/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to root of repo
+        uses: actions/checkout@v4
+
+      - name: Deploy Function
+        id: sls-func
+        uses: yc-actions/yc-sls-function@v3
+        with:
+          runtime: 'python312'
+          entrypoint: 'main.handler'
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          memory: ${{ secrets.YC_F_LOCATIONS_MEMORY }}
+          execution-timeout: ${{ secrets.YC_F_LOCATIONS_EXECUTION_TIMEOUT }}
+          folder-id: ${{ secrets.YC_F_LOCATIONS_FOLDER_ID ]}
+          function-name: ${{ secrets.YC_F_LOCATIONS_FUNCTION_NAME]}
+          service-account: ${{ secrets.YC_F_LOCATIONS_SERVICE_ACCOUNT_ID ]}
+          network-id: ${{ secrets.YC_F_LOCATIONS_NETWORK_ID ]}
+          environment: |
+            YMQ_SECRET_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_SECRET_KEY }}
+            YMQ_ACCESS_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_ACCESS_KEY }}
+            YMQ_REGION_NAME=${{ secrets.YC_F_LOCATIONS_YMQ_REGION_NAME }}
+            YMQ_ENDPOINT_URL=${{ secrets.YC_F_LOCATIONS_YMQ_ENDPOINT_URL }}
+            YMQ_QUEUE_URL=${{ secrets.YC_F_LOCATIONS_YMQ_QUEUE_URL }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            IPINFO_ACCESS_TOKEN=${ secrets.IPINFO_ACCESS_TOKEN }}
+          include: |
+            ./f-locations
+          tags: |
+            ${{ github.ref_name }}
+            latest

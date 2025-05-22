@@ -1,11 +1,10 @@
-from fastapi import Request
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
 from config import settings
-from utils.routing import APIRouter
 from utils.templates import templates
 
-router = APIRouter()
+router = APIRouter(tags=["pages"])
 
 
 @router.get("/", response_class=HTMLResponse)
