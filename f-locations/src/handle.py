@@ -24,4 +24,6 @@ async def handle(
         location = details.city or "unknown"
         await redis.hset(HASHSET_NAME, event.ip, location)
 
-    await ring_buffer.put(asdict(Location(locaton=location, timestamp=event.timestamp)))
+    await ring_buffer.put(
+        asdict(Location(location=location, timestamp=event.timestamp))
+    )
