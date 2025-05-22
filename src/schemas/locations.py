@@ -8,3 +8,8 @@ class Location(BaseModel):
 
 class Locations(BaseModel):
     locations: list[Location]
+
+
+class IPEvent(BaseModel):
+    ip: str
+    timestamp: str

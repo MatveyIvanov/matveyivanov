@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function isNewUpdate(timestamp) {
     const now = new Date();
-    const updateTime = new Date(timestamp);
+    const updateTime = new Date(parseInt(timestamp) * 1000);
     const diffMs = now - updateTime;
     const diffHours = diffMs / (1000 * 60 * 60);
 

@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== UTILITY FUNCTIONS =====
   function formatTimeAgo(timestamp) {
     const now = new Date();
-    const visitTime = new Date(timestamp);
+    const visitTime = new Date(parseInt(timestamp) * 1000);
     const diffSeconds = Math.floor((now - visitTime) / 1000);
 
     if (diffSeconds < 60) {

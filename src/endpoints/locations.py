@@ -1,14 +1,14 @@
 import asyncio
 import json
-import pickle
+from datetime import datetime
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
-from redis.asyncio import Redis
 from sse_starlette.sse import EventSourceResponse
 
 from config.di import Container
-from schemas.locations import Locations
+from schemas.locations import IPEvent, Locations
+from services.interfaces import IRingBuffer
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
@@ -18,24 +18,39 @@ LOCATIONS_KEY = "LOCATIONS"
 
 @router.get("", response_model=Locations)
 @inject
-async def locations(redis: Redis = Depends(Provide[Container.redis])):
-    locations = await redis.get(LOCATIONS_KEY)
-    locations = pickle.loads(locations) if locations else []
-    return {"locations": locations}
+async def locations(
+    request: Request,
+    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.locations_ring_buffer]),
+    queue=Depends(Provide[Container.ymq_locations_queue]),
+):
+    if request.client:
+        queue.send_message(
+            MessageBody=json.dumps(
+                IPEvent(
+                    ip=request.client.host,
+                    timestamp=str(datetime.now().timestamp()),
+                ).model_dump()
+            ),
+            MessageGroupId="default",
+        )
+    return {"locations": await ring_buffer.all()}
 
 
 @router.get("/stream")
 @inject
-async def stream(request: Request, redis: Redis = Depends(Provide[Container.redis])):
+async def stream(
+    request: Request,
+    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.locations_ring_buffer]),
+):
     async def generator():
         while True:
             if await request.is_disconnected():
                 break
 
-            locations = await redis.get(LOCATIONS_KEY)
-            locations = pickle.loads(locations) if locations else []
-
-            yield {"event": "message", "data": json.dumps({"locations": locations})}
+            yield {
+                "event": "message",
+                "data": json.dumps({"locations": await ring_buffer.all()}),
+            }
 
             await asyncio.sleep(MESSAGE_STREAM_DELAY)
 
