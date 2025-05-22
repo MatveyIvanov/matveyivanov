@@ -81,7 +81,7 @@ async def webhook(
         ChangelogItem(
             id=hook.ref,
             title=hook.ref,
-            type="feature" if major != last_major or feature != last_feature else "fix",
+            type="feature" if bugfix == "0" else "bugfix",
             description=hook.description or "No description provided :(",
             version=hook.ref,
             date=str(datetime.now().timestamp()),
