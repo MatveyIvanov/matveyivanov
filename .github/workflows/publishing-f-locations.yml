@@ -20,7 +20,7 @@ jobs:
 
       - name: Prepare directory structure for deploy
         run: |
-          cp -R f-locations .
+          cp -R f-locations/ .
           rm -rf f-locations
 
       - name: Deploy Function
