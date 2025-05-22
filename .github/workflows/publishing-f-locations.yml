@@ -24,10 +24,10 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           memory: ${{ secrets.YC_F_LOCATIONS_MEMORY }}
           execution-timeout: ${{ secrets.YC_F_LOCATIONS_EXECUTION_TIMEOUT }}
-          folder-id: ${{ secrets.YC_F_LOCATIONS_FOLDER_ID ]}
-          function-name: ${{ secrets.YC_F_LOCATIONS_FUNCTION_NAME]}
-          service-account: ${{ secrets.YC_F_LOCATIONS_SERVICE_ACCOUNT_ID ]}
-          network-id: ${{ secrets.YC_F_LOCATIONS_NETWORK_ID ]}
+          folder-id: ${{ secrets.YC_F_LOCATIONS_FOLDER_ID }}
+          function-name: ${{ secrets.YC_F_LOCATIONS_FUNCTION_NAME}}
+          service-account: ${{ secrets.YC_F_LOCATIONS_SERVICE_ACCOUNT_ID }}
+          network-id: ${{ secrets.YC_F_LOCATIONS_NETWORK_ID }}
           environment: |
             YMQ_SECRET_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_SECRET_KEY }}
             YMQ_ACCESS_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_ACCESS_KEY }}
