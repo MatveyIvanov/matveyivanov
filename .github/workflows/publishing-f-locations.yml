@@ -6,7 +6,7 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
-      - "locationsfunc/**"
+      - "f-locations/**"
 
 jobs:
   build:
