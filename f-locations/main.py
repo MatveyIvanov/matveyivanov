@@ -1,9 +1,9 @@
 import json
 from typing import Any, Dict
 
-from locationsfunc.src.di import Container
-from locationsfunc.src.handle import handle
-from locationsfunc.src.types import IPEvent
+from src.di import Container
+from src.handle import handle
+from src.types import IPEvent
 
 
 async def handler(event: Dict[str, Any], context: Dict[str, Any]) -> None:

@@ -6,11 +6,14 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
-      - "locationsfunc/**"
+      - "f-locations/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: f-locations
     steps:
       - name: Checkout to root of repo
         uses: actions/checkout@v4
@@ -20,7 +23,7 @@ jobs:
         uses: yc-actions/yc-sls-function@v3
         with:
           runtime: 'python312'
-          entrypoint: 'locationsfunc.main.handler'
+          entrypoint: 'main.handler'
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           memory: ${{ secrets.YC_F_LOCATIONS_MEMORY }}
           execution-timeout: ${{ secrets.YC_F_LOCATIONS_EXECUTION_TIMEOUT }}
@@ -39,4 +42,4 @@ jobs:
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             IPINFO_ACCESS_TOKEN=${{ secrets.IPINFO_ACCESS_TOKEN }}
           include: |
-            ./locationsfunc
+            ./

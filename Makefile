@@ -19,18 +19,18 @@ test:
 	cd src && poetry run pytest $(OPTS) .
 lint:
 	cd src && poetry run flake8 $(OPTS) .
-	cd src && poetry run flake8 $(OPTS) ../locationsfunc
+	cd src && poetry run flake8 $(OPTS) ../f-locations
 analyze:
 	cd src && poetry run mypy $(OPTS) .
-	cd src && poetry run mypy $(OPTS) ../locationsfunc
+	cd src && poetry run mypy $(OPTS) ../f-locations
 format:
 	cd src && poetry run black $(OPTS) .
-	cd src && poetry run black $(OPTS) ../locationsfunc
+	cd src && poetry run black $(OPTS) ../f-locations
 formatcheck:
 	$(MAKE) format OPTS="--check"
 sort:
 	cd src && poetry run isort --profile black --filter-files $(OPTS) .
-	cd src && poetry run isort --profile black --filter-files $(OPTS) ../locationsfunc
+	cd src && poetry run isort --profile black --filter-files $(OPTS) ../f-locations
 sortcheck:
 	$(MAKE) sort OPTS="--check"
 
