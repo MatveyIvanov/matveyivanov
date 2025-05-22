@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const ENDPOINTS = {
     INITIAL_DATA: '/api/v1/visitors',
-    SSE_STREAM: '/api/v1/visitors/stream'
+    SSE_STREAM: SSE_HOST + '/api/v1/visitors/stream'
   };
 
   const TIMEOUTS = {

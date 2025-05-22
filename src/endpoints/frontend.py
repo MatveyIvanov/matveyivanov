@@ -13,7 +13,7 @@ async def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="home.html",
-        context={"lines": settings.HOME},
+        context=settings.TEMPLATE_CONTEXT_BASE | {"lines": settings.HOME},
     )
 
 
@@ -24,7 +24,8 @@ async def experience(
     return templates.TemplateResponse(
         request=request,
         name="experience.html",
-        context={
+        context=settings.TEMPLATE_CONTEXT_BASE
+        | {
             "timeline": [
                 {
                     "direction": "right" if i % 2 == 0 else "left",
@@ -44,7 +45,7 @@ async def stack(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="stack.html",
-        context={"stack": settings.STACK},
+        context=settings.TEMPLATE_CONTEXT_BASE | {"stack": settings.STACK},
     )
 
 
@@ -53,7 +54,7 @@ async def python(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="python.html",
-        context={"libraries": settings.PYTHON},
+        context=settings.TEMPLATE_CONTEXT_BASE | {"libraries": settings.PYTHON},
     )
 
 
@@ -62,7 +63,8 @@ async def books(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="books.html",
-        context={
+        context=settings.TEMPLATE_CONTEXT_BASE
+        | {
             "work_books": settings.WORK_BOOKS,
             "off_work_books": settings.OFF_WORK_BOOKS,
         },
@@ -74,5 +76,5 @@ async def projects(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="projects.html",
-        context={"projects": settings.PROJECTS},
+        context=settings.TEMPLATE_CONTEXT_BASE | {"projects": settings.PROJECTS},
     )

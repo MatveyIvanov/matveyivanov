@@ -33,6 +33,9 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 
 ASGI_PORT = os.environ.get("ASGI_PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
+SSE_HOST = os.environ.get("SSE_HOST", "")
+
+TEMPLATE_CONTEXT_BASE = {"sse_host": SSE_HOST}
 
 BIRTH_DATE = datetime(2001, 3, 25)
 

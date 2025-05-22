@@ -4,10 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     MAX_UPDATES: 5, // Match the parameter from the Jinja2 template
     NEW_UPDATE_HOURS: 24 // Hours within which an update is considered "new"
   };
-
   const ENDPOINTS = {
     INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial changelog data
-    SSE_STREAM: '/api/v1/changelog/stream'   // Endpoint for SSE updates
+    SSE_STREAM: SSE_HOST + '/api/v1/changelog/stream'   // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
