@@ -2,8 +2,8 @@ import ipinfo
 from dependency_injector import containers, providers
 from redis.asyncio import Redis, StrictRedis
 
-from src import config
-from src.redis import RedisRingBuffer
+from locationsfunc.src import config
+from locationsfunc.src.redis import RedisRingBuffer
 
 
 class Container(containers.DeclarativeContainer):
