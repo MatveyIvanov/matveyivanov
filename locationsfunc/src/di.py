@@ -7,7 +7,7 @@ from locationsfunc.src.redis import RedisRingBuffer
 
 
 class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(packages=["src"])
+    wiring_config = containers.WiringConfiguration(packages=["locationsfunc.src"])
 
     redis: providers.Singleton[Redis] = providers.Singleton(
         StrictRedis,
