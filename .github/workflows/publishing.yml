@@ -44,11 +44,11 @@ jobs:
           key: ${{ secrets.YC_WEB_VM_SSH_PRIVATE_KEY }}
           port: ${{ secrets.YC_WEB_VM_SSH_PORT }}
           script: |
-            mkdir -p /var/www/matveyivanov || true
             cd /var/www/matveyivanov
             mkdir build || true
             rm -rf build.tmp || true
             mv build build.tmp
+            rm -rf build
             git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch main --single-branch build
             cd build
             docker compose -f docker-compose.yc.yml -p matveyivanov pull
