@@ -60,6 +60,9 @@ jobs:
           IMAGE_TAG: latest
           USERNAME: ${{ secrets.YC_WEB_VM_USERNAME }}
           SSH_PUBLIC_KEY: ${{ secrets.YC_WEB_VM_SSH_PUBLIC_KEY }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
+          ASGI_PORT: ${{ secrets.ASGI_PORT }}
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           folder-id: ${{ secrets.YC_WEB_VM_FOLDER_ID }}

@@ -1,11 +1,11 @@
 networks:
   network:
-    name: {{ env.PROJECT_NAME }}-network
+    name: ${PROJECT_NAME}-network
 
 services:
   asgi:
     extends:
       file: docker-compose.yml
       service: asgi
-    image: {{ env.REGISTRY }}/{{ env.IMAGE_NAME }}:{{ env.IMAGE_TAG:-latest }}
+    image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG:-latest}
     platform: linux/amd64
