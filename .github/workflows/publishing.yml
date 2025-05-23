@@ -54,9 +54,12 @@ jobs:
       - name: Deploy COI VM
         uses: yc-actions/yc-coi-deploy@v2
         env:
-          CR_REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
-          CR_REPOSITORY: ${{ secrets.YC_CR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.ref_name }}
+          REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
+          IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
+          # IMAGE_TAG: ${{ github.ref_name }}
+          IMAGE_TAG: latest
+          USERNAME: ${{ secrets.YC_WEB_VM_USERNAME }}
+          SSH_PUBLIC_KEY: ${{ secrets.YC_WEB_VM_SSH_PUBLIC_KEY }}
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           folder-id: ${{ secrets.YC_WEB_VM_FOLDER_ID }}
