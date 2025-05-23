@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   const ENDPOINTS = {
     INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial changelog data
-    SSE_STREAM: SSE_HOST + '/api/v1/changelog/stream'   // Endpoint for SSE updates
+    SSE_STREAM: '/api/v1/changelog/stream'   // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
