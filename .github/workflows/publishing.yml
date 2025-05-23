@@ -22,17 +22,17 @@ jobs:
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
 
-      - name: Build, tag, and push image to Yandex Cloud Container Registry
-        env:
-          REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
-          IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
-          # IMAGE_TAG: ${{ github.ref_name }}
-          IMAGE_TAG: latest
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-          ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
-          ASGI_PORT: ${{ secrets.ASGI_PORT }}
-        run: |
-          make publish
+      # - name: Build, tag, and push image to Yandex Cloud Container Registry
+      #   env:
+      #     REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
+      #     IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
+      #     # IMAGE_TAG: ${{ github.ref_name }}
+      #     IMAGE_TAG: latest
+      #     PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+      #     ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
+      #     ASGI_PORT: ${{ secrets.ASGI_PORT }}
+      #   run: |
+      #     make publish
 
       # - name: Deploy Serverless Container
       #   uses: yc-actions/yc-sls-container-deploy@v2
@@ -75,7 +75,7 @@ jobs:
           vm-disk-size: ${{ secrets.YC_WEB_VM_DISK_SIZE }}
           vm-zone-id: ${{ secrets.YC_WEB_VM_ZONE_ID }}
           vm-subnet-id: ${{ secrets.YC_WEB_VM_SUBNET_ID }}
-          vm-public-ip: true
+          # vm-public-ip: true
           vm-platform-id: ${{ secrets.YC_WEB_VM_PLATFORM_ID }}
           user-data-path: './.yc/vm/user-data.yml'
           docker-compose-path: './docker/docker-compose.yc.yml'
