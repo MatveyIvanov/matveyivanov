@@ -48,7 +48,7 @@ jobs:
             rm -rf build.tmp || true
             mv build build.tmp
             rm -rf build
-            git clone https://${{ secrets.YC_WEB_VM_GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch ${{ github.ref_name }} --single-branch build
+            git clone https://${{ secrets.YC_WEB_VM_GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch feature/compute-cloud --single-branch build
             cd build
             export REGISTRY=${{ secrets.YC_CR_REGISTRY }}
             export IMAGE_NAME=${{ secrets.YC_CR_REPOSITORY }}
