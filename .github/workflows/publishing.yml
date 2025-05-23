@@ -58,6 +58,6 @@ jobs:
             export ASGI_PORT=${{ secrets.ASGI_PORT }}
             echo ${{ secrets.YC_WEB_VM_DOCKER_TOKEN }}|docker login --username oauth --password-stdin ${{ secrets.YC_WEB_VM_DOCKER_HUB }}
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov pull
-            cd /var/www/matveyivanov/build && echo ${{ secrets.YC_REVISION_ENV }} >> docker/.env
+            cd /var/www/matveyivanov/build && echo "${{ secrets.YC_REVISION_ENV }}" > docker/.env
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov down
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov up -d --no-build
