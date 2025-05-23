@@ -77,7 +77,6 @@ jobs:
           vm-disk-size: ${{ secrets.YC_WEB_VM_DISK_SIZE }}
           vm-zone-id: ${{ secrets.YC_WEB_VM_ZONE_ID }}
           vm-subnet-id: ${{ secrets.YC_WEB_VM_SUBNET_ID }}
-          # vm-public-ip: auto
           vm-platform-id: ${{ secrets.YC_WEB_VM_PLATFORM_ID }}
           user-data-path: './.yc/vm/user-data.yml'
           docker-compose-path: './docker/docker-compose.yc.yml'
