@@ -36,47 +36,20 @@ jobs:
       #   run: |
       #     make publish
 
-      # - name: Deploy Serverless Container
-      #   uses: yc-actions/yc-sls-container-deploy@v2
-      #   with:
-      #     yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-      #     container-name: ${{ secrets.YC_CONTAINER_NAME }}
-      #     folder-id: ${{ secrets.YC_FOLDER_ID }}
-      #     revision-service-account-id: ${{ secrets.YC_REVISION_SERVICE_ACCOUNT_ID }}
-      #     revision-cores: ${{ secrets.YC_REVISION_CORES }}
-      #     revision-memory: ${{ secrets.YC_REVISION_MEMORY }}
-      #     revision-core-fraction: ${{ secrets.YC_REVISION_CORE_FRACTION }}
-      #     revision-concurrency: ${{ secrets.YC_REVISION_CONCURRENCY }}
-      #     revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.ref_name }}
-      #     revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
-      #     revision-env: ${{ secrets.YC_REVISION_ENV }}
-      #     revision-provisioned: ${{ secrets.YC_REVISION_PROVISIONED }}
-      #     revision-network-id: ${{ secrets.YC_REVISION_NETWORK_ID }}
-
-      - name: Deploy COI VM
-        uses: yc-actions/yc-coi-deploy@v2
-        env:
-          REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
-          IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
-          # IMAGE_TAG: ${{ github.ref_name }}
-          IMAGE_TAG: latest
-          USERNAME: ${{ secrets.YC_WEB_VM_USERNAME }}
-          SSH_PUBLIC_KEY: ${{ secrets.YC_WEB_VM_SSH_PUBLIC_KEY }}
-          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
-          ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
-          ASGI_PORT: ${{ secrets.ASGI_PORT }}
+      - name: Pull image and restart web server
+        uses: appleboy/ssh-action@v1
         with:
-          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          folder-id: ${{ secrets.YC_WEB_VM_FOLDER_ID }}
-          vm-name: ${{ secrets.YC_WEB_VM_NAME }}
-          vm-service-account-id: ${{ secrets.YC_WEB_VM_SERVICE_ACCOUNT_ID }}
-          vm-cores: ${{ secrets.YC_WEB_VM_CORES }}
-          vm-memory: ${{ secrets.YC_WEB_VM_MEMORY }}
-          vm-core-fraction: ${{ secrets.YC_WEB_VM_CORE_FRACTION }}
-          vm-disk-type: ${{ secrets.YC_WEB_VM_DISK_TYPE }}
-          vm-disk-size: ${{ secrets.YC_WEB_VM_DISK_SIZE }}
-          vm-zone-id: ${{ secrets.YC_WEB_VM_ZONE_ID }}
-          vm-subnet-id: ${{ secrets.YC_WEB_VM_SUBNET_ID }}
-          vm-platform-id: ${{ secrets.YC_WEB_VM_PLATFORM_ID }}
-          user-data-path: './.yc/vm/user-data.yml'
-          docker-compose-path: './docker/docker-compose.yc.yml'
+          host: ${{ secrets.YC_WEB_VM_SSH_HOST }}
+          username: ${{ secrets.YC_WEB_VM_SSH_USERNAME }}
+          key: ${{ secrets.YC_WEB_VM_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.YC_WEB_VM_SSH_PORT }}
+          script: |
+            mkdir -p /var/www/matveyivanov || true
+            cd /var/www/matveyivanov
+            mkdir build || true
+            rm -rf build.tmp || true
+            mv build build.tmp
+            git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch main --single-branch build
+            cd build
+            docker compose -f docker-compose.yc.yml -p matveyivanov pull
+            docker compose -f docker-compose.yc.yml -p matveyivanov up -d --no-build
