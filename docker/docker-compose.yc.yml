@@ -7,5 +7,5 @@ services:
     extends:
       file: docker-compose.yml
       service: asgi
-    image: {{ env.YC_WEB_VM_REGISTRY }}/{{ env.YC_WEB_VM_IMAGE_NAME }}:latest
+    image: {{ env.REGISTRY }}/{{ env.IMAGE_NAME }}:{{ env.IMAGE_TAG:-latest }}
     platform: linux/amd64

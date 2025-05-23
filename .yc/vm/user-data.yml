@@ -4,11 +4,11 @@ datasource:
     strict_id: false
 ssh_pwauth: no
 users:
-- name: {{ env.YC_WEB_VM_USERNAME }}
+- name: {{ env.USERNAME }}
   sudo: "ALL=(ALL) NOPASSWD:ALL"
   shell: /bin/bash
   ssh_authorized_keys:
-  - {{ env.YC_WEB_VM_SSH_PUBLIC_KEY }}
+  - {{ env.SSH_PUBLIC_KEY }}
 write_files:
   - path: "/usr/local/etc/docker-start.sh"
     permissions: "755"
@@ -29,10 +29,10 @@ write_files:
       #!/bin/bash
 
       # Docker run container
-      docker pull {{ env.REGISTRY }}/{{ env.IMAGE_NAME }}:latest
+      docker pull {{ env.REGISTRY }}/{{ env.IMAGE_NAME }}:{{ env.IMAGE_TAG }}
       docker run {{ env.REGISTRY }}/{{ env.IMAGE_NAME }}
 
     defer: true
 runcmd:
-  - [su, {{ env.YC_WEB_VM_USERNAME }}, -c, "/usr/local/etc/docker-start.sh"]
-  - [su, {{ env.YC_WEB_VM_USERNAME }}, -c, "/usr/local/etc/docker-main.sh"]
+  - [su, {{ env.USERNAME }}, -c, "/usr/local/etc/docker-start.sh"]
+  - [su, {{ env.USERNAME }}, -c, "/usr/local/etc/docker-main.sh"]

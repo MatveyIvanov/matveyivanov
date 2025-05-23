@@ -26,7 +26,8 @@ jobs:
         env:
           REGISTRY: ${{ secrets.YC_CR_REGISTRY }}
           IMAGE_NAME: ${{ secrets.YC_CR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.ref_name }}
+          # IMAGE_TAG: ${{ github.ref_name }}
+          IMAGE_TAG: latest
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           ASGI_PORT: ${{ secrets.ASGI_PORT }}
