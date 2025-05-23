@@ -3,13 +3,6 @@ datasource:
   Ec2:
     strict_id: false
 ssh_pwauth: no
-users:
-- name: test
-  passwd: "$6$kW4vfBM9kGgq4hr$TFtHW7.3jOECR9UCBuw9NrdSMJETzSVoNQGcVv2y.RqRUzWDEtYhYRkGvIpB6ml1fh/fZEVIgKbSXI9L1B6xF."
-  sudo: "ALL=(ALL) NOPASSWD:ALL"
-  shell: /bin/bash
-  ssh_authorized_keys:
-  - {{ env.SSH_PUBLIC_KEY }}
 write_files:
   - path: "/usr/local/etc/docker-start.sh"
     permissions: "755"
