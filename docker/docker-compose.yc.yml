@@ -1,0 +1,11 @@
+networks:
+  network:
+    name: {{ env.PROJECT_NAME }}-network
+
+services:
+  asgi:
+    extends:
+      file: docker-compose.yml
+      service: asgi
+    image: {{ env.YC_WEB_VM_REGISTRY }}/{{ env.YC_WEB_VM_IMAGE_NAME }}:latest
+    platform: linux/amd64
