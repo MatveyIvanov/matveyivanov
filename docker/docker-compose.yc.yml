@@ -9,3 +9,5 @@ services:
       service: asgi
     image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG:-latest}
     platform: linux/amd64
+    env_file:
+      - .env

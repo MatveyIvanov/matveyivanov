@@ -5,15 +5,13 @@ localup:
 localbuild:
 	docker compose -f docker/docker-compose.local.yml -p matveyivanov build --no-cache
 
-mainup:
-	docker compose -f docker/docker-compose.main.yml -p matveyivanov up --remove-orphans
-mainbuild:
-	docker compose -f docker/docker-compose.main.yml -p matveyivanov build --no-cache
-mainpush:
-	docker compose -f docker/docker-compose.main.yml -p matveyivanov push
+ycbuild:
+	docker compose -f docker/docker-compose.yc.yml -p matveyivanov build --no-cache
+ycpush:
+	docker compose -f docker/docker-compose.yc.yml -p matveyivanov push
 publish:
-	$(MAKE) mainbuild
-	$(MAKE) mainpush
+	$(MAKE) ycbuild
+	$(MAKE) ycpush
 
 test:
 	cd src && poetry run pytest $(OPTS) .
