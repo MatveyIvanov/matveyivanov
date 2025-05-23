@@ -34,6 +34,7 @@ jobs:
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           ASGI_PORT: ${{ secrets.ASGI_PORT }}
         run: |
+          echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
           make publish
 
       - name: Pull image and restart web server
