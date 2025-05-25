@@ -6,6 +6,8 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
+      - ".github/**"
+      - ".yc/**"
       - "src/**"
 
 jobs:
@@ -30,22 +32,30 @@ jobs:
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           ASGI_PORT: ${{ secrets.ASGI_PORT }}
         run: |
+          echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
           make publish
 
-      - name: Deploy Serverless Container
-        id: deploy-sls-container
-        uses: yc-actions/yc-sls-container-deploy@v2
+      - name: Pull image and restart web server
+        uses: appleboy/ssh-action@v1
         with:
-          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          container-name: ${{ secrets.YC_CONTAINER_NAME }}
-          folder-id: ${{ secrets.YC_FOLDER_ID }}
-          revision-service-account-id: ${{ secrets.YC_REVISION_SERVICE_ACCOUNT_ID }}
-          revision-cores: ${{ secrets.YC_REVISION_CORES }}
-          revision-memory: ${{ secrets.YC_REVISION_MEMORY }}
-          revision-core-fraction: ${{ secrets.YC_REVISION_CORE_FRACTION }}
-          revision-concurrency: ${{ secrets.YC_REVISION_CONCURRENCY }}
-          revision-image-url: ${{ secrets.YC_IMAGE_URL }}:${{ github.ref_name }}
-          revision-execution-timeout: ${{ secrets.YC_REVISION_EXECUTION_TIMEOUT }}
-          revision-env: ${{ secrets.YC_REVISION_ENV }}
-          revision-provisioned: ${{ secrets.YC_REVISION_PROVISIONED }}
-          revision-network-id: ${{ secrets.YC_REVISION_NETWORK_ID }}
+          host: ${{ secrets.YC_WEB_VM_SSH_HOST }}
+          username: ${{ secrets.YC_WEB_VM_SSH_USERNAME }}
+          key: ${{ secrets.YC_WEB_VM_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.YC_WEB_VM_SSH_PORT }}
+          script: |
+            cd /var/www/matveyivanov && rm -rf build.tmp || true
+            cd /var/www/matveyivanov && mv build build.tmp
+            cd /var/www/matveyivanov && rm -rf build
+            cd /var/www/matveyivanov && git clone https://${{ secrets.YC_WEB_VM_GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch feature/compute-cloud --single-branch build
+            cd /var/www/matveyivanov && cd build
+            export REGISTRY=${{ secrets.YC_CR_REGISTRY }}
+            export IMAGE_NAME=${{ secrets.YC_CR_REPOSITORY }}
+            export IMAGE_TAG=${{ github.ref_name }}
+            export PROJECT_NAME=${{ secrets.PROJECT_NAME }}
+            export ASGI_TARGET=${{ secrets.ASGI_TARGET }}
+            export ASGI_PORT=${{ secrets.ASGI_PORT }}
+            echo ${{ secrets.YC_WEB_VM_DOCKER_TOKEN }}|docker login --username oauth --password-stdin ${{ secrets.YC_WEB_VM_DOCKER_HUB }}
+            cd /var/www/matveyivanov/build && echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
+            cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov pull
+            cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov down
+            cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov up -d --no-build

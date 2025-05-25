@@ -89,7 +89,9 @@ FROM prod-base AS prod-asgi
 
 WORKDIR /apps/
 
-CMD python main.py
+COPY ./docker/entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["bash", "/entrypoint.sh"]
 
 # -----------------------------------------------------------
 # ASGI for DEVELOPMENT

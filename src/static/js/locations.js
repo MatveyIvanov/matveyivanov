@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const ENDPOINTS = {
     INITIAL_DATA: '/api/v1/locations', // Endpoint for initial locations data
-    SSE_STREAM: SSE_HOST + '/api/v1/locations/stream'   // Endpoint for SSE updates
+    SSE_STREAM: '/api/v1/locations/stream'   // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
