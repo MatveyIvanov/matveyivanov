@@ -21,7 +21,7 @@ async def handle(
     location = await redis.hget(HASHSET_NAME, event.ip)
     if location is None:
         details = await ipinfo_handler.getDetails(event.ip, timeout=5)
-        location = details.city or "unknown"
+        location = str(details.city) or "unknown"
         await redis.hset(HASHSET_NAME, event.ip, location)
 
     await ring_buffer.put(
