@@ -12,7 +12,7 @@ class RedisRingBuffer(IRingBuffer[T]):
         redis: Redis,
         name: str,
         max_size: int,
-        serializer: ISerializer[T] = pickle,
+        serializer: ISerializer[T] = pickle,  # type:ignore[assignment]
     ):
         """
         :param redis: Redis client
@@ -190,7 +190,7 @@ class RedisRingBuffer(IRingBuffer[T]):
                 for position in positions
             )
 
-    async def latest(self, n: int) -> list[T]:
+    async def latest(self, n: int = 1) -> list[T]:
         await self._initialize()
 
         values = await self.__latest(
