@@ -2,17 +2,6 @@ name: Website
 
 on:
   workflow_dispatch:
-    inputs:
-      hash_algorithm:
-        description: 'Hash algorithm to use (md5, sha1, sha256, sha512)'
-        required: true
-        default: 'sha256'
-        type: choice
-        options:
-          - md5
-          - sha1
-          - sha256
-          - sha512
   push:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
