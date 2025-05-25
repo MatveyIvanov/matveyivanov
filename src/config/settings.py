@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Tuple
+from typing import Any, Tuple
 
 from dateutil.relativedelta import relativedelta
 
@@ -34,7 +34,7 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 ASGI_PORT = os.environ.get("ASGI_PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
 
-TEMPLATE_CONTEXT_BASE = dict()
+TEMPLATE_CONTEXT_BASE: dict[str, Any] = dict()
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
