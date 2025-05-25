@@ -7,12 +7,20 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
       - ".github/**"
-      - ".yc/**"
+      - "docker/**"
       - "src/**"
 
 jobs:
+  core-compare:
+    uses: ./.github/workflows/core-compare.yml
+  linters:
+    uses: ./.github/workflows/linting.yml
   build:
+    name: Build new website version
     runs-on: ubuntu-latest
+    needs: 
+      - core-compare
+      - linters
     steps:
       - name: Checkout to root of repo
         uses: actions/checkout@v4
@@ -35,7 +43,13 @@ jobs:
           echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
           make publish
 
-      - name: Pull image and restart web server
+  deploy:
+    name: Deploy new website version
+    runs-on: ubuntu-latest
+    needs: 
+      - build
+    steps:
+      - name: Pull image and restart the web server
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.YC_WEB_VM_SSH_HOST }}

@@ -1,17 +1,15 @@
-name: Tests, linters, analyzers and formatters
+name: Linting
 
 on:
-  workflow_dispatch:
+  workflow_call:
+  pull_request:
   push:
     branches:
       - "main"
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
-  pull_request:
 
 jobs:
   linters:
-    name: Run linters
+    name: Run linters for the whole codebase
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
