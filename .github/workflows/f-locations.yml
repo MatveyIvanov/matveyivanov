@@ -2,17 +2,35 @@ name: Locations Function
 
 on:
   workflow_dispatch:
+    inputs:
+      hash_algorithm:
+        description: 'Hash algorithm to use (md5, sha1, sha256, sha512)'
+        required: true
+        default: 'sha256'
+        type: choice
+        options:
+          - md5
+          - sha1
+          - sha256
+          - sha512
   push:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
     paths:
       - ".github/**"
-      - ".yc/**"
       - "f-locations/**"
 
 jobs:
+  core-compare:
+    uses: ./.github/workflows/core-compare.yml
+  linters:
+    uses: ./.github/workflows/linting.yml
   build:
+    name: Deploy new locations function version 
     runs-on: ubuntu-latest
+    needs:
+      - core-compare
+      - linters
     steps:
       - name: Checkout to root of repo
         uses: actions/checkout@v4

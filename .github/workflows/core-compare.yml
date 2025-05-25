@@ -1,0 +1,86 @@
+name: Compare core files hashes across multiple modules
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      hash_algorithm:
+        description: 'Hash algorithm to use (md5, sha1, sha256, sha512)'
+        required: true
+        default: 'sha256'
+        type: choice
+        options:
+          - md5
+          - sha1
+          - sha256
+          - sha512
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  compare:
+    name: Compare all core files across multiple modules
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        comparison:
+          - { name: "Redis files", file1: "src/services/redis.py", file2: "f-locations/src/redis.py" }
+      # This ensures all comparisons run even if one fails
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Compare file hashes - ${{ matrix.comparison.name }}
+        id: compare
+        run: |
+          # Check if files exist
+          if [ ! -f "${{ matrix.comparison.file1 }}" ]; then
+            echo "Error: ${{ matrix.comparison.file1 }} does not exist"
+            exit 1
+          fi
+          
+          if [ ! -f "${{ matrix.comparison.file2 }}" ]; then
+            echo "Error: ${{ matrix.comparison.file2 }} does not exist"
+            exit 1
+          fi
+          
+          # Use the specified hash algorithm
+          HASH1=$(${HASH_CMD} "${{ matrix.comparison.file1 }}" | awk '{ print $1 }')
+          HASH2=$(${HASH_CMD} "${{ matrix.comparison.file2 }}" | awk '{ print $1 }')
+          
+          echo "Comparison: ${{ matrix.comparison.name }}"
+          echo "File 1: ${{ matrix.comparison.file1 }}"
+          echo "File 2: ${{ matrix.comparison.file2 }}"
+          echo "Hash of file1: $HASH1"
+          echo "Hash of file2: $HASH2"
+          
+          if [ "$HASH1" = "$HASH2" ]; then
+            echo "✅ Files have matching hashes"
+            echo "match=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Hashes do not match"
+            echo "match=false" >> $GITHUB_OUTPUT
+            exit 1  # Fail this specific matrix job
+          fi
+        env:
+          HASH_CMD: ${{ github.event.inputs.hash_algorithm }}sum
+  summary:
+    name: Summarize comparison results
+    runs-on: ubuntu-latest
+    needs: compare
+    if: always()
+    steps:
+      - name: Summarize results
+        run: |
+          echo "# Hash Comparison Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Algorithm used: ${{ github.event.inputs.hash_algorithm }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ contains(needs.compare.result, 'failure') }}" = "true" ]; then
+            echo "❌ Some file hash comparisons failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ All file hash comparisons succeeded" >> $GITHUB_STEP_SUMMARY
+          fi
