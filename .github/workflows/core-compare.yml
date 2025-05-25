@@ -1,6 +1,7 @@
 name: Compare core files hashes across multiple modules
 
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       hash_algorithm:
