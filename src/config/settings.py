@@ -34,7 +34,9 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 ASGI_PORT = os.environ.get("ASGI_PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
 
-TEMPLATE_CONTEXT_BASE: dict[str, Any] = dict()
+IMAGE_TAG = os.environ.get("IMAGE_TAG", "latest")
+
+TEMPLATE_CONTEXT_BASE: dict[str, Any] = {"IMAGE_TAG": IMAGE_TAG}
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
