@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
     UPDATE_DESCRIPTION: 'update-description',
     UPDATE_META: 'update-meta',
     UPDATE_VERSION: 'update-version',
-    UPDATE_DATE: 'update-date'
+    UPDATE_DATE: 'update-date',
+    HIDDEN: 'hidden' // Added for hiding widget
   };
 
   const DEFAULT_VALUES = {
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     DEFAULT_COUNT: '0'
   };
 
+  // SVG icons for different update types
   const UPDATE_ICONS = {
     FEATURE: '<path fill="currentColor" d="M19 1H9c-1.1 0-2 .9-2 2v3h2V4h10v16H9v-2H7v3c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zM7.01 13.47l-2.55-2.55-1.41 1.41L7.01 16.3l6.36-6.36-1.41-1.41-4.95 4.94z"/>',
     FIX: '<path fill="currentColor" d="M19.73 14.23L7.71 2.21a.996.996 0 0 0-1.41 0L3.7 4.8a.996.996 0 0 0 0 1.41l12.02 12.02c.39.39 1.02.39 1.41 0l2.59-2.58a.996.996 0 0 0 .01-1.42zM7 16.5c-1.93 0-3.5-1.57-3.5-3.5 0-.58.16-1.12.41-1.6l2.7 2.7c.46.25 1.01.41 1.59.41.45 0 .85-.1 1.24-.26l-2.7-2.7c.16-.39.26-.79.26-1.24 0-.58-.16-1.13-.41-1.59l2.7-2.7c.48.25 1.02.41 1.6.41 1.93 0 3.5 1.57 3.5 3.5 0 .58-.16 1.12-.41 1.6l-2.7-2.7c-.46-.25-1.01-.41-1.59-.41-.45 0-.85.1-1.24.26l2.7 2.7c-.16.39-.26.79-.26 1.24 0 .58.16 1.13.41 1.59l-2.7 2.7c-.48-.25-1.02-.41-1.6-.41z"/>',
@@ -58,13 +60,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== STATE VARIABLES =====
   let updatesCache = [];
+  let initialUpdatesCache = null;
   let connectionFailed = false;
   let seenUpdateIds = new Set(); // To track which updates the user has seen
   let eventSource = null; // Store the eventSource reference globally for cleanup
+  let initialDataFetched = false;
+  let widgetInitialized = false;
+  let maxRetryAttempts = 3;
+  let retryCount = 0;
+
+  // ===== UTILITY FUNCTIONS =====
+  function decodeHTMLEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  }
+
+  // ===== WIDGET VISIBILITY CONTROL =====
+  function hideWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.add(CSS_CLASSES.HIDDEN);
+    }
+  }
+
+  function showWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.remove(CSS_CLASSES.HIDDEN);
+    }
+  }
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Initialize with default values to show immediately
+    // Early exit if widget doesn't exist
+    if (!UI_ELEMENTS.widget || !UI_ELEMENTS.changelogList || !UI_ELEMENTS.changelogCount) {
+      console.error('Changelog widget elements not found in DOM');
+      return false;
+    }
+
+    // Initially hide the widget until we confirm we have data
+    hideWidget();
+
+    // Initialize with default values
     UI_ELEMENTS.changelogCount.textContent = DEFAULT_VALUES.DEFAULT_COUNT;
     UI_ELEMENTS.changelogList.innerHTML = DEFAULT_VALUES.NO_UPDATES;
 
@@ -82,6 +118,16 @@ document.addEventListener('DOMContentLoaded', function() {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
+
+    // Add style for hiding widget if not already in CSS
+    if (!document.getElementById('changelog-widget-styles')) {
+      const style = document.createElement('style');
+      style.id = 'changelog-widget-styles';
+      style.textContent = `.${CSS_CLASSES.HIDDEN} { display: none !important; }`;
+      document.head.appendChild(style);
+    }
+
+    return true;
   }
 
   // ===== EVENT HANDLERS =====
@@ -103,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (document.visibilityState === 'hidden') {
         // When tab becomes hidden, close the connection
         cleanupSSE();
-      } else if (document.visibilityState === 'visible' && !eventSource) {
+      } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
         // When tab becomes visible again and there's no active connection, reconnect
         connectToSSE();
       }
@@ -112,7 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('pagehide', cleanupSSE);
     window.addEventListener('popstate', function() {
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      if (initialDataFetched) {
+        setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      }
     });
   }
 
@@ -183,21 +231,27 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== UI UPDATES =====
-  function updateChangelogList() {
+  function updateChangelogList(useAnimation = true) {
     // Clear the list
     UI_ELEMENTS.changelogList.innerHTML = '';
 
     if (updatesCache.length === 0) {
-      UI_ELEMENTS.changelogList.innerHTML = connectionFailed ?
+      UI_ELEMENTS.changelogList.innerHTML = connectionFailed && !initialUpdatesCache ?
                                       DEFAULT_VALUES.UNAVAILABLE :
                                       DEFAULT_VALUES.NO_UPDATES;
       return;
     }
 
+    // Only show widget after we have valid data
+    if (!widgetInitialized) {
+      showWidget();
+      widgetInitialized = true;
+    }
+
     // Add each update to the list
     updatesCache.forEach((update, index) => {
       const listItem = document.createElement('li');
-      listItem.className = index === 0 && !seenUpdateIds.has(update.id) ? CSS_CLASSES.UPDATE_NEW : '';
+      listItem.className = useAnimation && index === 0 && !seenUpdateIds.has(update.id) ? CSS_CLASSES.UPDATE_NEW : '';
 
       const headerDiv = document.createElement('div');
       headerDiv.className = CSS_CLASSES.UPDATE_HEADER;
@@ -266,6 +320,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (connectionFailed) return; // Avoid repeated updates
 
     connectionFailed = true;
+
+    // If we have initial updates data, use that instead of showing error
+    if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+      updatesCache = initialUpdatesCache;
+      updateChangelogList(false); // Don't animate when falling back
+      updateChangesCount();
+      return;
+    }
+
+    // If no initial data and we can't connect, hide widget
+    if (!initialDataFetched) {
+      hideWidget();
+      return;
+    }
+
     UI_ELEMENTS.changelogCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
     UI_ELEMENTS.changelogCount.classList.add(CSS_CLASSES.PULSE);
 
@@ -273,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
       UI_ELEMENTS.changelogCount.classList.remove(CSS_CLASSES.PULSE);
     }, TIMEOUTS.ANIMATION);
 
-    updateChangelogList();
+    updateChangelogList(false);
   }
 
   // ===== DATA FETCHING =====
@@ -287,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               const data = JSON.parse(xhr.responseText);
               if (data.updates && Array.isArray(data.updates)) {
+                initialDataFetched = true;
                 resolve(data.updates.slice(0, CONFIG.MAX_UPDATES));
               } else {
                 reject(new Error('Invalid data format'));
@@ -317,17 +387,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
+    // If too many retries, just use the initial updates data
+    if (retryCount >= maxRetryAttempts) {
+      if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+        updatesCache = initialUpdatesCache;
+        updateChangelogList(false);
+        updateChangesCount();
+      } else {
+        hideWidget();
+      }
+      return;
+    }
+
     // Clean up any existing connection first
     cleanupSSE();
 
     try {
       console.log('Establishing SSE connection...');
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
+      retryCount++;
 
       // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
-          showConnectionError();
+          if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+            updatesCache = initialUpdatesCache;
+            updateChangelogList(false);
+            updateChangesCount();
+          } else {
+            showConnectionError();
+          }
           cleanupSSE();
         }
       }, TIMEOUTS.SSE_CONNECTION);
@@ -336,6 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
         connectionFailed = false;
+        retryCount = 0; // Reset retry counter on successful connection
       };
 
       eventSource.onmessage = function(event) {
@@ -369,7 +459,15 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
-          showConnectionError();
+
+          // Use initial data if SSE fails
+          if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+            updatesCache = initialUpdatesCache;
+            updateChangelogList(false);
+            updateChangesCount();
+          } else {
+            showConnectionError();
+          }
         }
       };
 
@@ -377,14 +475,44 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('SSE connection error:', error);
         clearTimeout(connectionTimeout);
         cleanupSSE();
-        showConnectionError();
-        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+        // Use initial data if SSE fails
+        if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+          updatesCache = initialUpdatesCache;
+          updateChangelogList(false);
+          updateChangesCount();
+
+          // Only try reconnecting if we've shown something to the user
+          setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+        } else {
+          showConnectionError();
+
+          // Try reconnecting with backoff
+          if (retryCount < maxRetryAttempts) {
+            setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+          } else {
+            hideWidget();
+          }
+        }
       };
     } catch (error) {
       console.error('Failed to create EventSource:', error);
-      showConnectionError();
+
+      // Use initial data if SSE fails
+      if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+        updatesCache = initialUpdatesCache;
+        updateChangelogList(false);
+        updateChangesCount();
+      } else {
+        showConnectionError();
+      }
+
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+      // Retry with backoff
+      if (retryCount < maxRetryAttempts) {
+        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+      }
     }
   }
 
@@ -395,21 +523,27 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchInitialData()
       .then(updates => {
         updatesCache = updates;
-        updateChangelogList();
+        initialUpdatesCache = [...updates]; // Create a copy to fall back to
+
+        updateChangelogList(false); // Don't animate initial list
         updateChangesCount();
 
         if (typeof EventSource !== 'undefined') {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
+          // Still show widget with initial data even if SSE not supported
+          showWidget();
         }
       })
       .catch(error => {
         console.error('Error fetching initial changelog data:', error);
+
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          showConnectionError();
+          // Hide widget if we can't get initial data and browser doesn't support SSE
+          hideWidget();
         }
       });
   }
@@ -423,7 +557,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== START INITIALIZATION =====
-  initializeUI();
+  if (!initializeUI()) {
+    console.error('Failed to initialize changelog widget UI');
+    return; // Exit early if UI initialization fails
+  }
 
   if (document.readyState === 'complete') {
     setTimeout(initializeWidget, 0);
