@@ -1,119 +1,114 @@
-@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap");
 
-/* Apply box-sizing to all elements */
-*, *:before, *:after {
-    box-sizing: inherit;
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 .error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 600px;
-    min-height: 400px; /* Changed from fixed height to min-height */
-    margin: 50px auto; /* Increased margin to add spacing from other elements */
-    padding: 30px 20px; /* Added more padding for better spacing */
-    position: relative;
-    /* Added cosmic styling to match site theme */
-    background-color: rgba(15, 32, 39, 0.3);
-    backdrop-filter: blur(3px);
-    border-radius: 10px;
-    border: 1px solid rgba(70, 252, 241, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  min-height: 400px;
+  margin: 50px auto;
+  padding: 30px 20px;
+  position: relative;
+  background-color: rgba(15, 32, 39, 0.3);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+  border: 1px solid rgba(70, 252, 241, 0.1);
 }
 
 .error h1 {
-    width: 100%;
-    margin: 0 0 20px 0; /* Added bottom margin for spacing */
-    text-align: center;
-    font-size: 80px;
-    line-height: 1.1;
-    /* Match cosmic styles */
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
+  width: 100%;
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-size: 80px;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
 }
 
 .error h3 {
-    width: 100%;
-    margin: 0 0 30px 0; /* Added bottom margin for spacing */
-    text-align: center;
-    font-weight: bold;
-    font-size: 26px;
-    line-height: 1.2;
-    /* Match cosmic styles */
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
-    /* Removed absolute positioning padding */
-    padding-top: 0;
+  width: 100%;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-weight: bold;
+  font-size: 26px;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(70, 252, 241, 0.4);
+  padding-top: 0;
 }
 
 .error p {
-    width: 100%;
-    margin: 0 0 25px 0; /* Adjusted margins */
-    text-align: center;
-    font-size: 18px;
-    line-height: 1.4;
-    /* Match cosmic styles */
-    color: #c9f0ff;
+  width: 100%;
+  margin: 0 0 25px 0;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #c9f0ff;
 }
 
-/* Media queries for responsive design */
 @media screen and (max-width: 768px) {
-    .error {
-        min-height: 350px;
-        margin: 40px auto;
-    }
+  .error {
+    min-height: 350px;
+    margin: 40px auto;
+  }
 
-    .error h1 {
-        font-size: 60px;
-        margin-bottom: 15px;
-    }
+  .error h1 {
+    font-size: 60px;
+    margin-bottom: 15px;
+  }
 
-    .error h3 {
-        margin-bottom: 25px;
-        font-size: 22px;
-    }
+  .error h3 {
+    margin-bottom: 25px;
+    font-size: 22px;
+  }
 }
 
 @media screen and (max-width: 480px) {
-    .error {
-        min-height: 300px;
-        margin: 30px auto;
-        padding: 20px 15px;
-    }
+  .error {
+    min-height: 300px;
+    margin: 30px auto;
+    padding: 20px 15px;
+  }
 
-    .error h1 {
-        font-size: 40px;
-        margin-bottom: 15px;
-    }
+  .error h1 {
+    font-size: 40px;
+    margin-bottom: 15px;
+  }
 
-    .error h3 {
-        margin-bottom: 20px;
-        font-size: 18px;
-    }
+  .error h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
 
-    .error p {
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
+  .error p {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
 }
 
 /* For very small screens */
 @media screen and (max-width: 320px) {
-    .error {
-        min-height: 250px;
-        margin: 20px auto;
-        padding: 15px 10px;
-    }
+  .error {
+    min-height: 250px;
+    margin: 20px auto;
+    padding: 15px 10px;
+  }
 
-    .error h1 {
-        font-size: 36px;
-        margin-bottom: 10px;
-    }
+  .error h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
 
-    .error h3 {
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
+  .error h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
 }

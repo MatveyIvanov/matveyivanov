@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/visitors',
-    SSE_STREAM: '/api/v1/visitors/stream'
+    INITIAL_DATA: '/api/v1/visitors', // Endpoint for initial data
+    SSE_STREAM: '/api/v1/visitors/stream' // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     KEYBOARD_FOCUS: 'keyboard-focus',
     TOUCH_DEVICE: 'touch-device',
     EXPANDED: 'expanded',
-    HIDDEN: 'hidden' // Added for hiding widget
+    HIDDEN: 'hidden'
   };
 
   // ===== STATE VARIABLES =====
@@ -60,35 +60,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Early exit if widget doesn't exist
     if (!UI_ELEMENTS.widget || !UI_ELEMENTS.visitorCount) {
       console.error('Visitor widget elements not found in DOM');
       return false;
     }
 
-    // Initially hide the widget until we confirm we have data
     hideWidget();
 
-    // Create circular count element
     circleCount = document.createElement('div');
     circleCount.className = CSS_CLASSES.CIRCLE_COUNT;
     circleCount.textContent = DEFAULT_VALUES.INITIAL_COUNT;
     UI_ELEMENTS.widget.appendChild(circleCount);
 
-    // Initialize with default values to show immediately
     UI_ELEMENTS.visitorCount.textContent = DEFAULT_VALUES.INITIAL_COUNT;
 
-    // Add keyboard accessibility
     UI_ELEMENTS.widget.setAttribute('tabindex', '0');
     UI_ELEMENTS.widget.addEventListener('keypress', handleKeyboardInteraction);
 
-    // Support for touch devices
     if ('ontouchstart' in window) {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
 
-    // Add style for hiding widget if not already in CSS
     if (!document.getElementById('visitors-widget-styles')) {
       const style = document.createElement('style');
       style.id = 'visitors-widget-styles';
@@ -121,17 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
-      // When tab becomes hidden, close the connection
       cleanupSSE();
     } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
-      // When tab becomes visible again and there's no active connection, reconnect
       connectToSSE();
     }
   }
 
   function handleNavigation() {
     cleanupSSE();
-    // Reconnect if needed - possibly delayed to ensure navigation completes
     if (initialDataFetched) {
       setTimeout(connectToSSE, TIMEOUTS.NAVIGATION_DELAY);
     }
@@ -144,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
     connectionFailed = false;
     currentCount = count;
 
-    // Only show widget after we have a valid count
     if (!widgetInitialized) {
       showWidget();
       widgetInitialized = true;
@@ -153,11 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
     UI_ELEMENTS.visitorCount.textContent = count;
     if (circleCount) circleCount.textContent = count;
 
-    // Add pulse animation
     UI_ELEMENTS.visitorCount.classList.add(CSS_CLASSES.PULSE);
     if (circleCount) circleCount.classList.add(CSS_CLASSES.PULSE);
 
-    // Remove the animation class after it completes
     setTimeout(() => {
       UI_ELEMENTS.visitorCount.classList.remove(CSS_CLASSES.PULSE);
       if (circleCount) circleCount.classList.remove(CSS_CLASSES.PULSE);
@@ -165,31 +152,26 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated animations
+    if (connectionFailed) return;
 
     connectionFailed = true;
 
-    // If we have an initial count value, use it instead of showing error
     if (initialCountValue !== null) {
       updateVisitorCount(initialCountValue);
       return;
     }
 
-    // If no initial value and we can't connect, hide widget
     if (!initialDataFetched) {
       hideWidget();
       return;
     }
 
-    // Otherwise show error message
     UI_ELEMENTS.visitorCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
     if (circleCount) circleCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
 
-    // Add pulse animation
     UI_ELEMENTS.visitorCount.classList.add(CSS_CLASSES.PULSE);
     if (circleCount) circleCount.classList.add(CSS_CLASSES.PULSE);
 
-    // Remove the animation class after it completes
     setTimeout(() => {
       UI_ELEMENTS.visitorCount.classList.remove(CSS_CLASSES.PULSE);
       if (circleCount) circleCount.classList.remove(CSS_CLASSES.PULSE);
@@ -239,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // If too many retries, just use the initial count
     if (retryCount >= maxRetryAttempts) {
       if (initialCountValue !== null) {
         updateVisitorCount(initialCountValue);
@@ -249,7 +230,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Clean up any existing connection first
     cleanupSSE();
 
     try {
@@ -257,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
       retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
           if (initialCountValue !== null) {
@@ -272,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
       eventSource.onopen = function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
-        retryCount = 0; // Reset retry counter on successful connection
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
@@ -286,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
           console.error('Error parsing SSE data:', error);
 
-          // Use initial value if SSE fails
           if (initialCountValue !== null) {
             updateVisitorCount(initialCountValue);
           } else {
@@ -300,16 +278,13 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(connectionTimeout);
         cleanupSSE();
 
-        // Use initial value if SSE fails
         if (initialCountValue !== null) {
           updateVisitorCount(initialCountValue);
 
-          // Only try reconnecting if we've shown something to the user
           setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
         } else {
           showConnectionError();
 
-          // Try reconnecting with backoff
           if (retryCount < maxRetryAttempts) {
             setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
           } else {
@@ -320,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Failed to create EventSource:', error);
 
-      // Use initial value if SSE fails
       if (initialCountValue !== null) {
         updateVisitorCount(initialCountValue);
       } else {
@@ -329,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       cleanupSSE();
 
-      // Retry with backoff
       if (retryCount < maxRetryAttempts) {
         setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
       }
@@ -349,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
-          // Still show widget with initial count even if SSE not supported
           showWidget();
         }
       })
@@ -359,7 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          // Hide widget if we can't get initial data and browser doesn't support SSE
           hideWidget();
         }
       });
@@ -376,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== START INITIALIZATION =====
   if (!initializeUI()) {
     console.error('Failed to initialize visitor widget UI');
-    return; // Exit early if UI initialization fails
+    return;
   }
 
   if (document.readyState === 'complete') {

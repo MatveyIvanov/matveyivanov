@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_UPDATES: 5, // Match the parameter from the Jinja2 template
+    MAX_UPDATES: 5,
     NEW_UPDATE_HOURS: 24 // Hours within which an update is considered "new"
   };
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial changelog data
-    SSE_STREAM: '/api/v1/changelog/stream'   // Endpoint for SSE updates
+    INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial data
+    SSE_STREAM: '/api/v1/changelog/stream' // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     UPDATE_META: 'update-meta',
     UPDATE_VERSION: 'update-version',
     UPDATE_DATE: 'update-date',
-    HIDDEN: 'hidden' // Added for hiding widget
+    HIDDEN: 'hidden'
   };
 
   const DEFAULT_VALUES = {
@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
     DEFAULT_COUNT: '0'
   };
 
-  // SVG icons for different update types
   const UPDATE_ICONS = {
     FEATURE: '<path fill="currentColor" d="M19 1H9c-1.1 0-2 .9-2 2v3h2V4h10v16H9v-2H7v3c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zM7.01 13.47l-2.55-2.55-1.41 1.41L7.01 16.3l6.36-6.36-1.41-1.41-4.95 4.94z"/>',
     FIX: '<path fill="currentColor" d="M19.73 14.23L7.71 2.21a.996.996 0 0 0-1.41 0L3.7 4.8a.996.996 0 0 0 0 1.41l12.02 12.02c.39.39 1.02.39 1.41 0l2.59-2.58a.996.996 0 0 0 .01-1.42zM7 16.5c-1.93 0-3.5-1.57-3.5-3.5 0-.58.16-1.12.41-1.6l2.7 2.7c.46.25 1.01.41 1.59.41.45 0 .85-.1 1.24-.26l-2.7-2.7c.16-.39.26-.79.26-1.24 0-.58-.16-1.13-.41-1.59l2.7-2.7c.48.25 1.02.41 1.6.41 1.93 0 3.5 1.57 3.5 3.5 0 .58-.16 1.12-.41 1.6l-2.7-2.7c-.46-.25-1.01-.41-1.59-.41-.45 0-.85.1-1.24.26l2.7 2.7c-.16.39-.26.79-.26 1.24 0 .58.16 1.13.41 1.59l-2.7 2.7c-.48-.25-1.02-.41-1.6-.41z"/>',
@@ -62,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let updatesCache = [];
   let initialUpdatesCache = null;
   let connectionFailed = false;
-  let seenUpdateIds = new Set(); // To track which updates the user has seen
+  let seenUpdateIds = new Set();
   let eventSource = null; // Store the eventSource reference globally for cleanup
   let initialDataFetched = false;
   let widgetInitialized = false;
@@ -147,10 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'hidden') {
-        // When tab becomes hidden, close the connection
         cleanupSSE();
       } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
-        // When tab becomes visible again and there's no active connection, reconnect
         connectToSSE();
       }
     });
@@ -242,13 +239,11 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Only show widget after we have valid data
     if (!widgetInitialized) {
       showWidget();
       widgetInitialized = true;
     }
 
-    // Add each update to the list
     updatesCache.forEach((update, index) => {
       const listItem = document.createElement('li');
       listItem.className = useAnimation && index === 0 && !seenUpdateIds.has(update.id) ? CSS_CLASSES.UPDATE_NEW : '';
@@ -264,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
       titleElement.className = CSS_CLASSES.UPDATE_TITLE;
       titleElement.textContent = update.title;
 
-      // Add NEW badge if this update is new and not seen
       if (isNewUpdate(update.date) && !seenUpdateIds.has(update.id)) {
         const newBadge = document.createElement('span');
         newBadge.className = CSS_CLASSES.NEW_BADGE;
@@ -317,19 +311,18 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated updates
+    if (connectionFailed) return;
 
     connectionFailed = true;
 
     // If we have initial updates data, use that instead of showing error
     if (initialUpdatesCache && initialUpdatesCache.length > 0) {
       updatesCache = initialUpdatesCache;
-      updateChangelogList(false); // Don't animate when falling back
+      updateChangelogList(false);
       updateChangesCount();
       return;
     }
 
-    // If no initial data and we can't connect, hide widget
     if (!initialDataFetched) {
       hideWidget();
       return;
@@ -373,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
       xhr.timeout = TIMEOUTS.INITIAL_FETCH;
       xhr.ontimeout = () => reject(new Error('Request timeout'));
 
-      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true); // Async = true for non-blocking
+      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true);
       xhr.send();
     });
   }
@@ -387,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // If too many retries, just use the initial updates data
     if (retryCount >= maxRetryAttempts) {
       if (initialUpdatesCache && initialUpdatesCache.length > 0) {
         updatesCache = initialUpdatesCache;
@@ -399,7 +391,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Clean up any existing connection first
     cleanupSSE();
 
     try {
@@ -407,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
       retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
           if (initialUpdatesCache && initialUpdatesCache.length > 0) {
@@ -425,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
         connectionFailed = false;
-        retryCount = 0; // Reset retry counter on successful connection
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
@@ -433,20 +423,15 @@ document.addEventListener('DOMContentLoaded', function() {
           const data = JSON.parse(event.data);
 
           if (data.updates && Array.isArray(data.updates)) {
-            // Update the changelog cache with the latest data
             updatesCache = data.updates.slice(0, CONFIG.MAX_UPDATES);
             updateChangelogList();
             updateChangesCount();
           } else if (data.id && data.title && data.type && data.description && data.version && data.date) {
-            // Single new update
-            // Check if we already have this update
             const existingIndex = updatesCache.findIndex(update => update.id === data.id);
 
             if (existingIndex === -1) {
-              // It's a new update, add to the front of the cache
               updatesCache.unshift(data);
 
-              // Limit the cache size
               if (updatesCache.length > CONFIG.MAX_UPDATES) {
                 updatesCache.pop();
               }
@@ -460,7 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
           console.error('Error parsing SSE data:', error);
 
-          // Use initial data if SSE fails
           if (initialUpdatesCache && initialUpdatesCache.length > 0) {
             updatesCache = initialUpdatesCache;
             updateChangelogList(false);
@@ -476,18 +460,15 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(connectionTimeout);
         cleanupSSE();
 
-        // Use initial data if SSE fails
         if (initialUpdatesCache && initialUpdatesCache.length > 0) {
           updatesCache = initialUpdatesCache;
           updateChangelogList(false);
           updateChangesCount();
 
-          // Only try reconnecting if we've shown something to the user
           setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
         } else {
           showConnectionError();
 
-          // Try reconnecting with backoff
           if (retryCount < maxRetryAttempts) {
             setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
           } else {
@@ -498,7 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Failed to create EventSource:', error);
 
-      // Use initial data if SSE fails
       if (initialUpdatesCache && initialUpdatesCache.length > 0) {
         updatesCache = initialUpdatesCache;
         updateChangelogList(false);
@@ -509,7 +489,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       cleanupSSE();
 
-      // Retry with backoff
       if (retryCount < maxRetryAttempts) {
         setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
       }
@@ -525,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatesCache = updates;
         initialUpdatesCache = [...updates]; // Create a copy to fall back to
 
-        updateChangelogList(false); // Don't animate initial list
+        updateChangelogList(false);
         updateChangesCount();
 
         if (typeof EventSource !== 'undefined') {
@@ -542,7 +521,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          // Hide widget if we can't get initial data and browser doesn't support SSE
           hideWidget();
         }
       });

@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_LOCATIONS: 5, // Match the parameter from the Jinja2 template
+    MAX_LOCATIONS: 5,
     TIMESTAMP_REFRESH_INTERVAL: 60000 // Update timestamps every minute
   };
 
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/locations', // Endpoint for initial locations data
+    INITIAL_DATA: '/api/v1/locations', // Endpoint for initial data
     SSE_STREAM: '/api/v1/locations/stream'   // Endpoint for SSE updates
   };
 
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     LOCATION_TEXT: 'location-text',
     LOCATION_TIME: 'location-time',
     LOCATION_PLACEHOLDER: 'location-placeholder',
-    HIDDEN: 'hidden' // Added for hiding widget
+    HIDDEN: 'hidden'
   };
 
   const DEFAULT_VALUES = {
@@ -80,30 +80,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Early exit if widget doesn't exist
     if (!UI_ELEMENTS.widget || !UI_ELEMENTS.locationsList || !UI_ELEMENTS.locationsCount) {
       console.error('Locations widget elements not found in DOM');
       return false;
     }
 
-    // Initially hide the widget until we confirm we have data
     hideWidget();
 
-    // Initialize with default values
     UI_ELEMENTS.locationsCount.textContent = DEFAULT_VALUES.DEFAULT_COUNT;
     UI_ELEMENTS.locationsList.innerHTML = DEFAULT_VALUES.NO_VISITORS;
 
-    // Add keyboard accessibility
     UI_ELEMENTS.widget.setAttribute('tabindex', '0');
     UI_ELEMENTS.widget.addEventListener('keypress', handleKeyboardInteraction);
 
-    // Support for touch devices
     if ('ontouchstart' in window) {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
 
-    // Add style for hiding widget if not already in CSS
     if (!document.getElementById('locations-widget-styles')) {
       const style = document.createElement('style');
       style.id = 'locations-widget-styles';
@@ -111,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.head.appendChild(style);
     }
 
-    // Setup timestamp refresh interval
     setupTimestampRefresh();
 
     return true;
@@ -134,10 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'hidden') {
-        // When tab becomes hidden, close the connection
         cleanupSSE();
       } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
-        // When tab becomes visible again and there's no active connection, reconnect
         connectToSSE();
       }
     });
@@ -172,15 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function setupTimestampRefresh() {
-    // Clear any existing interval
     if (timestampRefreshInterval) {
       clearInterval(timestampRefreshInterval);
     }
 
-    // Refresh timestamps every minute
     timestampRefreshInterval = setInterval(() => {
       if (locationCache.length > 0) {
-        // Only update the timestamps, not the whole list
         const timeElements = UI_ELEMENTS.locationsList.querySelectorAll(`.${CSS_CLASSES.LOCATION_TIME}`);
         locationCache.forEach((location, index) => {
           if (timeElements[index]) {
@@ -194,20 +182,17 @@ document.addEventListener('DOMContentLoaded', function() {
   function cleanupResources() {
     cleanupSSE();
 
-    // Clear the timestamp refresh interval
     if (timestampRefreshInterval) {
       clearInterval(timestampRefreshInterval);
       timestampRefreshInterval = null;
     }
   }
 
-  // Compare if two location arrays have the same content
   function locationsAreEqual(locations1, locations2) {
     if (locations1.length !== locations2.length) {
       return false;
     }
 
-    // Compare each location by its timestamp and location text
     for (let i = 0; i < locations1.length; i++) {
       if (locations1[i].timestamp !== locations2[i].timestamp ||
           locations1[i].location !== locations2[i].location) {
@@ -220,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== UI UPDATES =====
   function updateLocationsList(useAnimation = true, forceUpdate = false) {
-    // Check if locations have changed before applying pulse animation
     const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
     console.log(locationsChanged);
 
@@ -228,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Clear the list
     UI_ELEMENTS.locationsList.innerHTML = '';
 
     if (locationCache.length === 0) {
@@ -238,13 +221,11 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Only show widget after we have valid data
     if (!widgetInitialized) {
       showWidget();
       widgetInitialized = true;
     }
 
-    // Add each location to the list
     locationCache.forEach((location, index) => {
       const listItem = document.createElement('li');
       listItem.className = useAnimation && index === 0 ? CSS_CLASSES.LOCATION_NEW : '';
@@ -270,10 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateLocationsCount(forcePulse = false) {
-    // Set the text content to the number of locations
     UI_ELEMENTS.locationsCount.textContent = locationCache.length;
 
-    // Check if locations have changed before applying pulse animation
     const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
     console.log(locationsChanged);
 
@@ -284,25 +263,23 @@ document.addEventListener('DOMContentLoaded', function() {
         UI_ELEMENTS.locationsCount.classList.remove(CSS_CLASSES.PULSE);
       }, TIMEOUTS.ANIMATION);
 
-      // Update the previous cache to match the current one
       previousLocationCache = JSON.parse(JSON.stringify(locationCache));
     }
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated updates
+    if (connectionFailed) return;
 
     connectionFailed = true;
 
     // If we have initial locations data, use that instead of showing error
     if (initialLocationCache && initialLocationCache.length > 0) {
       locationCache = initialLocationCache;
-      updateLocationsList(false); // Don't animate when falling back
-      updateLocationsCount(false); // Don't pulse if falling back to same data
+      updateLocationsList(false);
+      updateLocationsCount(false);
       return;
     }
 
-    // If no initial data and we can't connect, hide widget
     if (!initialDataFetched) {
       hideWidget();
       return;
@@ -346,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
       xhr.timeout = TIMEOUTS.INITIAL_FETCH;
       xhr.ontimeout = () => reject(new Error('Request timeout'));
 
-      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true); // Async = true for non-blocking
+      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true);
       xhr.send();
     });
   }
@@ -360,19 +337,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // If too many retries, just use the initial locations data
     if (retryCount >= maxRetryAttempts) {
       if (initialLocationCache && initialLocationCache.length > 0) {
         locationCache = initialLocationCache;
         updateLocationsList(false);
-        updateLocationsCount(false); // No pulse for fallback
+        updateLocationsCount(false);
       } else {
         hideWidget();
       }
       return;
     }
 
-    // Clean up any existing connection first
     cleanupSSE();
 
     try {
@@ -380,13 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
       retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
           if (initialLocationCache && initialLocationCache.length > 0) {
             locationCache = initialLocationCache;
             updateLocationsList(false);
-            updateLocationsCount(false); // No pulse for fallback
+            updateLocationsCount(false);
           } else {
             showConnectionError();
           }
@@ -398,44 +372,38 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
         connectionFailed = false;
-        retryCount = 0; // Reset retry counter on successful connection
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
         try {
           const data = JSON.parse(event.data);
 
-          // Store the current locations for comparison
           const oldLocations = JSON.parse(JSON.stringify(locationCache));
 
           if (data.locations && Array.isArray(data.locations)) {
-            // Update the locations cache with the latest data
             locationCache = data.locations.slice(0, CONFIG.MAX_LOCATIONS);
             updateLocationsList();
-            updateLocationsCount(); // Will check for changes
+            updateLocationsCount();
           } else if (data.location && data.timestamp) {
-            // Single new location update
-            // Add to the front of the cache
             locationCache.unshift(data);
 
-            // Limit the cache size
             if (locationCache.length > CONFIG.MAX_LOCATIONS) {
               locationCache.pop();
             }
 
             updateLocationsList();
-            updateLocationsCount(); // Will check for changes
+            updateLocationsCount();
           } else {
             throw new Error('Invalid data format');
           }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
 
-          // Use initial data if SSE fails
           if (initialLocationCache && initialLocationCache.length > 0) {
             locationCache = initialLocationCache;
             updateLocationsList(false);
-            updateLocationsCount(false); // No pulse for fallback
+            updateLocationsCount(false);
           } else {
             showConnectionError();
           }
@@ -447,18 +415,15 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(connectionTimeout);
         cleanupSSE();
 
-        // Use initial data if SSE fails
         if (initialLocationCache && initialLocationCache.length > 0) {
           locationCache = initialLocationCache;
           updateLocationsList(false);
-          updateLocationsCount(false); // No pulse for fallback
+          updateLocationsCount(false);
 
-          // Only try reconnecting if we've shown something to the user
           setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
         } else {
           showConnectionError();
 
-          // Try reconnecting with backoff
           if (retryCount < maxRetryAttempts) {
             setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
           } else {
@@ -469,18 +434,16 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Failed to create EventSource:', error);
 
-      // Use initial data if SSE fails
       if (initialLocationCache && initialLocationCache.length > 0) {
         locationCache = initialLocationCache;
         updateLocationsList(false);
-        updateLocationsCount(false); // No pulse for fallback
+        updateLocationsCount(false);
       } else {
         showConnectionError();
       }
 
       cleanupSSE();
 
-      // Retry with backoff
       if (retryCount < maxRetryAttempts) {
         setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
       }
@@ -494,17 +457,16 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchInitialData()
       .then(locations => {
         locationCache = locations;
-        previousLocationCache = JSON.parse(JSON.stringify(locations)); // Initialize previous cache
+        previousLocationCache = JSON.parse(JSON.stringify(locations));
         initialLocationCache = [...locations]; // Create a copy to fall back to
 
-        updateLocationsList(false, true); // Don't animate initial list
-        updateLocationsCount(true); // Force pulse on initial load
+        updateLocationsList(false, true);
+        updateLocationsCount(true);
 
         if (typeof EventSource !== 'undefined') {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
-          // Still show widget with initial data even if SSE not supported
           showWidget();
         }
       })
@@ -514,7 +476,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          // Hide widget if we can't get initial data and browser doesn't support SSE
           hideWidget();
         }
       });
@@ -531,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== START INITIALIZATION =====
   if (!initializeUI()) {
     console.error('Failed to initialize locations widget UI');
-    return; // Exit early if UI initialization fails
+    return;
   }
 
   if (document.readyState === 'complete') {
