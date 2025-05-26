@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_LOCATIONS: 5, // Match the parameter from the Jinja2 template
+    MAX_LOCATIONS: 5,
     TIMESTAMP_REFRESH_INTERVAL: 60000 // Update timestamps every minute
   };
 
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/locations', // Endpoint for initial locations data
+    INITIAL_DATA: '/api/v1/locations', // Endpoint for initial data
     SSE_STREAM: '/api/v1/locations/stream'   // Endpoint for SSE updates
   };
 
@@ -34,12 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
     LOCATION_ICON: 'location-icon',
     LOCATION_TEXT: 'location-text',
     LOCATION_TIME: 'location-time',
-    LOCATION_PLACEHOLDER: 'location-placeholder'
+    LOCATION_PLACEHOLDER: 'location-placeholder',
+    HIDDEN: 'hidden'
   };
 
   const DEFAULT_VALUES = {
-    NO_VISITORS: `<li class="${CSS_CLASSES.LOCATION_PLACEHOLDER}">No visitors yet</li>`,
-    UNAVAILABLE: `<li class="${CSS_CLASSES.LOCATION_PLACEHOLDER}">Not available</li>`,
+    NO_VISITORS: `<li>No visitors yet</li>`,
+    UNAVAILABLE: `<li>Not available</li>`,
     ERROR_TEXT: 'N/A',
     DEFAULT_COUNT: '0'
   };
@@ -48,28 +49,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== STATE VARIABLES =====
   let locationCache = [];
+  let previousLocationCache = [];
+  let initialLocationCache = null;
   let connectionFailed = false;
   let eventSource = null;
   let timestampRefreshInterval = null;
+  let initialDataFetched = false;
+  let widgetInitialized = false;
+  let maxRetryAttempts = 3;
+  let retryCount = 0;
+
+  function decodeHTMLEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  }
+
+  // ===== WIDGET VISIBILITY CONTROL =====
+  function hideWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.add(CSS_CLASSES.HIDDEN);
+    }
+  }
+
+  function showWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.remove(CSS_CLASSES.HIDDEN);
+    }
+  }
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Initialize with default values to show immediately
+    if (!UI_ELEMENTS.widget || !UI_ELEMENTS.locationsList || !UI_ELEMENTS.locationsCount) {
+      console.error('Locations widget elements not found in DOM');
+      return false;
+    }
+
+    hideWidget();
+
     UI_ELEMENTS.locationsCount.textContent = DEFAULT_VALUES.DEFAULT_COUNT;
     UI_ELEMENTS.locationsList.innerHTML = DEFAULT_VALUES.NO_VISITORS;
 
-    // Add keyboard accessibility
     UI_ELEMENTS.widget.setAttribute('tabindex', '0');
     UI_ELEMENTS.widget.addEventListener('keypress', handleKeyboardInteraction);
 
-    // Support for touch devices
     if ('ontouchstart' in window) {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
 
-    // Setup timestamp refresh interval
+    if (!document.getElementById('locations-widget-styles')) {
+      const style = document.createElement('style');
+      style.id = 'locations-widget-styles';
+      style.textContent = `.${CSS_CLASSES.HIDDEN} { display: none !important; }`;
+      document.head.appendChild(style);
+    }
+
     setupTimestampRefresh();
+
+    return true;
   }
 
   // ===== EVENT HANDLERS =====
@@ -89,10 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'hidden') {
-        // When tab becomes hidden, close the connection
         cleanupSSE();
-      } else if (document.visibilityState === 'visible' && !eventSource) {
-        // When tab becomes visible again and there's no active connection, reconnect
+      } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
         connectToSSE();
       }
     });
@@ -100,7 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('pagehide', cleanupResources);
     window.addEventListener('popstate', function() {
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      if (initialDataFetched) {
+        setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      }
     });
   }
 
@@ -125,15 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function setupTimestampRefresh() {
-    // Clear any existing interval
     if (timestampRefreshInterval) {
       clearInterval(timestampRefreshInterval);
     }
 
-    // Refresh timestamps every minute
     timestampRefreshInterval = setInterval(() => {
-      if (!connectionFailed && locationCache.length > 0) {
-        // Only update the timestamps, not the whole list
+      if (locationCache.length > 0) {
         const timeElements = UI_ELEMENTS.locationsList.querySelectorAll(`.${CSS_CLASSES.LOCATION_TIME}`);
         locationCache.forEach((location, index) => {
           if (timeElements[index]) {
@@ -147,29 +182,53 @@ document.addEventListener('DOMContentLoaded', function() {
   function cleanupResources() {
     cleanupSSE();
 
-    // Clear the timestamp refresh interval
     if (timestampRefreshInterval) {
       clearInterval(timestampRefreshInterval);
       timestampRefreshInterval = null;
     }
   }
 
+  function locationsAreEqual(locations1, locations2) {
+    if (locations1.length !== locations2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < locations1.length; i++) {
+      if (locations1[i].timestamp !== locations2[i].timestamp ||
+          locations1[i].location !== locations2[i].location) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   // ===== UI UPDATES =====
-  function updateLocationsList() {
-    // Clear the list
+  function updateLocationsList(useAnimation = true, forceUpdate = false) {
+    const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
+    console.log(locationsChanged);
+
+    if (!locationsChanged && !forceUpdate) {
+        return;
+    }
+
     UI_ELEMENTS.locationsList.innerHTML = '';
 
     if (locationCache.length === 0) {
-      UI_ELEMENTS.locationsList.innerHTML = connectionFailed ?
+      UI_ELEMENTS.locationsList.innerHTML = connectionFailed && !initialLocationCache ?
                                       DEFAULT_VALUES.UNAVAILABLE :
                                       DEFAULT_VALUES.NO_VISITORS;
       return;
     }
 
-    // Add each location to the list
+    if (!widgetInitialized) {
+      showWidget();
+      widgetInitialized = true;
+    }
+
     locationCache.forEach((location, index) => {
       const listItem = document.createElement('li');
-      listItem.className = index === 0 ? CSS_CLASSES.LOCATION_NEW : '';
+      listItem.className = useAnimation && index === 0 ? CSS_CLASSES.LOCATION_NEW : '';
 
       const iconElement = document.createElement('span');
       iconElement.className = CSS_CLASSES.LOCATION_ICON;
@@ -191,19 +250,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function updateLocationsCount() {
+  function updateLocationsCount(forcePulse = false) {
     UI_ELEMENTS.locationsCount.textContent = locationCache.length;
-    UI_ELEMENTS.locationsCount.classList.add(CSS_CLASSES.PULSE);
 
-    setTimeout(() => {
-      UI_ELEMENTS.locationsCount.classList.remove(CSS_CLASSES.PULSE);
-    }, TIMEOUTS.ANIMATION);
+    const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
+    console.log(locationsChanged);
+
+    if (locationsChanged || forcePulse) {
+      UI_ELEMENTS.locationsCount.classList.add(CSS_CLASSES.PULSE);
+
+      setTimeout(() => {
+        UI_ELEMENTS.locationsCount.classList.remove(CSS_CLASSES.PULSE);
+      }, TIMEOUTS.ANIMATION);
+
+      previousLocationCache = JSON.parse(JSON.stringify(locationCache));
+    }
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated updates
+    if (connectionFailed) return;
 
     connectionFailed = true;
+
+    // If we have initial locations data, use that instead of showing error
+    if (initialLocationCache && initialLocationCache.length > 0) {
+      locationCache = initialLocationCache;
+      updateLocationsList(false);
+      updateLocationsCount(false);
+      return;
+    }
+
+    if (!initialDataFetched) {
+      hideWidget();
+      return;
+    }
+
     UI_ELEMENTS.locationsCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
     UI_ELEMENTS.locationsCount.classList.add(CSS_CLASSES.PULSE);
 
@@ -211,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
       UI_ELEMENTS.locationsCount.classList.remove(CSS_CLASSES.PULSE);
     }, TIMEOUTS.ANIMATION);
 
-    updateLocationsList();
+    updateLocationsList(false);
   }
 
   // ===== DATA FETCHING =====
@@ -225,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               const data = JSON.parse(xhr.responseText);
               if (data.locations && Array.isArray(data.locations)) {
+                initialDataFetched = true;
                 resolve(data.locations.slice(0, CONFIG.MAX_LOCATIONS));
               } else {
                 reject(new Error('Invalid data format'));
@@ -241,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
       xhr.timeout = TIMEOUTS.INITIAL_FETCH;
       xhr.ontimeout = () => reject(new Error('Request timeout'));
 
-      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true); // Async = true for non-blocking
+      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true);
       xhr.send();
     });
   }
@@ -255,17 +337,33 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // Clean up any existing connection first
+    if (retryCount >= maxRetryAttempts) {
+      if (initialLocationCache && initialLocationCache.length > 0) {
+        locationCache = initialLocationCache;
+        updateLocationsList(false);
+        updateLocationsCount(false);
+      } else {
+        hideWidget();
+      }
+      return;
+    }
+
     cleanupSSE();
 
     try {
       console.log('Establishing SSE connection...');
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
+      retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
-          showConnectionError();
+          if (initialLocationCache && initialLocationCache.length > 0) {
+            locationCache = initialLocationCache;
+            updateLocationsList(false);
+            updateLocationsCount(false);
+          } else {
+            showConnectionError();
+          }
           cleanupSSE();
         }
       }, TIMEOUTS.SSE_CONNECTION);
@@ -274,23 +372,22 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
         connectionFailed = false;
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
         try {
           const data = JSON.parse(event.data);
 
+          const oldLocations = JSON.parse(JSON.stringify(locationCache));
+
           if (data.locations && Array.isArray(data.locations)) {
-            // Update the locations cache with the latest data
             locationCache = data.locations.slice(0, CONFIG.MAX_LOCATIONS);
             updateLocationsList();
             updateLocationsCount();
           } else if (data.location && data.timestamp) {
-            // Single new location update
-            // Add to the front of the cache
             locationCache.unshift(data);
 
-            // Limit the cache size
             if (locationCache.length > CONFIG.MAX_LOCATIONS) {
               locationCache.pop();
             }
@@ -302,7 +399,14 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
-          showConnectionError();
+
+          if (initialLocationCache && initialLocationCache.length > 0) {
+            locationCache = initialLocationCache;
+            updateLocationsList(false);
+            updateLocationsCount(false);
+          } else {
+            showConnectionError();
+          }
         }
       };
 
@@ -310,14 +414,39 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('SSE connection error:', error);
         clearTimeout(connectionTimeout);
         cleanupSSE();
-        showConnectionError();
-        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+        if (initialLocationCache && initialLocationCache.length > 0) {
+          locationCache = initialLocationCache;
+          updateLocationsList(false);
+          updateLocationsCount(false);
+
+          setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+        } else {
+          showConnectionError();
+
+          if (retryCount < maxRetryAttempts) {
+            setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+          } else {
+            hideWidget();
+          }
+        }
       };
     } catch (error) {
       console.error('Failed to create EventSource:', error);
-      showConnectionError();
+
+      if (initialLocationCache && initialLocationCache.length > 0) {
+        locationCache = initialLocationCache;
+        updateLocationsList(false);
+        updateLocationsCount(false);
+      } else {
+        showConnectionError();
+      }
+
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+      if (retryCount < maxRetryAttempts) {
+        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+      }
     }
   }
 
@@ -328,21 +457,26 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchInitialData()
       .then(locations => {
         locationCache = locations;
-        updateLocationsList();
-        updateLocationsCount();
+        previousLocationCache = JSON.parse(JSON.stringify(locations));
+        initialLocationCache = [...locations]; // Create a copy to fall back to
+
+        updateLocationsList(false, true);
+        updateLocationsCount(true);
 
         if (typeof EventSource !== 'undefined') {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
+          showWidget();
         }
       })
       .catch(error => {
         console.error('Error fetching initial locations data:', error);
+
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          showConnectionError();
+          hideWidget();
         }
       });
   }
@@ -356,7 +490,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== START INITIALIZATION =====
-  initializeUI();
+  if (!initializeUI()) {
+    console.error('Failed to initialize locations widget UI');
+    return;
+  }
 
   if (document.readyState === 'complete') {
     setTimeout(initializeWidget, 0);

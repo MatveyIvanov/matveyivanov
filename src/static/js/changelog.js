@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_UPDATES: 5, // Match the parameter from the Jinja2 template
+    MAX_UPDATES: 5,
     NEW_UPDATE_HOURS: 24 // Hours within which an update is considered "new"
   };
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial changelog data
-    SSE_STREAM: '/api/v1/changelog/stream'   // Endpoint for SSE updates
+    INITIAL_DATA: '/api/v1/changelog', // Endpoint for initial data
+    SSE_STREAM: '/api/v1/changelog/stream' // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
     UPDATE_DESCRIPTION: 'update-description',
     UPDATE_META: 'update-meta',
     UPDATE_VERSION: 'update-version',
-    UPDATE_DATE: 'update-date'
+    UPDATE_DATE: 'update-date',
+    HIDDEN: 'hidden'
   };
 
   const DEFAULT_VALUES = {
@@ -58,13 +59,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== STATE VARIABLES =====
   let updatesCache = [];
+  let initialUpdatesCache = null;
   let connectionFailed = false;
-  let seenUpdateIds = new Set(); // To track which updates the user has seen
+  let seenUpdateIds = new Set();
   let eventSource = null; // Store the eventSource reference globally for cleanup
+  let initialDataFetched = false;
+  let widgetInitialized = false;
+  let maxRetryAttempts = 3;
+  let retryCount = 0;
+
+  // ===== UTILITY FUNCTIONS =====
+  function decodeHTMLEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  }
+
+  // ===== WIDGET VISIBILITY CONTROL =====
+  function hideWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.add(CSS_CLASSES.HIDDEN);
+    }
+  }
+
+  function showWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.remove(CSS_CLASSES.HIDDEN);
+    }
+  }
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Initialize with default values to show immediately
+    // Early exit if widget doesn't exist
+    if (!UI_ELEMENTS.widget || !UI_ELEMENTS.changelogList || !UI_ELEMENTS.changelogCount) {
+      console.error('Changelog widget elements not found in DOM');
+      return false;
+    }
+
+    // Initially hide the widget until we confirm we have data
+    hideWidget();
+
+    // Initialize with default values
     UI_ELEMENTS.changelogCount.textContent = DEFAULT_VALUES.DEFAULT_COUNT;
     UI_ELEMENTS.changelogList.innerHTML = DEFAULT_VALUES.NO_UPDATES;
 
@@ -82,6 +117,16 @@ document.addEventListener('DOMContentLoaded', function() {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
+
+    // Add style for hiding widget if not already in CSS
+    if (!document.getElementById('changelog-widget-styles')) {
+      const style = document.createElement('style');
+      style.id = 'changelog-widget-styles';
+      style.textContent = `.${CSS_CLASSES.HIDDEN} { display: none !important; }`;
+      document.head.appendChild(style);
+    }
+
+    return true;
   }
 
   // ===== EVENT HANDLERS =====
@@ -101,10 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'hidden') {
-        // When tab becomes hidden, close the connection
         cleanupSSE();
-      } else if (document.visibilityState === 'visible' && !eventSource) {
-        // When tab becomes visible again and there's no active connection, reconnect
+      } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
         connectToSSE();
       }
     });
@@ -112,7 +155,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('pagehide', cleanupSSE);
     window.addEventListener('popstate', function() {
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      if (initialDataFetched) {
+        setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
+      }
     });
   }
 
@@ -183,21 +228,25 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== UI UPDATES =====
-  function updateChangelogList() {
+  function updateChangelogList(useAnimation = true) {
     // Clear the list
     UI_ELEMENTS.changelogList.innerHTML = '';
 
     if (updatesCache.length === 0) {
-      UI_ELEMENTS.changelogList.innerHTML = connectionFailed ?
+      UI_ELEMENTS.changelogList.innerHTML = connectionFailed && !initialUpdatesCache ?
                                       DEFAULT_VALUES.UNAVAILABLE :
                                       DEFAULT_VALUES.NO_UPDATES;
       return;
     }
 
-    // Add each update to the list
+    if (!widgetInitialized) {
+      showWidget();
+      widgetInitialized = true;
+    }
+
     updatesCache.forEach((update, index) => {
       const listItem = document.createElement('li');
-      listItem.className = index === 0 && !seenUpdateIds.has(update.id) ? CSS_CLASSES.UPDATE_NEW : '';
+      listItem.className = useAnimation && index === 0 && !seenUpdateIds.has(update.id) ? CSS_CLASSES.UPDATE_NEW : '';
 
       const headerDiv = document.createElement('div');
       headerDiv.className = CSS_CLASSES.UPDATE_HEADER;
@@ -210,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
       titleElement.className = CSS_CLASSES.UPDATE_TITLE;
       titleElement.textContent = update.title;
 
-      // Add NEW badge if this update is new and not seen
       if (isNewUpdate(update.date) && !seenUpdateIds.has(update.id)) {
         const newBadge = document.createElement('span');
         newBadge.className = CSS_CLASSES.NEW_BADGE;
@@ -263,9 +311,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated updates
+    if (connectionFailed) return;
 
     connectionFailed = true;
+
+    // If we have initial updates data, use that instead of showing error
+    if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+      updatesCache = initialUpdatesCache;
+      updateChangelogList(false);
+      updateChangesCount();
+      return;
+    }
+
+    if (!initialDataFetched) {
+      hideWidget();
+      return;
+    }
+
     UI_ELEMENTS.changelogCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
     UI_ELEMENTS.changelogCount.classList.add(CSS_CLASSES.PULSE);
 
@@ -273,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
       UI_ELEMENTS.changelogCount.classList.remove(CSS_CLASSES.PULSE);
     }, TIMEOUTS.ANIMATION);
 
-    updateChangelogList();
+    updateChangelogList(false);
   }
 
   // ===== DATA FETCHING =====
@@ -287,6 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               const data = JSON.parse(xhr.responseText);
               if (data.updates && Array.isArray(data.updates)) {
+                initialDataFetched = true;
                 resolve(data.updates.slice(0, CONFIG.MAX_UPDATES));
               } else {
                 reject(new Error('Invalid data format'));
@@ -303,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
       xhr.timeout = TIMEOUTS.INITIAL_FETCH;
       xhr.ontimeout = () => reject(new Error('Request timeout'));
 
-      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true); // Async = true for non-blocking
+      xhr.open('GET', ENDPOINTS.INITIAL_DATA, true);
       xhr.send();
     });
   }
@@ -317,17 +380,33 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // Clean up any existing connection first
+    if (retryCount >= maxRetryAttempts) {
+      if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+        updatesCache = initialUpdatesCache;
+        updateChangelogList(false);
+        updateChangesCount();
+      } else {
+        hideWidget();
+      }
+      return;
+    }
+
     cleanupSSE();
 
     try {
       console.log('Establishing SSE connection...');
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
+      retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
-          showConnectionError();
+          if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+            updatesCache = initialUpdatesCache;
+            updateChangelogList(false);
+            updateChangesCount();
+          } else {
+            showConnectionError();
+          }
           cleanupSSE();
         }
       }, TIMEOUTS.SSE_CONNECTION);
@@ -336,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
         connectionFailed = false;
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
@@ -343,20 +423,15 @@ document.addEventListener('DOMContentLoaded', function() {
           const data = JSON.parse(event.data);
 
           if (data.updates && Array.isArray(data.updates)) {
-            // Update the changelog cache with the latest data
             updatesCache = data.updates.slice(0, CONFIG.MAX_UPDATES);
             updateChangelogList();
             updateChangesCount();
           } else if (data.id && data.title && data.type && data.description && data.version && data.date) {
-            // Single new update
-            // Check if we already have this update
             const existingIndex = updatesCache.findIndex(update => update.id === data.id);
 
             if (existingIndex === -1) {
-              // It's a new update, add to the front of the cache
               updatesCache.unshift(data);
 
-              // Limit the cache size
               if (updatesCache.length > CONFIG.MAX_UPDATES) {
                 updatesCache.pop();
               }
@@ -369,7 +444,14 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
-          showConnectionError();
+
+          if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+            updatesCache = initialUpdatesCache;
+            updateChangelogList(false);
+            updateChangesCount();
+          } else {
+            showConnectionError();
+          }
         }
       };
 
@@ -377,14 +459,39 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('SSE connection error:', error);
         clearTimeout(connectionTimeout);
         cleanupSSE();
-        showConnectionError();
-        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+        if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+          updatesCache = initialUpdatesCache;
+          updateChangelogList(false);
+          updateChangesCount();
+
+          setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+        } else {
+          showConnectionError();
+
+          if (retryCount < maxRetryAttempts) {
+            setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+          } else {
+            hideWidget();
+          }
+        }
       };
     } catch (error) {
       console.error('Failed to create EventSource:', error);
-      showConnectionError();
+
+      if (initialUpdatesCache && initialUpdatesCache.length > 0) {
+        updatesCache = initialUpdatesCache;
+        updateChangelogList(false);
+        updateChangesCount();
+      } else {
+        showConnectionError();
+      }
+
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+      if (retryCount < maxRetryAttempts) {
+        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+      }
     }
   }
 
@@ -395,21 +502,26 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchInitialData()
       .then(updates => {
         updatesCache = updates;
-        updateChangelogList();
+        initialUpdatesCache = [...updates]; // Create a copy to fall back to
+
+        updateChangelogList(false);
         updateChangesCount();
 
         if (typeof EventSource !== 'undefined') {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
+          // Still show widget with initial data even if SSE not supported
+          showWidget();
         }
       })
       .catch(error => {
         console.error('Error fetching initial changelog data:', error);
+
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          showConnectionError();
+          hideWidget();
         }
       });
   }
@@ -423,7 +535,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== START INITIALIZATION =====
-  initializeUI();
+  if (!initializeUI()) {
+    console.error('Failed to initialize changelog widget UI');
+    return; // Exit early if UI initialization fails
+  }
 
   if (document.readyState === 'complete') {
     setTimeout(initializeWidget, 0);

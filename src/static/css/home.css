@@ -4,31 +4,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  line-height: 1.5; /* Changed from fixed 5px to relative unit */
-  padding: 15px 10px; /* Added padding for spacing */
-  text-align: center; /* Ensure text is centered */
+  line-height: 1.5;
+  padding: 15px 10px;
+  text-align: center;
 }
 
 .home p {
   font-size: 20px;
-  margin: 10px 0; /* Add proper margins instead of relying on line-height */
-  width: 100%; /* Ensure paragraphs take up available width */
-  max-width: 600px; /* Limit maximum width for readability */
+  margin: 10px 0;
+  width: 100%;
+  max-width: 600px;
 }
 
 /* Media queries for smaller screens */
 @media screen and (max-width: 768px) {
   .home p {
-    font-size: 18px; /* Slightly smaller text on tablets */
+    font-size: 18px;
   }
 }
 
 @media screen and (max-width: 480px) {
   .home {
-    line-height: 1.3; /* Tighter line height for mobile */
+    line-height: 1.3;
   }
 
   .home p {
-    font-size: 16px; /* Even smaller text on phones */
+    font-size: 16px;
   }
 }

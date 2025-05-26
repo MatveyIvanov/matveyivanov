@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const ENDPOINTS = {
-    INITIAL_DATA: '/api/v1/visitors',
-    SSE_STREAM: '/api/v1/visitors/stream'
+    INITIAL_DATA: '/api/v1/visitors', // Endpoint for initial data
+    SSE_STREAM: '/api/v1/visitors/stream' // Endpoint for SSE updates
   };
 
   const TIMEOUTS = {
@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     PULSE: 'pulse',
     KEYBOARD_FOCUS: 'keyboard-focus',
     TOUCH_DEVICE: 'touch-device',
-    EXPANDED: 'expanded'
+    EXPANDED: 'expanded',
+    HIDDEN: 'hidden'
   };
 
   // ===== STATE VARIABLES =====
@@ -38,27 +39,57 @@ document.addEventListener('DOMContentLoaded', function() {
   let connectionFailed = false;
   let eventSource = null;
   let circleCount = null;
+  let initialDataFetched = false;
+  let initialCountValue = null;
+  let maxRetryAttempts = 3;
+  let retryCount = 0;
+  let widgetInitialized = false;
+
+  // ===== WIDGET VISIBILITY CONTROL =====
+  function hideWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.add(CSS_CLASSES.HIDDEN);
+    }
+  }
+
+  function showWidget() {
+    if (UI_ELEMENTS.widget) {
+      UI_ELEMENTS.widget.classList.remove(CSS_CLASSES.HIDDEN);
+    }
+  }
 
   // ===== INITIALIZATION =====
   function initializeUI() {
-    // Create circular count element
+    if (!UI_ELEMENTS.widget || !UI_ELEMENTS.visitorCount) {
+      console.error('Visitor widget elements not found in DOM');
+      return false;
+    }
+
+    hideWidget();
+
     circleCount = document.createElement('div');
     circleCount.className = CSS_CLASSES.CIRCLE_COUNT;
     circleCount.textContent = DEFAULT_VALUES.INITIAL_COUNT;
     UI_ELEMENTS.widget.appendChild(circleCount);
 
-    // Initialize with default values to show immediately
     UI_ELEMENTS.visitorCount.textContent = DEFAULT_VALUES.INITIAL_COUNT;
 
-    // Add keyboard accessibility
     UI_ELEMENTS.widget.setAttribute('tabindex', '0');
     UI_ELEMENTS.widget.addEventListener('keypress', handleKeyboardInteraction);
 
-    // Support for touch devices
     if ('ontouchstart' in window) {
       UI_ELEMENTS.widget.classList.add(CSS_CLASSES.TOUCH_DEVICE);
       UI_ELEMENTS.widget.addEventListener('click', handleTouchInteraction);
     }
+
+    if (!document.getElementById('visitors-widget-styles')) {
+      const style = document.createElement('style');
+      style.id = 'visitors-widget-styles';
+      style.textContent = `.${CSS_CLASSES.HIDDEN} { display: none !important; }`;
+      document.head.appendChild(style);
+    }
+
+    return true;
   }
 
   // ===== EVENT HANDLERS =====
@@ -83,18 +114,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
-      // When tab becomes hidden, close the connection
       cleanupSSE();
-    } else if (document.visibilityState === 'visible' && !eventSource) {
-      // When tab becomes visible again and there's no active connection, reconnect
+    } else if (document.visibilityState === 'visible' && !eventSource && initialDataFetched) {
       connectToSSE();
     }
   }
 
   function handleNavigation() {
     cleanupSSE();
-    // Reconnect if needed - possibly delayed to ensure navigation completes
-    setTimeout(connectToSSE, TIMEOUTS.NAVIGATION_DELAY);
+    if (initialDataFetched) {
+      setTimeout(connectToSSE, TIMEOUTS.NAVIGATION_DELAY);
+    }
   }
 
   // ===== UI UPDATES =====
@@ -103,35 +133,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     connectionFailed = false;
     currentCount = count;
+
+    if (!widgetInitialized) {
+      showWidget();
+      widgetInitialized = true;
+    }
+
     UI_ELEMENTS.visitorCount.textContent = count;
-    circleCount.textContent = count;
+    if (circleCount) circleCount.textContent = count;
 
-    // Add pulse animation
     UI_ELEMENTS.visitorCount.classList.add(CSS_CLASSES.PULSE);
-    circleCount.classList.add(CSS_CLASSES.PULSE);
+    if (circleCount) circleCount.classList.add(CSS_CLASSES.PULSE);
 
-    // Remove the animation class after it completes
     setTimeout(() => {
       UI_ELEMENTS.visitorCount.classList.remove(CSS_CLASSES.PULSE);
-      circleCount.classList.remove(CSS_CLASSES.PULSE);
+      if (circleCount) circleCount.classList.remove(CSS_CLASSES.PULSE);
     }, TIMEOUTS.ANIMATION);
   }
 
   function showConnectionError() {
-    if (connectionFailed) return; // Avoid repeated animations
+    if (connectionFailed) return;
 
     connectionFailed = true;
+
+    if (initialCountValue !== null) {
+      updateVisitorCount(initialCountValue);
+      return;
+    }
+
+    if (!initialDataFetched) {
+      hideWidget();
+      return;
+    }
+
     UI_ELEMENTS.visitorCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
-    circleCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
+    if (circleCount) circleCount.textContent = DEFAULT_VALUES.ERROR_TEXT;
 
-    // Add pulse animation
     UI_ELEMENTS.visitorCount.classList.add(CSS_CLASSES.PULSE);
-    circleCount.classList.add(CSS_CLASSES.PULSE);
+    if (circleCount) circleCount.classList.add(CSS_CLASSES.PULSE);
 
-    // Remove the animation class after it completes
     setTimeout(() => {
       UI_ELEMENTS.visitorCount.classList.remove(CSS_CLASSES.PULSE);
-      circleCount.classList.remove(CSS_CLASSES.PULSE);
+      if (circleCount) circleCount.classList.remove(CSS_CLASSES.PULSE);
     }, TIMEOUTS.ANIMATION);
   }
 
@@ -146,6 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               const data = JSON.parse(xhr.responseText);
               if (data.count !== undefined) {
+                initialDataFetched = true;
+                initialCountValue = data.count;
                 resolve(data.count);
               } else {
                 reject(new Error('Invalid data format'));
@@ -176,17 +221,29 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function connectToSSE() {
-    // Clean up any existing connection first
+    if (retryCount >= maxRetryAttempts) {
+      if (initialCountValue !== null) {
+        updateVisitorCount(initialCountValue);
+      } else {
+        hideWidget();
+      }
+      return;
+    }
+
     cleanupSSE();
 
     try {
       console.log('Establishing SSE connection...');
       eventSource = new EventSource(ENDPOINTS.SSE_STREAM);
+      retryCount++;
 
-      // Set timeout to detect initial connection failure
       const connectionTimeout = setTimeout(() => {
         if (!eventSource || eventSource.readyState !== 1) { // 1 = OPEN
-          showConnectionError();
+          if (initialCountValue !== null) {
+            updateVisitorCount(initialCountValue);
+          } else {
+            showConnectionError();
+          }
           cleanupSSE();
         }
       }, TIMEOUTS.SSE_CONNECTION);
@@ -194,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
       eventSource.onopen = function() {
         console.log('SSE connection opened');
         clearTimeout(connectionTimeout);
+        retryCount = 0;
       };
 
       eventSource.onmessage = function(event) {
@@ -206,7 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
-          showConnectionError();
+
+          if (initialCountValue !== null) {
+            updateVisitorCount(initialCountValue);
+          } else {
+            showConnectionError();
+          }
         }
       };
 
@@ -214,14 +277,35 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('SSE connection error:', error);
         clearTimeout(connectionTimeout);
         cleanupSSE();
-        showConnectionError();
-        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+        if (initialCountValue !== null) {
+          updateVisitorCount(initialCountValue);
+
+          setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+        } else {
+          showConnectionError();
+
+          if (retryCount < maxRetryAttempts) {
+            setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+          } else {
+            hideWidget();
+          }
+        }
       };
     } catch (error) {
       console.error('Failed to create EventSource:', error);
-      showConnectionError();
+
+      if (initialCountValue !== null) {
+        updateVisitorCount(initialCountValue);
+      } else {
+        showConnectionError();
+      }
+
       cleanupSSE();
-      setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT);
+
+      if (retryCount < maxRetryAttempts) {
+        setTimeout(connectToSSE, TIMEOUTS.SSE_RECONNECT * retryCount);
+      }
     }
   }
 
@@ -231,20 +315,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fetchInitialData()
       .then(count => {
+        initialCountValue = count;
         updateVisitorCount(count);
 
         if (typeof EventSource !== 'undefined') {
           scheduleSSEConnection();
         } else {
           console.error('Browser does not support Server-Sent Events');
+          showWidget();
         }
       })
       .catch(error => {
         console.error('Error fetching initial visitor count:', error);
+
         if (typeof EventSource !== 'undefined') {
           setTimeout(connectToSSE, TIMEOUTS.SHORT_DELAY);
         } else {
-          showConnectionError();
+          hideWidget();
         }
       });
   }
@@ -258,7 +345,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== START INITIALIZATION =====
-  initializeUI();
+  if (!initializeUI()) {
+    console.error('Failed to initialize visitor widget UI');
+    return;
+  }
 
   if (document.readyState === 'complete') {
     setTimeout(initializeWidget, 0);

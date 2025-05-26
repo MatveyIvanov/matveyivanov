@@ -1,7 +1,7 @@
 .timeline {
   position: relative;
-  max-width: 660px; /* Change to max-width instead of fixed width */
-  width: 100%; /* Make it responsive */
+  max-width: 660px;
+  width: 100%;
   margin: 0 auto;
   margin-top: 20px;
   padding: 1em 0;
@@ -78,14 +78,14 @@
 
 .direction-l {
   position: relative;
-  width: 47%; /* Changed from fixed pixels to percentage */
+  width: 47%;
   float: left;
   text-align: right;
 }
 
 .direction-r {
   position: relative;
-  width: 47%; /* Changed from fixed pixels to percentage */
+  width: 47%;
   float: right;
 }
 
@@ -102,8 +102,8 @@
   border-radius: 5px;
   font-weight: 600;
   text-align: left;
-  background: rgba(15, 32, 39, 0.8); /* Dark semi-transparent background */
-  color: #e0e0ff; /* Light blue-tinted text */
+  background: rgba(15, 32, 39, 0.8);
+  color: #e0e0ff;
 }
 
 .direction-l .flag {
@@ -172,7 +172,7 @@
   display: inline;
   line-height: 1em;
   font-size: 0.66666em;
-  color: rgb(70, 252, 241); /* Cyan */
+  color: rgb(70, 252, 241);
   vertical-align: middle;
 }
 
@@ -209,7 +209,7 @@
   }
 
   .timeline:before {
-    left: 10px; /* Move timeline to left side on mobile */
+    left: 10px;
     margin-left: 0;
   }
 
@@ -221,8 +221,8 @@
   .direction-r {
     float: none;
     width: 100%;
-    text-align: left; /* Left-align all content */
-    padding-left: 30px; /* Space for timeline */
+    text-align: left;
+    padding-left: 30px;
   }
 
   .flag-wrapper {
@@ -230,18 +230,18 @@
   }
 
   .flag {
-    background: rgba(15, 32, 39, 0.8); /* Dark semi-transparent background */
-    color: #e0e0ff; /* Light blue-tinted text */
+    background: rgba(15, 32, 39, 0.8);
+    color: #e0e0ff;
     z-index: 15;
     padding-left: 10px;
-    display: inline-block; /* Ensures proper display */
+    display: inline-block;
   }
 
   .direction-l .flag:before,
   .direction-r .flag:before {
     position: absolute;
-    top: 50%; /* Vertical center with content */
-    left: -30px; /* Position dot on timeline */
+    top: 50%;
+    left: -30px;
     content: " ";
     display: block;
     width: 12px;
@@ -257,7 +257,7 @@
   .direction-r .flag:after {
     content: "";
     position: absolute;
-    left: -8px; /* Position arrow to point from timeline */
+    left: -8px;
     top: 50%;
     height: 0;
     width: 0;
