@@ -206,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ===== UI UPDATES =====
   function updateLocationsList(useAnimation = true, forceUpdate = false) {
     const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
-    console.log(locationsChanged);
 
     if (!locationsChanged && !forceUpdate) {
         return;
@@ -254,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
     UI_ELEMENTS.locationsCount.textContent = locationCache.length;
 
     const locationsChanged = !locationsAreEqual(locationCache, previousLocationCache);
-    console.log(locationsChanged);
 
     if (locationsChanged || forcePulse) {
       UI_ELEMENTS.locationsCount.classList.add(CSS_CLASSES.PULSE);
