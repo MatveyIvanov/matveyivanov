@@ -10,4 +10,4 @@ set -o pipefail
 set -o nounset
 
 echo "[RUN SERVER]"
-uvicorn main:app --host 0.0.0.0 --port ${ASGI_PORT:-8080}
+uvicorn main:app --host 0.0.0.0 --port ${ASGI_PORT:-8080} --proxy-headers
