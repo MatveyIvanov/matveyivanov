@@ -72,6 +72,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
             cd /var/www/matveyivanov/build && echo "" >> docker/.env
             cd /var/www/matveyivanov/build && echo "IMAGE_TAG=${{ github.ref_name }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "PROXY_TRUSTED_HOSTS=${{ secrets.YC_WEB_VM_PROXY_TRUSTED_HOSTS }}" >> docker/.env
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov pull
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov down
             cd /var/www/matveyivanov/build && docker compose -f docker/docker-compose.yc.yml -p matveyivanov up -d --no-build
