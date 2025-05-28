@@ -6,6 +6,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 import endpoints
 from config import di, settings
@@ -54,6 +55,7 @@ __app.add_middleware(
     ],
 )
 __app.add_middleware(TranslationMiddleware)
+__app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=settings.PROXY_TRUSTED_HOSTS)
 
 
 def get_fastapi_app() -> FastAPI:
