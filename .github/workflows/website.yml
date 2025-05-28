@@ -113,6 +113,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "HTML_FOR_PYTHON=${{ secrets.YC_WEB_VM_HTML_FOR_PYTHON }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "HTML_FOR_BOOKS=${{ secrets.YC_WEB_VM_HTML_FOR_BOOKS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "HTML_FOR_PROJECTS=${{ secrets.YC_WEB_VM_HTML_FOR_PROJECTS }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "HTML_FOR_ERROR=${{ secrets.YC_WEB_VM_HTML_FOR_ERROR }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "HOME=${{ secrets.YC_WEB_VM_HOME }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "EXPERIENCE=${{ secrets.YC_WEB_VM_EXPERIENCE }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "STACK=${{ secrets.YC_WEB_VM_STACK }}" >> docker/.env

@@ -14,73 +14,108 @@ from schemas.project import Project
 from schemas.python import Python
 from schemas.stack import Stack
 
-TDataclass = TypeVar("TDataclass", bound=DataclassInstance)
+T = TypeVar("T")
+if TYPE_CHECKING:
+    TDataclass = TypeVar("TDataclass", bound=DataclassInstance)
+else:
+    TDataclass = TypeVar("TDataclass")
 
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 
-REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
-REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
-REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD", "password")
-REDIS_SOCKET_TIMEOUT: int = int(os.environ.get("REDIS_SOCKET_TIMEOUT", 5))
-REDIS_SOCKET_CONNECTION_TIMEOUT: int = int(
-    os.environ.get("REDIS_SOCKET_CONNECTION_TIMEOUT", 5)
+def load(
+    key: str, default: T, *, cast_to: type | None = None, ensure_not_empty: bool = False
+) -> T:
+    value = os.environ.get(key, default)
+    if not value and ensure_not_empty:
+        return default
+    return value if cast_to is None else cast_to(value)
+
+
+STATIC_URL = load("STATIC_URL", "/static/", ensure_not_empty=True)
+
+REDIS_HOST: str = load("REDIS_HOST", "redis", ensure_not_empty=True)
+REDIS_PORT: int = load("REDIS_PORT", 6379, cast_to=int, ensure_not_empty=True)
+REDIS_PASSWORD: str = load("REDIS_PASSWORD", "password", ensure_not_empty=True)
+REDIS_SOCKET_TIMEOUT: int = load(
+    "REDIS_SOCKET_TIMEOUT", 5, cast_to=int, ensure_not_empty=True
 )
-REDIS_VISITORS_COUNTER_KEY: str = os.environ.get(
+REDIS_SOCKET_CONNECTION_TIMEOUT: int = load(
+    "REDIS_SOCKET_CONNECTION_TIMEOUT", 5, cast_to=int, ensure_not_empty=True
+)
+REDIS_VISITORS_COUNTER_KEY: str = load(
     "REDIS_VISITORS_COUNTER_KEY",
     "visitors:counter",
+    ensure_not_empty=True,
 )
 
-SQS_LOCATIONS_ACCESS_KEY = os.environ.get("SQS_LOCATIONS_ACCESS_KEY")
-SQS_LOCATIONS_SECRET_KEY = os.environ.get("SQS_LOCATIONS_SECRET_KEY")
-SQS_LOCATIONS_ENDPOINT_URL = os.environ.get("SQS_LOCATIONS_ENDPOINT_URL")
-SQS_LOCATIONS_QUEUE_URL = os.environ.get("SQS_LOCATIONS_QUEUE_URL")
-SQS_LOCATIONS_REGION_NAME = os.environ.get("SQS_LOCATIONS_REGION_NAME")
+SQS_LOCATIONS_ACCESS_KEY = load("SQS_LOCATIONS_ACCESS_KEY", "")
+SQS_LOCATIONS_SECRET_KEY = load("SQS_LOCATIONS_SECRET_KEY", "")
+SQS_LOCATIONS_ENDPOINT_URL = load("SQS_LOCATIONS_ENDPOINT_URL", "")
+SQS_LOCATIONS_QUEUE_URL = load("SQS_LOCATIONS_QUEUE_URL", "")
+SQS_LOCATIONS_REGION_NAME = load("SQS_LOCATIONS_REGION_NAME", "")
 
-GITHUB_CREATE_WEBHOOK_TOKEN: str = os.environ.get("GITHUB_CREATE_WEBHOOK_TOKEN", "")
-GITHUB_TAG_PATTERN: str = os.environ.get("GITHUB_TAG_PATTERN", r"^\d+\.\d+\.\d+$")
-
-TIMEZONE = os.environ.get("TIMEZONE", "Europe/Moscow")
-
-DEBUG = bool(int(os.environ.get("DEBUG", 0)))
-PROD = bool(int(os.environ.get("PROD", 1)))
-
-LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(",")
-
-ASGI_PORT = os.environ.get("ASGI_PORT")
-ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-PROXY_TRUSTED_HOSTS = os.environ.get("PROXY_TRUSTED_HOSTS", "127.0.0.1").split(",")
-
-IMAGE_TAG = os.environ.get("IMAGE_TAG", "latest")
-
-CHANGELOG_SSE_INTERVAL_SECONDS: int = int(
-    os.environ.get("CHANGELOG_SSE_INTERVAL_SECONDS", 1)
+GITHUB_CREATE_WEBHOOK_TOKEN: str = load("GITHUB_CREATE_WEBHOOK_TOKEN", "")
+GITHUB_TAG_PATTERN: str = load(
+    "GITHUB_TAG_PATTERN", r"^\d+\.\d+\.\d+$", ensure_not_empty=True
 )
-CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = os.environ.get(
+
+TIMEZONE: str = load("TIMEZONE", "Europe/Moscow", ensure_not_empty=True)
+
+DEBUG: bool = bool(load("DEBUG", 0, cast_to=int, ensure_not_empty=True))
+PROD: bool = bool(load("PROD", 1, cast_to=int, ensure_not_empty=True))
+
+LOGGING_SENSITIVE_FIELDS = load("LOGGING_SENSITIVE_FIELDS", "").split(",")
+
+ASGI_PORT: int = load("ASGI_PORT", 8000, cast_to=int, ensure_not_empty=True)
+ABSOLUTE_URL = load(
+    "ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}", ensure_not_empty=True
+)
+ALLOWED_HOSTS = load("ALLOWED_HOSTS", "").split(",")
+PROXY_TRUSTED_HOSTS = load(
+    "PROXY_TRUSTED_HOSTS", "127.0.0.1", ensure_not_empty=True
+).split(",")
+
+IMAGE_TAG = load("IMAGE_TAG", "latest", ensure_not_empty=True)
+
+CHANGELOG_SSE_INTERVAL_SECONDS: int = load(
+    "CHANGELOG_SSE_INTERVAL_SECONDS", 1, cast_to=int, ensure_not_empty=True
+)
+CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = load(
     "CHANGELOG_VERSION_DEFAULT_DESCRIPTION",
     "No description provided.",
+    ensure_not_empty=True,
 )
-CHANGELOG_BUFFER_NAME: str = os.environ.get("CHANGELOG_BUFFER_NAME", "changelog")
-CHANGELOG_BUFFER_MAX_SIZE: int = int(os.environ.get("CHANGELOG_BUFFER_MAX_SIZE", 5))
-
-LOCATIONS_SSE_INTERVAL_SECONDS: int = int(
-    os.environ.get("LOCATIONS_SSE_INTERVAL_SECONDS", 1)
+CHANGELOG_BUFFER_NAME: str = load(
+    "CHANGELOG_BUFFER_NAME", "changelog", ensure_not_empty=True
 )
-LOCATIONS_BUFFER_NAME: str = os.environ.get("LOCATIONS_BUFFER_NAME", "locations")
-LOCATIONS_BUFFER_MAX_SIZE: int = int(os.environ.get("LOCATIONS_BUFFER_MAX_SIZE", 5))
+CHANGELOG_BUFFER_MAX_SIZE: int = load(
+    "CHANGELOG_BUFFER_MAX_SIZE", 5, cast_to=int, ensure_not_empty=True
+)
 
-HTML_FOR_HOME = os.environ.get("HTML_FOR_HOME", "home.html")
-HTML_FOR_EXPERIENCE = os.environ.get("HTML_FOR_EXPERIENCE", "experience.html")
-HTML_FOR_STACK = os.environ.get("HTML_FOR_STACK", "stack.html")
-HTML_FOR_PYTHON = os.environ.get("HTML_FOR_PYTHON", "python.html")
-HTML_FOR_BOOKS = os.environ.get("HTML_FOR_BOOKS", "books.html")
-HTML_FOR_PROJECTS = os.environ.get("HTML_FOR_PROJECTS", "projects.html")
+LOCATIONS_SSE_INTERVAL_SECONDS: int = load(
+    "LOCATIONS_SSE_INTERVAL_SECONDS", 1, cast_to=int, ensure_not_empty=True
+)
+LOCATIONS_BUFFER_NAME: str = load(
+    "LOCATIONS_BUFFER_NAME", "locations", ensure_not_empty=True
+)
+LOCATIONS_BUFFER_MAX_SIZE: int = load(
+    "LOCATIONS_BUFFER_MAX_SIZE", 5, cast_to=int, ensure_not_empty=True
+)
+
+HTML_FOR_HOME = load("HTML_FOR_HOME", "home.html", ensure_not_empty=True)
+HTML_FOR_EXPERIENCE = load(
+    "HTML_FOR_EXPERIENCE", "experience.html", ensure_not_empty=True
+)
+HTML_FOR_STACK = load("HTML_FOR_STACK", "stack.html", ensure_not_empty=True)
+HTML_FOR_PYTHON = load("HTML_FOR_PYTHON", "python.html", ensure_not_empty=True)
+HTML_FOR_BOOKS = load("HTML_FOR_BOOKS", "books.html", ensure_not_empty=True)
+HTML_FOR_PROJECTS = load("HTML_FOR_PROJECTS", "projects.html", ensure_not_empty=True)
+HTML_FOR_ERROR = load("HTML_FOR_ERROR", "error.html", ensure_not_empty=True)
 
 TEMPLATE_CONTEXT_BASE: dict[str, Any] = {"IMAGE_TAG": IMAGE_TAG}
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
-HOME: Tuple[str, ...] = tuple(os.environ.get("HOME", "").split("{newline}")) or (
+HOME: Tuple[str, ...] = tuple(load("HOME", "").split("{newline}")) or (
     "Hello, my name is Matvey Ivanov",
     f"I'm {relativedelta(datetime.now(), BIRTH_DATE).years} y.o.",
     "Currently living in Saint-Petersburg",
@@ -108,7 +143,7 @@ def load_instances_from_env(
     try:
         return tuple(
             type(**load_fields(raw_obj))
-            for raw_obj in os.environ.get(key, "").split(dict_separator)
+            for raw_obj in load(key, "").split(dict_separator)
         )
     except TypeError:
         return tuple()
