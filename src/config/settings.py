@@ -49,6 +49,7 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 ASGI_PORT = os.environ.get("ASGI_PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+PROXY_TRUSTED_HOSTS = os.environ.get("PROXY_TRUSTED_HOSTS", "127.0.0.1").split(",")
 
 IMAGE_TAG = os.environ.get("IMAGE_TAG", "latest")
 

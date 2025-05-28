@@ -60,7 +60,8 @@ jobs:
             cd /var/www/matveyivanov && rm -rf build.tmp || true
             cd /var/www/matveyivanov && mv build build.tmp
             cd /var/www/matveyivanov && rm -rf build
-            cd /var/www/matveyivanov && git clone https://${{ secrets.YC_WEB_VM_GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch feature/compute-cloud --single-branch build
+
+            cd /var/www/matveyivanov && git clone https://${{ secrets.YC_WEB_VM_GITHUB_TOKEN }}@github.com/MatveyIvanov/matveyivanov.git --branch ${{ github.ref_name }} --single-branch build
 
             export REGISTRY=${{ secrets.YC_CR_REGISTRY }}
             export IMAGE_NAME=${{ secrets.YC_CR_REPOSITORY }}
@@ -84,6 +85,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "ASGI_PORT=${{ secrets.YC_WEB_VM_ASGI_PORT }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ABSOLUTE_URL=${{ secrets.YC_WEB_VM_ABSOLUTE_URL }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ALLOWED_HOSTS=${{ secrets.YC_WEB_VM_ALLOWED_HOSTS }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "PROXY_TRUSTED_HOSTS=${{ secrets.YC_WEB_VM_PROXY_TRUSTED_HOSTS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> docker/.env
