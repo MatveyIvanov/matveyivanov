@@ -1,6 +1,10 @@
 import os
+from dataclasses import fields
 from datetime import datetime
-from typing import Any, Tuple
+from typing import TYPE_CHECKING, Any, Tuple, TypeVar
+
+if TYPE_CHECKING:
+    from _typeshed import DataclassInstance
 
 from dateutil.relativedelta import relativedelta
 
@@ -10,19 +14,30 @@ from schemas.project import Project
 from schemas.python import Python
 from schemas.stack import Stack
 
+TDataclass = TypeVar("TDataclass", bound=DataclassInstance)
+
 STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 
 REDIS_HOST: str = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT: int = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD", "password")
+REDIS_SOCKET_TIMEOUT: int = int(os.environ.get("REDIS_SOCKET_TIMEOUT", 5))
+REDIS_SOCKET_CONNECTION_TIMEOUT: int = int(
+    os.environ.get("REDIS_SOCKET_CONNECTION_TIMEOUT", 5)
+)
+REDIS_VISITORS_COUNTER_KEY: str = os.environ.get(
+    "REDIS_VISITORS_COUNTER_KEY",
+    "visitors:counter",
+)
 
-YMQ_LOCATIONS_ACCESS_KEY = os.environ.get("YMQ_LOCATIONS_ACCESS_KEY")
-YMQ_LOCATIONS_SECRET_KEY = os.environ.get("YMQ_LOCATIONS_SECRET_KEY")
-YMQ_LOCATIONS_ENDPOINT_URL = os.environ.get("YMQ_LOCATIONS_ENDPOINT_URL")
-YMQ_LOCATIONS_QUEUE_URL = os.environ.get("YMQ_LOCATIONS_QUEUE_URL")
-YMQ_LOCATIONS_REGION_NAME = os.environ.get("YMQ_LOCATIONS_REGION_NAME")
+SQS_LOCATIONS_ACCESS_KEY = os.environ.get("SQS_LOCATIONS_ACCESS_KEY")
+SQS_LOCATIONS_SECRET_KEY = os.environ.get("SQS_LOCATIONS_SECRET_KEY")
+SQS_LOCATIONS_ENDPOINT_URL = os.environ.get("SQS_LOCATIONS_ENDPOINT_URL")
+SQS_LOCATIONS_QUEUE_URL = os.environ.get("SQS_LOCATIONS_QUEUE_URL")
+SQS_LOCATIONS_REGION_NAME = os.environ.get("SQS_LOCATIONS_REGION_NAME")
 
 GITHUB_CREATE_WEBHOOK_TOKEN: str = os.environ.get("GITHUB_CREATE_WEBHOOK_TOKEN", "")
+GITHUB_TAG_PATTERN: str = os.environ.get("GITHUB_TAG_PATTERN", r"^\d+\.\d+\.\d+$")
 
 TIMEZONE = os.environ.get("TIMEZONE", "Europe/Moscow")
 
@@ -33,175 +48,74 @@ LOGGING_SENSITIVE_FIELDS = os.environ.get("LOGGING_SENSITIVE_FIELDS", "").split(
 
 ASGI_PORT = os.environ.get("ASGI_PORT")
 ABSOLUTE_URL = os.environ.get("ABSOLUTE_URL", f"http://localhost:{ASGI_PORT}")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 IMAGE_TAG = os.environ.get("IMAGE_TAG", "latest")
+
+CHANGELOG_SSE_INTERVAL_SECONDS: int = int(
+    os.environ.get("CHANGELOG_SSE_INTERVAL_SECONDS", 1)
+)
+CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = os.environ.get(
+    "CHANGELOG_VERSION_DEFAULT_DESCRIPTION",
+    "No description provided.",
+)
+CHANGELOG_BUFFER_NAME: str = os.environ.get("CHANGELOG_BUFFER_NAME", "changelog")
+CHANGELOG_BUFFER_MAX_SIZE: int = int(os.environ.get("CHANGELOG_BUFFER_MAX_SIZE", 5))
+
+LOCATIONS_SSE_INTERVAL_SECONDS: int = int(
+    os.environ.get("LOCATIONS_SSE_INTERVAL_SECONDS", 1)
+)
+LOCATIONS_BUFFER_NAME: str = os.environ.get("LOCATIONS_BUFFER_NAME", "locations")
+LOCATIONS_BUFFER_MAX_SIZE: int = int(os.environ.get("LOCATIONS_BUFFER_MAX_SIZE", 5))
+
+HTML_FOR_HOME = os.environ.get("HTML_FOR_HOME", "home.html")
+HTML_FOR_EXPERIENCE = os.environ.get("HTML_FOR_EXPERIENCE", "experience.html")
+HTML_FOR_STACK = os.environ.get("HTML_FOR_STACK", "stack.html")
+HTML_FOR_PYTHON = os.environ.get("HTML_FOR_PYTHON", "python.html")
+HTML_FOR_BOOKS = os.environ.get("HTML_FOR_BOOKS", "books.html")
+HTML_FOR_PROJECTS = os.environ.get("HTML_FOR_PROJECTS", "projects.html")
 
 TEMPLATE_CONTEXT_BASE: dict[str, Any] = {"IMAGE_TAG": IMAGE_TAG}
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
-HOME: Tuple[str, ...] = (
+HOME: Tuple[str, ...] = tuple(os.environ.get("HOME", "").split("{newline}")) or (
     "Hello, my name is Matvey Ivanov",
     f"I'm {relativedelta(datetime.now(), BIRTH_DATE).years} y.o.",
     "Currently living in Saint-Petersburg",
     "Full-time middle Python backend developer",
 )
-EXPERIENCE = [
-    Experience(
-        place="Yandex",
-        from_="2025",
-        to_="today",
-        description="Software Developer",
-    ),
-    Experience(
-        place="Sixhands",
-        from_="2024",
-        to_="2025",
-        description="Middle Python Backend Developer",
-    ),
-    Experience(
-        place="Sixhands",
-        from_="2022",
-        to_="2024",
-        description="Junior Python Backend Developer",
-    ),
-    Experience(
-        place="LETI University",
-        from_="2019",
-        to_="2023",
-        description="Bachelor in Computer Science",
-    ),
-]
-STACK = [
-    Stack(name="Python", progress="90%"),
-    Stack(name="git", progress="90%"),
-    Stack(name="Docker", progress="90%"),
-    Stack(name="RabbitMQ", progress="75%"),
-    Stack(name="Nginx", progress="75%"),
-    Stack(name="PostgreSQL", progress="75%"),
-    Stack(name="Redis", progress="75%"),
-    Stack(name="Linux", progress="75%"),
-    Stack(name="Grafana", progress="60%"),
-    Stack(name="Prometheus", progress="60%"),
-    Stack(name="CI/CD", progress="50%"),
-    Stack(name="ffmpeg", progress="40%"),
-    Stack(name="Jaeger", progress="20%"),
-    Stack(name="MongoDB", progress="20%"),
-    Stack(name="Cassandra", progress="20%"),
-    Stack(name="Apache Kafka", progress="20%"),
-    Stack(name="C++", progress="15%"),
-]
-PYTHON = [
-    Python(name="Django", progress="90%"),
-    Python(name="DRF", progress="90%"),
-    Python(name="FastAPI", progress="65%"),
-    Python(name="SQLAlchemy", progress="65%"),
-    Python(name="Celery", progress="90%"),
-    Python(name="SQLAlchemy", progress="65%"),
-    Python(name="Alembic", progress="65%"),
-    Python(name="Pytest", progress="90%"),
-    Python(name="Flake8", progress="90%"),
-    Python(name="MyPy", progress="70%"),
-    Python(name="Asyncio", progress="65%"),
-    Python(name="OpenCV", progress="55%"),
-    Python(name="Pillow", progress="70%"),
-    Python(name="QuixStreams", progress="20%"),
-    Python(name="FastStream", progress="20%"),
-    Python(name="NumPy", progress="20%"),
-    Python(name="Matplotlib", progress="20%"),
-    Python(name="requests/httpx", progress="90%"),
-    Python(name="Pygame", progress="45%"),
-    Python(name="SciPy", progress="10%"),
-    Python(name="Flask", progress="20%"),
-    Python(name="OpenTelemetry", progress="40%"),
-    Python(name="Black", progress="90%"),
-    Python(name="Redis", progress="90%"),
-    Python(name="PyQT", progress="30%"),
-    Python(name="MoviePy", progress="60%"),
-    Python(name="Poetry", progress="90%"),
-]
-WORK_BOOKS = [
-    Book(name="Grokking Algorithms by Aditya Y. Bhargava"),
-    Book(name="Architecture Patterns with Python by Harry Percival and Bob Gregory"),
-    Book(name="Django Design Patterns and Best Practices by Arun Ravindran"),
-    Book(
-        name=(
-            "Building Event-Driven Microservices: "
-            "Leveraging Organizational Data at Scale by Adam Bellemare"
+
+
+def load_instances_from_env(
+    type: type[TDataclass],
+    key: str,
+    dict_separator: str = "{dict_separator}",
+    value_separator: str = "{value_separator}",
+) -> tuple[TDataclass, ...]:
+    def parse_value(raw_value: str) -> str | None:
+        if raw_value in ("None", "null"):
+            return None
+        return raw_value
+
+    def load_fields(raw_obj: str) -> dict[str, Any]:
+        return {
+            field.name: parse_value(value)
+            for field, value in zip(fields(type), raw_obj.split(value_separator))
+        }
+
+    try:
+        return tuple(
+            type(**load_fields(raw_obj))
+            for raw_obj in os.environ.get(key, "").split(dict_separator)
         )
-    ),
-    Book(name="Monolith to Microservices by Sam Newman"),
-]
-OFF_WORK_BOOKS = [
-    Book(name="The Witcher series of novels by Andrzej Sapkowski"),
-    Book(name="Dune by Frank Herbert"),
-    Book(name="The Brothers Karamazov by Fyodor Dostoevsky"),
-]
-PROJECTS = [
-    Project(
-        name="Present website",
-        description="Personal website with work experience, stack, projects and more.",
-        url="https://github.com/MatveyIvanov/matveyivanov",
-    ),
-    Project(
-        name="eventscore",
-        description=(
-            "Open-source Python package that allows to build "
-            "event-driven monolith backend applications "
-            "using same architecture patterns and semantics "
-            "as microservices."
-        ),
-        url="https://github.com/MatveyIvanov/eventscore",
-    ),
-    Project(
-        name="dbrepos",
-        description=(
-            "My first open-source package that helps "
-            "to work with databases via repository pattern abstraction "
-            "using standardized interface."
-        ),
-        url="https://github.com/MatveyIvanov/dbrepos",
-    ),
-    Project(
-        name="File upload microservice",
-        description=(
-            "This was a test task for job appliance, "
-            "but still one of the latest open source "
-            "repository with my current code-style."
-        ),
-        url="https://github.com/MatveyIvanov/file-upload-microservice",
-    ),
-    Project(
-        name="DNS-client cli",
-        description=(
-            "Simple cli working as DNS client. "
-            "You can lookup for domain names and get their IP's."
-        ),
-        url="https://github.com/MatveyIvanov/DNS-Client",
-    ),
-    Project(
-        name="Huffman archiver",
-        description=(
-            "University project written in C++ that allows "
-            "to compress text with a compression ratio up to 2 units."
-        ),
-        url="https://github.com/MatveyIvanov/HuffmanArchiver",
-    ),
-    Project(
-        name="Web templates",
-        description=(
-            "Group of repositories containing multiple templates "
-            "for some common web apps that I build."
-        ),
-        url="https://github.com/orgs/Python-Backend-Templates/repositories",
-    ),
-    Project(
-        name="2 grpc microservices with API Gateway",
-        description=(
-            "This was a learning-purpose project, "
-            "as I was trying to understand how to "
-            "build microservices based on gRPC communication."
-        ),
-        url="https://github.com/orgs/VerimApp/repositories",
-    ),
-]
+    except TypeError:
+        return tuple()
+
+
+EXPERIENCE = load_instances_from_env(Experience, "EXPERIENCE")
+STACK = load_instances_from_env(Stack, "STACK")
+PYTHON = load_instances_from_env(Python, "PYTHON")
+WORK_BOOKS = load_instances_from_env(Book, "WORK_BOOKS")
+OFF_WORK_BOOKS = load_instances_from_env(Book, "OFF_WORK_BOOKS")
+PROJECTS = load_instances_from_env(Project, "PROJECTS")

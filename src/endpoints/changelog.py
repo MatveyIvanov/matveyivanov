@@ -7,16 +7,13 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Response
 from sse_starlette.sse import EventSourceResponse
 
+from config import settings
 from config.di import Container
 from schemas.changelog import Changelog, ChangelogItem
 from schemas.webhooks import GitHubCreateHook
 from services.interfaces import IHashAndCompare, IRingBuffer
 
 router = APIRouter(prefix="/changelog", tags=["changelog"])
-
-MESSAGE_STREAM_DELAY = 1  # second
-CHANGELOG_KEY = "CHANGELOG"
-GITHUB_TAG_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 
 
 @router.get("", response_model=Changelog)
@@ -43,7 +40,7 @@ async def stream(
                 "data": json.dumps({"updates": await ring_buffer.all()}),
             }
 
-            await asyncio.sleep(MESSAGE_STREAM_DELAY)
+            await asyncio.sleep(settings.CHANGELOG_SSE_INTERVAL_SECONDS)
 
     return EventSourceResponse(generator())
 
@@ -64,7 +61,7 @@ async def webhook(
     ):
         return Response("Unauthorized", status_code=401)
 
-    if hook.ref_type != "tag" or not re.match(GITHUB_TAG_PATTERN, hook.ref):
+    if hook.ref_type != "tag" or not re.match(settings.GITHUB_TAG_PATTERN, hook.ref):
         return "OK"
 
     latest_item = await ring_buffer.latest(n=1)
@@ -82,7 +79,8 @@ async def webhook(
             id=hook.ref,
             title=hook.ref,
             type="feature" if bugfix == "0" else "bugfix",
-            description=hook.description or "No description provided :(",
+            description=hook.description
+            or settings.CHANGELOG_VERSION_DEFAULT_DESCRIPTION,
             version=hook.ref,
             date=str(datetime.now().timestamp()),
         ).model_dump()

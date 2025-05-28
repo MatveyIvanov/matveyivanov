@@ -46,12 +46,7 @@ __app.mount(
 )
 __app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=[
-        "127.0.0.1",
-        "localhost",
-        "matveyivanov.tech",
-        "bbaa1gitq97o0chvdj72.containers.yandexcloud.net",
-    ],
+    allowed_hosts=settings.ALLOWED_HOSTS,
 )
 __app.add_middleware(TranslationMiddleware)
 

@@ -15,9 +15,6 @@ from services.interfaces import IRingBuffer
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
-MESSAGE_STREAM_DELAY = 1  # second
-LOCATIONS_KEY = "LOCATIONS"
-
 T = TypeVar("T", bound=dict)
 
 
@@ -35,7 +32,7 @@ def unique_dict(objs: Iterable[T], *, key: str) -> list[T]:
 async def locations(
     request: Request,
     ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.locations_ring_buffer]),
-    queue=Depends(Provide[Container.ymq_locations_queue]),
+    queue=Depends(Provide[Container.sqs_locations_queue]),
 ):
     if request.client and settings.PROD:
         queue.send_message(
@@ -68,6 +65,6 @@ async def stream(
                 ),
             }
 
-            await asyncio.sleep(MESSAGE_STREAM_DELAY)
+            await asyncio.sleep(settings.LOCATIONS_SSE_INTERVAL_SECONDS)
 
     return EventSourceResponse(generator())

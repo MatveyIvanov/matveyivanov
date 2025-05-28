@@ -4,11 +4,10 @@ from dependency_injector.wiring import Provide, inject
 from ipinfo import AsyncHandler
 from redis.asyncio import Redis
 
+from src import config
 from src.di import Container
 from src.interfaces import IRingBuffer
 from src.types import IPEvent, Location
-
-HASHSET_NAME = "hashset:locations"
 
 
 @inject
@@ -18,11 +17,13 @@ async def handle(
     ring_buffer: IRingBuffer[dict] = Provide[Container.ring_buffer],
     ipinfo_handler: AsyncHandler = Provide[Container.ipinfo_handler],
 ) -> None:
-    location = await redis.hget(HASHSET_NAME, event.ip)
+    location = await redis.hget(config.LOCATIONS_HASHSET_NAME, event.ip)
     if location is None:
-        details = await ipinfo_handler.getDetails(event.ip, timeout=5)
-        location = str(getattr(details, "city", "unknown"))
-        await redis.hset(HASHSET_NAME, event.ip, location)
+        details = await ipinfo_handler.getDetails(
+            event.ip, timeout=config.IPINFO_TIMEOUT
+        )
+        location = str(getattr(details, "city", config.IPINFO_DEFAULT_CITY))
+        await redis.hset(config.LOCATIONS_HASHSET_NAME, event.ip, location)
 
     await ring_buffer.put(
         asdict(Location(location=location, timestamp=event.timestamp))

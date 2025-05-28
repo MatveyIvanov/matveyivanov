@@ -5,7 +5,7 @@ import hmac
 def hash_github_payload_and_compare(
     value: bytes | str,
     expected: str,
-    key: str = "token",
+    key: str = "token",  # just a stub, actual value should be passed via DI
 ) -> bool:
     hashed = hmac.new(
         key.encode("utf-8"),

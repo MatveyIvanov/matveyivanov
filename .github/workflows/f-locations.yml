@@ -48,14 +48,21 @@ jobs:
           service-account: ${{ secrets.YC_F_LOCATIONS_SERVICE_ACCOUNT_ID }}
           network-id: ${{ secrets.YC_F_LOCATIONS_NETWORK_ID }}
           environment: |
-            YMQ_SECRET_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_SECRET_KEY }}
-            YMQ_ACCESS_KEY=${{ secrets.YC_F_LOCATIONS_YMQ_ACCESS_KEY }}
-            YMQ_REGION_NAME=${{ secrets.YC_F_LOCATIONS_YMQ_REGION_NAME }}
-            YMQ_ENDPOINT_URL=${{ secrets.YC_F_LOCATIONS_YMQ_ENDPOINT_URL }}
-            YMQ_QUEUE_URL=${{ secrets.YC_F_LOCATIONS_YMQ_QUEUE_URL }}
+            SQS_SECRET_KEY=${{ secrets.SQS_LOCATIONS_SECRET_KEY }}
+            SQS_ACCESS_KEY=${{ secrets.SQS_LOCATIONS_ACCESS_KEY }}
+            SQS_REGION_NAME=${{ secrets.SQS_LOCATIONS_REGION_NAME }}
+            SQS_ENDPOINT_URL=${{ secrets.SQS_LOCATIONS_ENDPOINT_URL }}
+            SQS_QUEUE_URL=${{ secrets.SQS_LOCATIONS_QUEUE_URL }}
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            REDIS_SOCKET_TIMEOUT=${{ secrets.YC_F_LOCATIONS_REDIS_SOCKET_TIMEOUT }}
+            REDIS_SOCKET_CONNECTION_TIMEOUT=${{ secrets.YC_F_LOCATIONS_REDIS_SOCKET_CONNECTION_TIMEOUT }}
             IPINFO_ACCESS_TOKEN=${{ secrets.IPINFO_ACCESS_TOKEN }}
+            IPINFO_TIMEOUT=${{ secrets.YC_F_LOCATIONS_IPINFO_TIMEOUT }}
+            IPINFO_DEFAULT_CITY=${{ secrets.YC_F_LOCATIONS_IPINFO_DEFAULT_CITY }}
+            LOCATIONS_BUFFER_NAME=${{ secrets.LOCATIONS_BUFFER_NAME }}
+            LOCATIONS_BUFFER_MAX_SIZE=${{ secrets.LOCATIONS_BUFFER_MAX_SIZE }}
+            LOCATIONS_HASHSET_NAME=${{ secrets.LOCATIONS_HASHSET_NAME }}
           include: |
             ./

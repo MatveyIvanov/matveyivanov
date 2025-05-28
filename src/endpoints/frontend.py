@@ -12,18 +12,16 @@ router = APIRouter(tags=["pages"])
 async def home(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="home.html",
+        name=settings.HTML_FOR_HOME,
         context=settings.TEMPLATE_CONTEXT_BASE | {"lines": settings.HOME},
     )
 
 
 @router.get("/experience", response_class=HTMLResponse)
-async def experience(
-    request: Request,
-):
+async def experience(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="experience.html",
+        name=settings.HTML_FOR_EXPERIENCE,
         context=settings.TEMPLATE_CONTEXT_BASE
         | {
             "timeline": [
@@ -44,7 +42,7 @@ async def experience(
 async def stack(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="stack.html",
+        name=settings.HTML_FOR_STACK,
         context=settings.TEMPLATE_CONTEXT_BASE | {"stack": settings.STACK},
     )
 
@@ -53,7 +51,7 @@ async def stack(request: Request):
 async def python(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="python.html",
+        name=settings.HTML_FOR_PYTHON,
         context=settings.TEMPLATE_CONTEXT_BASE | {"libraries": settings.PYTHON},
     )
 
@@ -62,7 +60,7 @@ async def python(request: Request):
 async def books(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="books.html",
+        name=settings.HTML_FOR_BOOKS,
         context=settings.TEMPLATE_CONTEXT_BASE
         | {
             "work_books": settings.WORK_BOOKS,
@@ -75,6 +73,6 @@ async def books(request: Request):
 async def projects(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="projects.html",
+        name=settings.HTML_FOR_PROJECTS,
         context=settings.TEMPLATE_CONTEXT_BASE | {"projects": settings.PROJECTS},
     )
