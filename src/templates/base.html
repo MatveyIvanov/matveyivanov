@@ -64,8 +64,12 @@
             </a>
         </div>
     </div>
-    {{ changelog_widget() }}
-    {{ visitors_locations_widget() }}
+    <script>
+        const LOCATIONS_BUFFER_MAX_SIZE = {{ LOCATIONS_BUFFER_MAX_SIZE }};
+        const CHANGELOG_BUFFER_MAX_SIZE = {{ CHANGELOG_BUFFER_MAX_SIZE }};
+    </script>
+    {{ changelog_widget(CHANGELOG_BUFFER_MAX_SIZE) }}
+    {{ visitors_locations_widget(LOCATIONS_BUFFER_MAX_SIZE) }}
     {{ visitors_widget() }}
     <script src="{{ url_for('static', path='/js/visitors.js') }}"></script>
     <script src="{{ url_for('static', path='/js/locations.js') }}"></script>

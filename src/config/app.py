@@ -21,7 +21,7 @@ for router in endpoints.get_routers():
 
 __app.mount(
     settings.STATIC_URL,
-    StaticFiles(directory="static"),
+    StaticFiles(directory=settings.STATIC_PATH),
     name="static",
 )
 __app.add_middleware(

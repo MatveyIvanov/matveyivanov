@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_LOCATIONS: 5,
+    MAX_LOCATIONS: LOCATIONS_BUFFER_MAX_SIZE,
     TIMESTAMP_REFRESH_INTERVAL: 60000 // Update timestamps every minute
   };
 

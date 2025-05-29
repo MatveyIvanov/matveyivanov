@@ -31,6 +31,7 @@ def load(
 
 
 STATIC_URL = load("STATIC_URL", "/static/", ensure_not_empty=True)
+STATIC_PATH = load("STATIC_PATH", "static", ensure_not_empty=True)
 
 REDIS_HOST: str = load("REDIS_HOST", "redis", ensure_not_empty=True)
 REDIS_PORT: int = load("REDIS_PORT", 6379, cast_to=int, ensure_not_empty=True)
@@ -55,7 +56,9 @@ SQS_LOCATIONS_REGION_NAME = load("SQS_LOCATIONS_REGION_NAME", "")
 
 GITHUB_CREATE_WEBHOOK_TOKEN: str = load("GITHUB_CREATE_WEBHOOK_TOKEN", "")
 GITHUB_TAG_PATTERN: str = load(
-    "GITHUB_TAG_PATTERN", r"^\d+\.\d+\.\d+$", ensure_not_empty=True
+    "GITHUB_TAG_PATTERN",
+    r"^\d+\.\d+\.\d+$",
+    ensure_not_empty=True,
 )
 
 TIMEZONE: str = load("TIMEZONE", "Europe/Moscow", ensure_not_empty=True)
@@ -71,13 +74,18 @@ ABSOLUTE_URL = load(
 )
 ALLOWED_HOSTS = load("ALLOWED_HOSTS", "").split(",")
 PROXY_TRUSTED_HOSTS = load(
-    "PROXY_TRUSTED_HOSTS", "127.0.0.1", ensure_not_empty=True
+    "PROXY_TRUSTED_HOSTS",
+    "127.0.0.1",
+    ensure_not_empty=True,
 ).split(",")
 
 IMAGE_TAG = load("IMAGE_TAG", "latest", ensure_not_empty=True)
 
 CHANGELOG_SSE_INTERVAL_SECONDS: int = load(
-    "CHANGELOG_SSE_INTERVAL_SECONDS", 1, cast_to=int, ensure_not_empty=True
+    "CHANGELOG_SSE_INTERVAL_SECONDS",
+    1,
+    cast_to=int,
+    ensure_not_empty=True,
 )
 CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = load(
     "CHANGELOG_VERSION_DEFAULT_DESCRIPTION",
@@ -85,25 +93,40 @@ CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = load(
     ensure_not_empty=True,
 )
 CHANGELOG_BUFFER_NAME: str = load(
-    "CHANGELOG_BUFFER_NAME", "changelog", ensure_not_empty=True
+    "CHANGELOG_BUFFER_NAME",
+    "changelog",
+    ensure_not_empty=True,
 )
 CHANGELOG_BUFFER_MAX_SIZE: int = load(
-    "CHANGELOG_BUFFER_MAX_SIZE", 5, cast_to=int, ensure_not_empty=True
+    "CHANGELOG_BUFFER_MAX_SIZE",
+    5,
+    cast_to=int,
+    ensure_not_empty=True,
 )
 
 LOCATIONS_SSE_INTERVAL_SECONDS: int = load(
-    "LOCATIONS_SSE_INTERVAL_SECONDS", 1, cast_to=int, ensure_not_empty=True
+    "LOCATIONS_SSE_INTERVAL_SECONDS",
+    1,
+    cast_to=int,
+    ensure_not_empty=True,
 )
 LOCATIONS_BUFFER_NAME: str = load(
-    "LOCATIONS_BUFFER_NAME", "locations", ensure_not_empty=True
+    "LOCATIONS_BUFFER_NAME",
+    "locations",
+    ensure_not_empty=True,
 )
 LOCATIONS_BUFFER_MAX_SIZE: int = load(
-    "LOCATIONS_BUFFER_MAX_SIZE", 5, cast_to=int, ensure_not_empty=True
+    "LOCATIONS_BUFFER_MAX_SIZE",
+    5,
+    cast_to=int,
+    ensure_not_empty=True,
 )
 
 HTML_FOR_HOME = load("HTML_FOR_HOME", "home.html", ensure_not_empty=True)
 HTML_FOR_EXPERIENCE = load(
-    "HTML_FOR_EXPERIENCE", "experience.html", ensure_not_empty=True
+    "HTML_FOR_EXPERIENCE",
+    "experience.html",
+    ensure_not_empty=True,
 )
 HTML_FOR_STACK = load("HTML_FOR_STACK", "stack.html", ensure_not_empty=True)
 HTML_FOR_PYTHON = load("HTML_FOR_PYTHON", "python.html", ensure_not_empty=True)
@@ -111,7 +134,11 @@ HTML_FOR_BOOKS = load("HTML_FOR_BOOKS", "books.html", ensure_not_empty=True)
 HTML_FOR_PROJECTS = load("HTML_FOR_PROJECTS", "projects.html", ensure_not_empty=True)
 HTML_FOR_ERROR = load("HTML_FOR_ERROR", "error.html", ensure_not_empty=True)
 
-TEMPLATE_CONTEXT_BASE: dict[str, Any] = {"IMAGE_TAG": IMAGE_TAG}
+TEMPLATE_CONTEXT_BASE: dict[str, Any] = {
+    "IMAGE_TAG": IMAGE_TAG,
+    "CHANGELOG_BUFFER_MAX_SIZE": CHANGELOG_BUFFER_MAX_SIZE,
+    "LOCATIONS_BUFFER_MAX_SIZE": LOCATIONS_BUFFER_MAX_SIZE,
+}
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
