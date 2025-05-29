@@ -20,11 +20,19 @@ async def handle(
     location = await redis.hget(config.LOCATIONS_HASHSET_NAME, event.ip)
     if location is None:
         details = await ipinfo_handler.getDetails(
-            event.ip, timeout=config.IPINFO_TIMEOUT
+            event.ip,
+            timeout=config.IPINFO_TIMEOUT,
         )
         location = str(getattr(details, "city", config.IPINFO_DEFAULT_CITY))
         await redis.hset(config.LOCATIONS_HASHSET_NAME, event.ip, location)
+    else:
+        location = str(location)
 
     await ring_buffer.put(
-        asdict(Location(location=location, timestamp=event.timestamp))
+        asdict(
+            Location(
+                location=location,
+                timestamp=event.timestamp,
+            )
+        )
     )
