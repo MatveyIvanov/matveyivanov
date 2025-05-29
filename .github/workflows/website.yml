@@ -67,9 +67,8 @@ jobs:
             export IMAGE_NAME=${{ secrets.YC_CR_REPOSITORY }}
             export IMAGE_TAG=${{ github.ref_name }}
             export PROJECT_NAME=${{ secrets.PROJECT_NAME }}
-            export PORT=${{ secrets.ASGI_PORT }}
             export ASGI_TARGET=${{ secrets.ASGI_TARGET }}
-            export ASGI_PORT=${{ secrets.ASGI_PORT }}
+            export ASGI_PORT=${{ secrets.YC_WEB_VM_ASGI_PORT }}
             export RESTART_POLICY=${{ secrets.RESTART_POLICY }}
 
             echo ${{ secrets.YC_WEB_VM_DOCKER_TOKEN }}|docker login --username oauth --password-stdin ${{ secrets.YC_WEB_VM_DOCKER_HUB }}
