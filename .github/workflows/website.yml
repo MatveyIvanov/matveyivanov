@@ -67,6 +67,7 @@ jobs:
             export IMAGE_NAME=${{ secrets.YC_CR_REPOSITORY }}
             export IMAGE_TAG=${{ github.ref_name }}
             export PROJECT_NAME=${{ secrets.PROJECT_NAME }}
+            export PORT=${{ secrets.ASGI_PORT }}
             export ASGI_TARGET=${{ secrets.ASGI_TARGET }}
             export ASGI_PORT=${{ secrets.ASGI_PORT }}
             export RESTART_POLICY=${{ secrets.RESTART_POLICY }}
@@ -83,6 +84,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "STATIC_URL=${{ secrets.YC_WEB_VM_STATIC_URL }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "STATIC_PATH=${{ secrets.YC_WEB_VM_STATIC_PATH }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ASGI_PORT=${{ secrets.YC_WEB_VM_ASGI_PORT }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "PORT=${{ secrets.YC_WEB_VM_ASGI_PORT }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ABSOLUTE_URL=${{ secrets.YC_WEB_VM_ABSOLUTE_URL }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ALLOWED_HOSTS=${{ secrets.YC_WEB_VM_ALLOWED_HOSTS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "PROXY_TRUSTED_HOSTS=${{ secrets.YC_WEB_VM_PROXY_TRUSTED_HOSTS }}" >> docker/.env
