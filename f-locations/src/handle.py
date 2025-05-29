@@ -17,8 +17,11 @@ async def handle(
     ring_buffer: IRingBuffer[dict] = Provide[Container.ring_buffer],
     ipinfo_handler: AsyncHandler = Provide[Container.ipinfo_handler],
 ) -> None:
-    location = await redis.hget(config.LOCATIONS_HASHSET_NAME, event.ip)
-    if location is None:
+    _location: str | bytes | None = await redis.hget(
+        config.LOCATIONS_HASHSET_NAME,
+        event.ip,
+    )
+    if _location is None:
         details = await ipinfo_handler.getDetails(
             event.ip,
             timeout=config.IPINFO_TIMEOUT,
@@ -26,7 +29,7 @@ async def handle(
         location = str(getattr(details, "city", config.IPINFO_DEFAULT_CITY))
         await redis.hset(config.LOCATIONS_HASHSET_NAME, event.ip, location)
     else:
-        location = str(location)
+        location = _location.decode() if isinstance(_location, bytes) else _location
 
     await ring_buffer.put(
         asdict(
