@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ===== CONSTANTS =====
   const CONFIG = {
-    MAX_UPDATES: 5,
+    MAX_UPDATES: CHANGELOG_BUFFER_MAX_SIZE,
     NEW_UPDATE_HOURS: 24 // Hours within which an update is considered "new"
   };
   const ENDPOINTS = {

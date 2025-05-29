@@ -15,21 +15,21 @@ class Container(containers.DeclarativeContainer):
         host=settings.REDIS_HOST,
         port=settings.REDIS_PORT,
         password=settings.REDIS_PASSWORD,
-        socket_timeout=5,
-        socket_connect_timeout=5,
+        socket_timeout=settings.REDIS_SOCKET_TIMEOUT,
+        socket_connect_timeout=settings.REDIS_SOCKET_CONNECTION_TIMEOUT,
     )
 
     changelog_ring_buffer: providers.Singleton[RedisRingBuffer] = providers.Singleton(
         RedisRingBuffer,
         redis=redis,
-        name="changelog",
-        max_size=5,
+        name=settings.CHANGELOG_BUFFER_NAME,
+        max_size=settings.CHANGELOG_BUFFER_MAX_SIZE,
     )
     locations_ring_buffer: providers.Singleton[RedisRingBuffer] = providers.Singleton(
         RedisRingBuffer,
         redis=redis,
-        name="locations",
-        max_size=5,
+        name=settings.LOCATIONS_BUFFER_NAME,
+        max_size=settings.LOCATIONS_BUFFER_MAX_SIZE,
     )
 
     hash_n_compare_github_payload_on_create: providers.Callable[
@@ -39,18 +39,18 @@ class Container(containers.DeclarativeContainer):
         key=settings.GITHUB_CREATE_WEBHOOK_TOKEN,
     )
 
-    _ymq_locations_session = providers.Resource(  # type:ignore
+    _sqs_locations_session = providers.Resource(  # type:ignore
         boto3.session.Session,
-        aws_access_key_id=settings.YMQ_LOCATIONS_ACCESS_KEY,
-        aws_secret_access_key=settings.YMQ_LOCATIONS_SECRET_KEY,
+        aws_access_key_id=settings.SQS_LOCATIONS_ACCESS_KEY,
+        aws_secret_access_key=settings.SQS_LOCATIONS_SECRET_KEY,
     )
-    _ymq_locations_resource = providers.Resource(
-        _ymq_locations_session.provided.resource.call(),
+    _sqs_locations_resource = providers.Resource(
+        _sqs_locations_session.provided.resource.call(),
         service_name="sqs",
-        endpoint_url=settings.YMQ_LOCATIONS_ENDPOINT_URL,
-        region_name=settings.YMQ_LOCATIONS_REGION_NAME,
+        endpoint_url=settings.SQS_LOCATIONS_ENDPOINT_URL,
+        region_name=settings.SQS_LOCATIONS_REGION_NAME,
     )
-    ymq_locations_queue = providers.Resource(
-        _ymq_locations_resource.provided.Queue.call(),
-        settings.YMQ_LOCATIONS_QUEUE_URL,
+    sqs_locations_queue = providers.Resource(
+        _sqs_locations_resource.provided.Queue.call(),
+        settings.SQS_LOCATIONS_QUEUE_URL,
     )
