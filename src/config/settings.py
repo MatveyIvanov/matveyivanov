@@ -85,6 +85,13 @@ PROXY_TRUSTED_HOSTS = load(
 
 IMAGE_TAG = load("IMAGE_TAG", "latest", ensure_not_empty=True)
 
+VISITORS_SSE_INTERVAL_SECONDS: int = load(
+    "VISITORS_SSE_INTERVAL_SECONDS",
+    1,
+    cast_to=int,
+    ensure_not_empty=True,
+)
+
 CHANGELOG_SSE_INTERVAL_SECONDS: int = load(
     "CHANGELOG_SSE_INTERVAL_SECONDS",
     1,

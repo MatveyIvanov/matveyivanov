@@ -55,7 +55,7 @@ async def stream(
 
                 yield {"event": "message", "data": json.dumps({"count": count})}
 
-                await asyncio.sleep(settings.REDIS_VISITORS_COUNTER_KEY)
+                await asyncio.sleep(settings.VISITORS_SSE_INTERVAL_SECONDS)
 
     async def cleanup():
         await update(-1)

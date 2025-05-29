@@ -101,6 +101,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "GITHUB_CREATE_WEBHOOK_TOKEN=${{ secrets.YC_WEB_VM_GITHUB_CREATE_WEBHOOK_TOKEN }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "GITHUB_TAG_PATTERN=${{ secrets.YC_WEB_VM_GITHUB_TAG_PATTERN }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "TIMEZONE=${{ secrets.YC_WEB_VM_TIMEZONE }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "VISITORS_SSE_INTERVAL_SECONDS=${{ secrets.YC_WEB_VM_VISITORS_SSE_INTERVAL_SECONDS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_SSE_INTERVAL_SECONDS=${{ secrets.YC_WEB_VM_CHANGELOG_SSE_INTERVAL_SECONDS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_VERSION_DEFAULT_DESCRIPTION=${{ secrets.YC_WEB_VM_CHANGELOG_VERSION_DEFAULT_DESCRIPTION }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_BUFFER_NAME=${{ secrets.CHANGELOG_BUFFER_NAME }}" >> docker/.env
