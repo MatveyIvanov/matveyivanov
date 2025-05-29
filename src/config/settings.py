@@ -22,7 +22,11 @@ else:
 
 
 def load(
-    key: str, default: T, *, cast_to: type | None = None, ensure_not_empty: bool = False
+    key: str,
+    default: T,
+    *,
+    cast_to: type | None = None,
+    ensure_not_empty: bool = False,
 ) -> T:
     value = os.environ.get(key, default)
     if not value and ensure_not_empty:
