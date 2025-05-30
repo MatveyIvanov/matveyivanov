@@ -55,7 +55,7 @@ async def stream(
     ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
         Provide[Container.locations_ring_buffer]
     ),
-) -> EventSourceResponse:
+) -> dict[str, str]:
     async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
@@ -70,4 +70,4 @@ async def stream(
 
             await asyncio.sleep(settings.LOCATIONS_SSE_INTERVAL_SECONDS)
 
-    return EventSourceResponse(generator())
+    return EventSourceResponse(generator())  # type:ignore[return-value]

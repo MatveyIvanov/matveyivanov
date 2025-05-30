@@ -30,7 +30,7 @@ async def stream(
     request: Request,
     background_tasks: BackgroundTasks,
     redis: Redis = Depends(Provide[Container.redis]),
-) -> EventSourceResponse:
+) -> dict[str, str]:
     async def update(increment: int = 0) -> int:
         pipe = redis.pipeline(transaction=True)
         await pipe.incr(settings.REDIS_VISITORS_COUNTER_KEY, increment)
@@ -65,4 +65,7 @@ async def stream(
 
     background_tasks.add_task(cleanup)
 
-    return EventSourceResponse(generator(), background=background_tasks)
+    return EventSourceResponse(  # type:ignore[return-value]
+        generator(),
+        background=background_tasks,
+    )
