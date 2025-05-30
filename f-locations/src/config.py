@@ -1,20 +1,19 @@
 import os
-from typing import TypeVar
-
-T = TypeVar("T")
 
 
-def load(
+def load[
+    T: str | int | float
+](
     key: str,
     default: T,
     *,
-    cast_to: type | None = None,
+    cast_to: type[T] | None = None,
     ensure_not_empty: bool = False,
 ) -> T:
     value = os.environ.get(key, default)
     if not value and ensure_not_empty:
         return default
-    return value if cast_to is None else cast_to(value)
+    return value if cast_to is None else cast_to(value)  # type:ignore[return-value]
 
 
 REDIS_HOST: str = load("REDIS_HOST", "redis", ensure_not_empty=True)

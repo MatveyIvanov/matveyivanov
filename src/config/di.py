@@ -1,3 +1,6 @@
+# fmt: off
+from typing import Any
+
 import boto3
 from dependency_injector import containers, providers
 from redis.asyncio import Redis, StrictRedis
@@ -19,22 +22,24 @@ class Container(containers.DeclarativeContainer):
         socket_connect_timeout=settings.REDIS_SOCKET_CONNECTION_TIMEOUT,
     )
 
-    changelog_ring_buffer: providers.Singleton[RedisRingBuffer] = providers.Singleton(
-        RedisRingBuffer,
-        redis=redis,
-        name=settings.CHANGELOG_BUFFER_NAME,
-        max_size=settings.CHANGELOG_BUFFER_MAX_SIZE,
+    changelog_ring_buffer: providers.Singleton[RedisRingBuffer[dict[str, Any]]] = (
+        providers.Singleton(
+            RedisRingBuffer,
+            redis=redis,
+            name=settings.CHANGELOG_BUFFER_NAME,
+            max_size=settings.CHANGELOG_BUFFER_MAX_SIZE,
+        )
     )
-    locations_ring_buffer: providers.Singleton[RedisRingBuffer] = providers.Singleton(
-        RedisRingBuffer,
-        redis=redis,
-        name=settings.LOCATIONS_BUFFER_NAME,
-        max_size=settings.LOCATIONS_BUFFER_MAX_SIZE,
+    locations_ring_buffer: providers.Singleton[RedisRingBuffer[dict[str, Any]]] = (
+        providers.Singleton(
+            RedisRingBuffer,
+            redis=redis,
+            name=settings.LOCATIONS_BUFFER_NAME,
+            max_size=settings.LOCATIONS_BUFFER_MAX_SIZE,
+        )
     )
 
-    hash_n_compare_github_payload_on_create: providers.Callable[
-        hash_github_payload_and_compare
-    ] = providers.Callable(
+    hash_n_compare_github_payload_on_create = providers.Callable(
         hash_github_payload_and_compare,
         key=settings.GITHUB_CREATE_WEBHOOK_TOKEN,
     )

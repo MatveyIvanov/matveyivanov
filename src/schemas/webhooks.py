@@ -1,15 +1,15 @@
 from pydantic import BaseModel
 
 
-class GitHubRepository(BaseModel, extra="allow"):  # type:ignore[call-arg]
+class GitHubRepository(BaseModel, extra="allow"):
     name: str
 
 
-class GitHubSender(BaseModel, extra="allow"):  # type:ignore[call-arg]
+class GitHubSender(BaseModel, extra="allow"):
     login: str
 
 
-class GitHubCreateHook(BaseModel, extra="allow"):  # type:ignore[call-arg]
+class GitHubCreateHook(BaseModel, extra="allow"):
     ref: str
     ref_type: str
     master_branch: str

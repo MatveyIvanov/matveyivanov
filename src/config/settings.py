@@ -1,10 +1,12 @@
 import os
 from dataclasses import fields
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Tuple, TypeVar
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
+else:
+    DataclassInstance = None
 
 from dateutil.relativedelta import relativedelta
 
@@ -14,24 +16,20 @@ from schemas.project import Project
 from schemas.python import Python
 from schemas.stack import Stack
 
-T = TypeVar("T")
-if TYPE_CHECKING:
-    TDataclass = TypeVar("TDataclass", bound=DataclassInstance)
-else:
-    TDataclass = TypeVar("TDataclass")
 
-
-def load(
+def load[
+    T: str | int | float
+](
     key: str,
     default: T,
     *,
-    cast_to: type | None = None,
+    cast_to: type[T] | None = None,
     ensure_not_empty: bool = False,
 ) -> T:
     value = os.environ.get(key, default)
     if not value and ensure_not_empty:
         return default
-    return value if cast_to is None else cast_to(value)
+    return value if cast_to is None else cast_to(value)  # type:ignore[return-value]
 
 
 STATIC_URL = load("STATIC_URL", "/static/", ensure_not_empty=True)
@@ -153,7 +151,7 @@ TEMPLATE_CONTEXT_BASE: dict[str, Any] = {
 
 BIRTH_DATE = datetime(2001, 3, 25)
 
-HOME: Tuple[str, ...] = tuple(load("HOME", "").split("{newline}")) or (
+HOME: tuple[str, ...] = tuple(load("HOME", "").split("{newline}")) or (
     "Hello, my name is Matvey Ivanov",
     f"I'm {relativedelta(datetime.now(), BIRTH_DATE).years} y.o.",
     "Currently living in Saint-Petersburg",
@@ -161,12 +159,14 @@ HOME: Tuple[str, ...] = tuple(load("HOME", "").split("{newline}")) or (
 )
 
 
-def load_instances_from_env(
-    type: type[TDataclass],
+def load_instances_from_env[
+    T: DataclassInstance
+](
+    type: type[T],
     key: str,
     dict_separator: str = "{dict_separator}",
     value_separator: str = "{value_separator}",
-) -> tuple[TDataclass, ...]:
+) -> tuple[T, ...]:
     def parse_value(raw_value: str) -> str | None:
         if raw_value in ("None", "null"):
             return None

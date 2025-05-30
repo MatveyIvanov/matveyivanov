@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
@@ -20,11 +20,11 @@ app = get_fastapi_app()
 logger = logging.getLogger("exceptions")
 
 
-SHORT_DESCRIPTION_BY_STATUS_CODE: Dict[int, str] = {
+SHORT_DESCRIPTION_BY_STATUS_CODE: dict[int, str] = {
     404: "Looks like you're lost",
     429: "Too Many Requests",
 }
-LONG_DESCRIPTION_BY_STATUS_CODE: Dict[int, str] = {
+LONG_DESCRIPTION_BY_STATUS_CODE: dict[int, str] = {
     404: "The page you're looking for is not available!",
     429: "You've made too many requests recently. Please, try again later!",
 }
@@ -36,28 +36,28 @@ class CustomException(HTTPException):
 
 class Custom400Exception(CustomException):
     def __init__(
-        self, detail: Any = None, headers: Dict[str, str] | None = None
+        self, detail: Any = None, headers: dict[str, str] | None = None
     ) -> None:
         super().__init__(status.HTTP_400_BAD_REQUEST, detail, headers)
 
 
 class Custom401Exception(CustomException):
     def __init__(
-        self, detail: Any = None, headers: Dict[str, str] | None = None
+        self, detail: Any = None, headers: dict[str, str] | None = None
     ) -> None:
         super().__init__(status.HTTP_401_UNAUTHORIZED, detail, headers)
 
 
 class Custom403Exception(CustomException):
     def __init__(
-        self, detail: Any = None, headers: Dict[str, str] | None = None
+        self, detail: Any = None, headers: dict[str, str] | None = None
     ) -> None:
         super().__init__(status.HTTP_403_FORBIDDEN, detail, headers)
 
 
 class Custom404Exception(CustomException):
     def __init__(
-        self, detail: Any = None, headers: Dict[str, str] | None = None
+        self, detail: Any = None, headers: dict[str, str] | None = None
     ) -> None:
         super().__init__(status.HTTP_404_NOT_FOUND, detail, headers)
 
@@ -101,9 +101,11 @@ async def request_validation_exception_handler(
     request: Request,
     exc: RequestValidationError,
 ) -> JSONResponse:
-    errors = {}
+    errors: dict[str, str] = {}
     for error in exc._errors:
-        errors["__".join(error.get("loc")[1:])] = error.get("msg")
+        errors["__".join(error.get("loc")[1:])] = error.get(
+            "msg", "No error message provided."
+        )
     logger.info(
         f"Validation error has occured - {str(exc)}",
         extra={"built_msg": errors},
@@ -117,7 +119,7 @@ async def request_validation_exception_handler(
 
 @app.exception_handler(HTTP_500_INTERNAL_SERVER_ERROR)
 @app.exception_handler(Exception)
-async def internal_exception_handler(request: Request, exc: Exception):
+async def internal_exception_handler(request: Request, exc: Exception) -> Response:
     logger.critical(
         f"An internal error has occured - {str(exc)}",
         exc_info=exc,

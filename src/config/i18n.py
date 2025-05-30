@@ -7,7 +7,7 @@ LOCALE_DIR = "locale"
 _lang = DEFAULT_LANGUAGE
 
 
-def activate_translation(lang: str):
+def activate_translation(lang: str) -> None:
     global _lang
     _lang = DEFAULT_LANGUAGE if lang not in SUPPORTED_LANGUAGES else lang
 

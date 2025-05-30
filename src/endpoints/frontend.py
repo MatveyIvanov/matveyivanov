@@ -9,7 +9,7 @@ router = APIRouter(tags=["pages"])
 
 @router.get("/", response_class=HTMLResponse)
 @router.get("/home", response_class=HTMLResponse)
-async def home(request: Request):
+async def home(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_HOME,
@@ -18,7 +18,7 @@ async def home(request: Request):
 
 
 @router.get("/experience", response_class=HTMLResponse)
-async def experience(request: Request):
+async def experience(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_EXPERIENCE,
@@ -39,7 +39,7 @@ async def experience(request: Request):
 
 
 @router.get("/stack", response_class=HTMLResponse)
-async def stack(request: Request):
+async def stack(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_STACK,
@@ -48,7 +48,7 @@ async def stack(request: Request):
 
 
 @router.get("/python", response_class=HTMLResponse)
-async def python(request: Request):
+async def python(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_PYTHON,
@@ -57,7 +57,7 @@ async def python(request: Request):
 
 
 @router.get("/books", response_class=HTMLResponse)
-async def books(request: Request):
+async def books(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_BOOKS,
@@ -70,7 +70,7 @@ async def books(request: Request):
 
 
 @router.get("/projects", response_class=HTMLResponse)
-async def projects(request: Request):
+async def projects(request: Request):  # type:ignore[no-untyped-def]
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_PROJECTS,

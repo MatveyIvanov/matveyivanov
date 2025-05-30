@@ -2,7 +2,7 @@
 # Pre base image
 # Installs base dependencies and sets up python
 # -----------------------------------------------------------
-FROM python:3.11 AS pre-base
+FROM python:3.13 AS pre-base
 
 WORKDIR /
 
@@ -43,7 +43,7 @@ RUN poetry install --only main --no-interaction && \
 # Base image
 # Copies python devendencies from pre base image for DEVELOPMENT and sets up python
 # -----------------------------------------------------------
-FROM python:3.11-slim AS dev-base
+FROM python:3.13-slim AS dev-base
 
 ENV PYTHONUNBUFFERED 1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -62,7 +62,7 @@ COPY ./src/ ./
 # Base image
 # Copies python devendencies from pre base image for PRODUCTION and sets up python
 # -----------------------------------------------------------
-FROM python:3.11-slim AS prod-base
+FROM python:3.13-slim AS prod-base
 
 ENV PYTHONUNBUFFERED 1 \
     PYTHONDONTWRITEBYTECODE=1

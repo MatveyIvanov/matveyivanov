@@ -1,3 +1,5 @@
+from typing import Any
+
 import ipinfo
 from dependency_injector import containers, providers
 from redis.asyncio import Redis, StrictRedis
@@ -18,14 +20,16 @@ class Container(containers.DeclarativeContainer):
         socket_connect_timeout=config.REDIS_SOCKET_CONNECTION_TIMEOUT,
     )
 
-    ring_buffer: providers.Singleton[RedisRingBuffer] = providers.Singleton(
-        RedisRingBuffer,
-        redis=redis,
-        name=config.LOCATIONS_BUFFER_NAME,
-        max_size=config.LOCATIONS_BUFFER_MAX_SIZE,
+    ring_buffer: providers.Singleton[RedisRingBuffer[dict[str, Any]]] = (
+        providers.Singleton(
+            RedisRingBuffer,
+            redis=redis,
+            name=config.LOCATIONS_BUFFER_NAME,
+            max_size=config.LOCATIONS_BUFFER_MAX_SIZE,
+        )
     )
 
-    ipinfo_handler: providers.Singleton[ipinfo.AsyncHandler] = providers.Singleton(
+    ipinfo_handler: providers.Singleton = providers.Singleton(  # type:ignore[type-arg]
         ipinfo.getHandlerAsync,
         config.IPINFO_ACCESS_TOKEN,
     )

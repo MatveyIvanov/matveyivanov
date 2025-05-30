@@ -1,7 +1,9 @@
 import asyncio
 import json
 import re
+from collections.abc import AsyncGenerator
 from datetime import datetime
+from typing import Any
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Response
@@ -19,8 +21,10 @@ router = APIRouter(prefix="/changelog", tags=["changelog"])
 @router.get("", response_model=Changelog)
 @inject
 async def changelog(
-    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
-):
+    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+        Provide[Container.changelog_ring_buffer]
+    ),
+) -> dict[str, Any]:
     return {"updates": await ring_buffer.all()}
 
 
@@ -28,9 +32,11 @@ async def changelog(
 @inject
 async def stream(
     request: Request,
-    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
-):
-    async def generator():
+    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+        Provide[Container.changelog_ring_buffer]
+    ),
+) -> EventSourceResponse:
+    async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
                 break
@@ -50,11 +56,13 @@ async def stream(
 async def webhook(
     request: Request,
     hook: GitHubCreateHook,
-    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.changelog_ring_buffer]),
+    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+        Provide[Container.changelog_ring_buffer]
+    ),
     hash_n_compare: IHashAndCompare = Depends(
         Provide[Container.hash_n_compare_github_payload_on_create.provider]
     ),
-):
+) -> Response | str:
     if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
         value=await request.body(),
         expected=request.headers["X-Hub-Signature-256"],
@@ -74,7 +82,7 @@ async def webhook(
     if major == last_major and feature == last_feature and bugfix == last_bugfix:
         return "OK"
 
-    await ring_buffer.put(
+    _ = await ring_buffer.put(
         ChangelogItem(
             id=hook.ref,
             title=hook.ref,

@@ -1,8 +1,8 @@
 import asyncio
 import json
-from collections.abc import Iterable
+from collections.abc import AsyncGenerator, Iterable
 from datetime import datetime
-from typing import TypeVar
+from typing import Any
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
@@ -15,11 +15,10 @@ from services.interfaces import IRingBuffer
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
-T = TypeVar("T", bound=dict)
 
-
-def unique_dict(objs: Iterable[T], *, key: str) -> list[T]:
-    seen, result = set(), list()
+def unique_dict[T: dict[str, Any]](objs: Iterable[T], *, key: str) -> list[T]:
+    seen = set[Any]()
+    result = list[T]()
     for obj in objs:
         if obj[key] not in seen:
             seen.add(obj[key])
@@ -29,11 +28,13 @@ def unique_dict(objs: Iterable[T], *, key: str) -> list[T]:
 
 @router.get("", response_model=Locations)
 @inject
-async def locations(
+async def locations(  # type:ignore[no-untyped-def]
     request: Request,
-    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.locations_ring_buffer]),
+    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+        Provide[Container.locations_ring_buffer]
+    ),
     queue=Depends(Provide[Container.sqs_locations_queue]),
-):
+) -> dict[str, Any]:
     if request.client and settings.PROD:
         queue.send_message(
             MessageBody=json.dumps(
@@ -51,9 +52,11 @@ async def locations(
 @inject
 async def stream(
     request: Request,
-    ring_buffer: IRingBuffer[dict] = Depends(Provide[Container.locations_ring_buffer]),
-):
-    async def generator():
+    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+        Provide[Container.locations_ring_buffer]
+    ),
+) -> EventSourceResponse:
+    async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
                 break

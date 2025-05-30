@@ -1,9 +1,7 @@
-from typing import Protocol, TypeVar
-
-T = TypeVar("T")
+from typing import Protocol
 
 
-class IRingBuffer(Protocol[T]):
+class IRingBuffer[T](Protocol):
     async def put(self, value: T) -> bool:
         """
         Put a value to the ring buffer.
@@ -56,7 +54,7 @@ class IRingBuffer(Protocol[T]):
         ...
 
 
-class ISerializer(Protocol[T]):
+class ISerializer[T](Protocol):
     def dumps(self, obj: T) -> bytes | str:
         """
         Dump object to bytes or str.

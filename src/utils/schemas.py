@@ -1,5 +1,3 @@
-from typing import Dict
-
 from fastapi import status
 from pydantic.dataclasses import dataclass
 
@@ -11,7 +9,7 @@ class RequestErrorSchema:
 
 @dataclass
 class RequestValidationErrorSchema:
-    detail: Dict[str, str]
+    detail: dict[str, str]
 
 
 default_responses = {

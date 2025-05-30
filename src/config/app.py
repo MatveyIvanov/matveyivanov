@@ -10,12 +10,16 @@ from config import di, settings
 from utils.logging import get_config
 from utils.middleware import TranslationMiddleware
 
-logging.config.dictConfig(get_config())  # type: ignore[attr-defined]
+# fmt: off
+logging.config.dictConfig(
+    get_config()
+)
+# fmt: on
 
 container = di.Container()
 
 __app = FastAPI(debug=settings.DEBUG)
-__app.container = container
+__app.container = container  # type:ignore[attr-defined]
 for router in endpoints.get_routers():
     __app.include_router(router, tags=router.tags)
 
@@ -28,8 +32,11 @@ __app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=settings.ALLOWED_HOSTS,
 )
-__app.add_middleware(TranslationMiddleware)
-__app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=settings.PROXY_TRUSTED_HOSTS)
+__app.add_middleware(TranslationMiddleware)  # type:ignore[arg-type]
+__app.add_middleware(
+    ProxyHeadersMiddleware,  # type:ignore[arg-type]
+    trusted_hosts=settings.PROXY_TRUSTED_HOSTS,
+)
 
 
 def get_fastapi_app() -> FastAPI:
