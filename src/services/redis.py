@@ -1,12 +1,13 @@
 import pickle
+from typing import Any
 
 from redis.asyncio import Redis
 from redis.commands.core import AsyncScript
 
-from services.interfaces import IRingBuffer, ISerializer, T
+from services.interfaces import IRingBuffer, ISerializer
 
 
-class RedisRingBuffer(IRingBuffer[T]):
+class RedisRingBuffer[T](IRingBuffer[T]):
     def __init__(
         self,
         redis: Redis,
@@ -179,7 +180,9 @@ class RedisRingBuffer(IRingBuffer[T]):
             # buffer has not wrapped around,
             # so we can simply get all values and
             # sort them
-            values = await self.__redis.hgetall(self.__data_key)
+            values: dict[Any, Any] = await self.__redis.hgetall(
+                self.__data_key
+            )  # type:ignore[misc]
             positions: list[int] = [
                 int(key.decode()) if isinstance(key, bytes) else int(key)
                 for key in values.keys()
@@ -211,7 +214,7 @@ class RedisRingBuffer(IRingBuffer[T]):
     async def size(self) -> int:
         await self._initialize()
 
-        size = await self.__size(
+        size: str | bytes | int = await self.__size(
             keys=[self.__head_key],
             args=[self.__max_size],
         )

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from fastapi import APIRouter
 
 from endpoints.changelog import router as changelog_router
@@ -13,7 +11,7 @@ api_router.include_router(locations_router)
 api_router.include_router(visitors_router)
 
 
-def get_routers() -> Tuple[APIRouter, ...]:
+def get_routers() -> tuple[APIRouter, ...]:
     return (
         frontend_router,
         api_router,

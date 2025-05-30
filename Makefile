@@ -18,9 +18,13 @@ test:
 lint:
 	cd src && poetry run flake8 $(OPTS) .
 	cd src && poetry run flake8 $(OPTS) ../f-locations
+	cd src && poetry run ruff check $(OPTS) .
+	cd src && poetry run ruff check $(OPTS) ../f-locations
 analyze:
-	cd src && poetry run mypy $(OPTS) .
-	cd src && poetry run mypy $(OPTS) ../f-locations
+	cd src && poetry run mypy $(OPTS) . --namespace-packages --explicit-package-bases
+	cd src && poetry run mypy $(OPTS) ../f-locations --namespace-packages --explicit-package-bases
+	cd src && poetry run pyrefly check . || true  # experimental until stable version of pyrefly is released
+	cd src && poetry run pyrefly check ../f-locations || true  # experimental until stable version of pyrefly is released
 format:
 	cd src && poetry run black $(OPTS) .
 	cd src && poetry run black $(OPTS) ../f-locations

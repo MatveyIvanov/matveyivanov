@@ -1,9 +1,9 @@
-from typing import Dict
+from typing import Any
 
 from config import settings
 
 
-def get_config() -> Dict:
+def get_config() -> dict[str, Any]:
     handlers = {
         "uvicorn": {
             "level": "DEBUG" if settings.DEBUG else "ERROR",
