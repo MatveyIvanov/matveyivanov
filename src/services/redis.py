@@ -1,5 +1,4 @@
 import pickle
-from typing import Any
 
 from redis.asyncio import Redis
 from redis.commands.core import AsyncScript
@@ -8,6 +7,12 @@ from services.interfaces import IRingBuffer, ISerializer
 
 
 class RedisRingBuffer[T](IRingBuffer[T]):
+    __write: AsyncScript
+    __size: AsyncScript
+    __clear: AsyncScript
+    __latest: AsyncScript
+    __all_ordered: AsyncScript
+
     def __init__(
         self,
         redis: Redis,
@@ -33,11 +38,6 @@ class RedisRingBuffer[T](IRingBuffer[T]):
         self.__data_key = f"{name}:data"
         self.__lock_key = f"{name}:lock"
         self.__initialized = False
-        self.__write: AsyncScript = None  # type:ignore
-        self.__size: AsyncScript = None  # type:ignore
-        self.__clear: AsyncScript = None  # type:ignore
-        self.__latest: AsyncScript = None  # type:ignore
-        self.__all_ordered: AsyncScript = None  # type:ignore
 
     async def _initialize(self) -> None:
         if self.__initialized:
@@ -180,9 +180,7 @@ class RedisRingBuffer[T](IRingBuffer[T]):
             # buffer has not wrapped around,
             # so we can simply get all values and
             # sort them
-            values: dict[Any, Any] = await self.__redis.hgetall(
-                self.__data_key
-            )  # type:ignore[misc]
+            values = await self.__redis.hgetall(self.__data_key)  # type:ignore[misc]
             positions: list[int] = [
                 int(key.decode()) if isinstance(key, bytes) else int(key)
                 for key in values.keys()
@@ -214,7 +212,7 @@ class RedisRingBuffer[T](IRingBuffer[T]):
     async def size(self) -> int:
         await self._initialize()
 
-        size: str | bytes | int = await self.__size(
+        size = await self.__size(
             keys=[self.__head_key],
             args=[self.__max_size],
         )
