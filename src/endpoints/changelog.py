@@ -35,7 +35,7 @@ async def stream(
     ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
         Provide[Container.changelog_ring_buffer]
     ),
-) -> EventSourceResponse:
+) -> dict[str, str]:
     async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
@@ -48,7 +48,7 @@ async def stream(
 
             await asyncio.sleep(settings.CHANGELOG_SSE_INTERVAL_SECONDS)
 
-    return EventSourceResponse(generator())
+    return EventSourceResponse(generator())  # type:ignore[return-value]
 
 
 @router.post("/webhook")
@@ -62,12 +62,15 @@ async def webhook(
     hash_n_compare: IHashAndCompare = Depends(
         Provide[Container.hash_n_compare_github_payload_on_create.provider]
     ),
-) -> Response | str:
+) -> str:
     if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
         value=await request.body(),
         expected=request.headers["X-Hub-Signature-256"],
     ):
-        return Response("Unauthorized", status_code=401)
+        return Response(  # type:ignore[return-value]
+            "Unauthorized",
+            status_code=401,
+        )
 
     if hook.ref_type != "tag" or not re.match(settings.GITHUB_TAG_PATTERN, hook.ref):
         return "OK"

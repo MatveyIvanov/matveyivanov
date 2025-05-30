@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
@@ -9,7 +11,7 @@ router = APIRouter(tags=["pages"])
 
 @router.get("/", response_class=HTMLResponse)
 @router.get("/home", response_class=HTMLResponse)
-async def home(request: Request):  # type:ignore[no-untyped-def]
+async def home(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_HOME,
@@ -18,7 +20,7 @@ async def home(request: Request):  # type:ignore[no-untyped-def]
 
 
 @router.get("/experience", response_class=HTMLResponse)
-async def experience(request: Request):  # type:ignore[no-untyped-def]
+async def experience(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_EXPERIENCE,
@@ -39,7 +41,7 @@ async def experience(request: Request):  # type:ignore[no-untyped-def]
 
 
 @router.get("/stack", response_class=HTMLResponse)
-async def stack(request: Request):  # type:ignore[no-untyped-def]
+async def stack(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_STACK,
@@ -48,7 +50,7 @@ async def stack(request: Request):  # type:ignore[no-untyped-def]
 
 
 @router.get("/python", response_class=HTMLResponse)
-async def python(request: Request):  # type:ignore[no-untyped-def]
+async def python(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_PYTHON,
@@ -57,7 +59,7 @@ async def python(request: Request):  # type:ignore[no-untyped-def]
 
 
 @router.get("/books", response_class=HTMLResponse)
-async def books(request: Request):  # type:ignore[no-untyped-def]
+async def books(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_BOOKS,
@@ -70,7 +72,7 @@ async def books(request: Request):  # type:ignore[no-untyped-def]
 
 
 @router.get("/projects", response_class=HTMLResponse)
-async def projects(request: Request):  # type:ignore[no-untyped-def]
+async def projects(request: Request) -> Any:
     return templates.TemplateResponse(
         request=request,
         name=settings.HTML_FOR_PROJECTS,
