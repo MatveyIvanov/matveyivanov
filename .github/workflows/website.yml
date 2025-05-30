@@ -52,22 +52,24 @@ jobs:
       fail-fast: true
       matrix:
         vm:
-          - host: ${{ secrets.YC_WEB_VM_SSH_HOST }}
-            username: ${{ secrets.YC_WEB_VM_SSH_USERNAME }}
-            key: ${{ secrets.YC_WEB_VM_SSH_PRIVATE_KEY }}
-            port: ${{ secrets.YC_WEB_VM_SSH_PORT }}
-          - host: ${{ secrets.YC_WEB_FALLBACK_VM_SSH_HOST }}
-            username: ${{ secrets.YC_WEB_FALLBACK_VM_SSH_USERNAME }}
-            key: ${{ secrets.YC_WEB_FALLBACK_VM_SSH_PRIVATE_KEY }}
-            port: ${{ secrets.YC_WEB_FALLBACK_VM_SSH_PORT }}
+          - id: "Primary Web VM"
+            host_secret_name: YC_WEB_VM_SSH_HOST
+            username_secret_name: YC_WEB_VM_SSH_USERNAME
+            key_secret_name: YC_WEB_VM_SSH_PRIVATE_KEY
+            port_secret_name: YC_WEB_VM_SSH_PORT
+          - id: "Fallback Web VM"
+            host_secret_name: YC_WEB_FALLBACK_VM_SSH_HOST
+            username_secret_name: YC_WEB_FALLBACK_VM_SSH_USERNAME
+            key_secret_name: YC_WEB_FALLBACK_VM_SSH_PRIVATE_KEY
+            port_secret_name: YC_WEB_FALLBACK_VM_SSH_PORT
     steps:
       - name: Pull image and restart the web server
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ matrix.vm.host }}
-          username: ${{ matrix.vm.username }}
-          key: ${{ matrix.vm.key }}
-          port: ${{ matrix.vm.port }}
+          host: ${{ secrets[matrix.vm.host_secret_name] }}
+          username: ${{ secrets[matrix.vm.username_secret_name] }}
+          key: ${{ secrets[matrix.vm.key_secret_name] }}
+          port: ${{ secrets[matrix.vm.port_secret_name] }}
           script: |
             cd /var/www/matveyivanov && rm -rf build.tmp || true
             cd /var/www/matveyivanov && mv build build.tmp
