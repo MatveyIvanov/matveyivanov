@@ -131,7 +131,6 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "utils/pygettext.py",
 ]
 line-length = 88
 indent-width = 4
@@ -160,7 +159,6 @@ python_version = "3.13"
 exclude = [
     "tests",
     "di\\.py",
-    "utils/pygettext\\.py",
 ]
 plugins = [
     
@@ -204,7 +202,6 @@ force_union_syntax = false
 project_excludes = [
     "tests/**",
     "di\\.py",
-    "utils/pygettext\\.py",
 ]
 python_platform = "linux"
 python_version = "3.13"
