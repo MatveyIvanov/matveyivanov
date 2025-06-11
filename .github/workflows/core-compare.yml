@@ -24,6 +24,7 @@ jobs:
     name: Compare all core files across multiple modules
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         comparison:
           - {
@@ -32,11 +33,34 @@ jobs:
               file2: "f-locations/src/redis.py",
               start_line_no: 9,
             }
-      # This ensures all comparisons run even if one fails
-      fail-fast: false
+          - {
+              name: "Lua.Hset.All",
+              file1: "src/lua/hset/all.lua",
+              file2: "f-locations/lua/hset/all.lua",
+            }
+          - {
+              name: "Lua.Hset.Clear",
+              file1: "src/lua/hset/clear.lua",
+              file2: "f-locations/lua/hset/clear.lua",
+            }
+          - {
+              name: "Lua.Hset.Latest",
+              file1: "src/lua/hset/latest.lua",
+              file2: "f-locations/lua/hset/latest.lua",
+            }
+          - {
+              name: "Lua.Hset.Size",
+              file1: "src/lua/hset/size.lua",
+              file2: "f-locations/lua/hset/size.lua",
+            }
+          - {
+              name: "Lua.Hset.WriteOne",
+              file1: "src/lua/hset/write_one.lua",
+              file2: "f-locations/lua/hset/write_one.lua",
+            }
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Compare file hashes - ${{ matrix.comparison.name }}
         id: compare
         run: |
