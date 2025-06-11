@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from datetime import datetime
 from typing import Any
 
 from dependency_injector.wiring import Provide, inject
@@ -29,16 +30,32 @@ async def handle(  # type:ignore[no-any-unimported]
         )
         location = str(getattr(details, "city", config.IPINFO_DEFAULT_CITY))
         await redis.hset(
-            config.LOCATIONS_HASHSET_NAME, event.ip, location
+            config.LOCATIONS_HASHSET_NAME,
+            event.ip,
+            location,
         )  # type:ignore[misc]
     else:
         location = _location.decode() if isinstance(_location, bytes) else _location
 
-    await ring_buffer.put(
-        asdict(
-            Location(
-                location=location,
-                timestamp=event.timestamp,
+    locations = await ring_buffer.all()
+    put_needed = True
+    if _location is not None:
+        for loc in locations:
+            if loc["location"] != location:
+                continue
+
+            if (
+                datetime.fromtimestamp(float(event.timestamp))
+                - datetime.fromtimestamp(float(loc["timestamp"]))
+            ).seconds < config.LOCATIONS_SECONDS_CONSIDER_AS_NEW:
+                put_needed = False
+
+    if put_needed:
+        await ring_buffer.put(
+            asdict(
+                Location(
+                    location=location,
+                    timestamp=event.timestamp,
+                )
             )
         )
-    )

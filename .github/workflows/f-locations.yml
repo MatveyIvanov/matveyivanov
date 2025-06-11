@@ -64,5 +64,6 @@ jobs:
             LOCATIONS_BUFFER_NAME=${{ secrets.LOCATIONS_BUFFER_NAME }}
             LOCATIONS_BUFFER_MAX_SIZE=${{ secrets.LOCATIONS_BUFFER_MAX_SIZE }}
             LOCATIONS_HASHSET_NAME=${{ secrets.LOCATIONS_HASHSET_NAME }}
+            LOCATIONS_SECONDS_CONSIDER_AS_NEW=${{ secrets.YC_F_LOCATIONS_LOCATIONS_SECONDS_CONSIDER_AS_NEW }}
           include: |
             ./

@@ -1,6 +1,6 @@
 import asyncio
 import json
-from collections.abc import AsyncGenerator, Iterable
+from collections.abc import AsyncGenerator
 from datetime import datetime
 from typing import Any
 
@@ -14,16 +14,6 @@ from schemas.locations import IPEvent, Locations
 from services.interfaces import IRingBuffer
 
 router = APIRouter(prefix="/locations", tags=["locations"])
-
-
-def unique_dict[T: dict[str, Any]](objs: Iterable[T], *, key: str) -> list[T]:
-    seen = set[Any]()
-    result = list[T]()
-    for obj in objs:
-        if obj[key] not in seen:
-            seen.add(obj[key])
-            result.append(obj)
-    return result
 
 
 @router.get("", response_model=Locations)
@@ -45,7 +35,7 @@ async def locations(  # type:ignore[no-untyped-def]
             ),
             MessageGroupId="default",
         )
-    return {"locations": unique_dict(await ring_buffer.all(), key="location")}
+    return {"locations": await ring_buffer.all()}
 
 
 @router.get("/stream")
@@ -63,9 +53,7 @@ async def stream(
 
             yield {
                 "event": "message",
-                "data": json.dumps(
-                    {"locations": unique_dict(await ring_buffer.all(), key="location")}
-                ),
+                "data": json.dumps({"locations": await ring_buffer.all()}),
             }
 
             await asyncio.sleep(settings.LOCATIONS_SSE_INTERVAL_SECONDS)

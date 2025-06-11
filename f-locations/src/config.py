@@ -52,3 +52,8 @@ LOCATIONS_HASHSET_NAME: str = load(
     "hashset:locations",
     ensure_not_empty=True,
 )
+LOCATIONS_SECONDS_CONSIDER_AS_NEW: int = load(
+    "LOCATIONS_SECONDS_CONSIDER_AS_NEW",
+    60 * 60 * 24,
+    ensure_not_empty=True,
+)
