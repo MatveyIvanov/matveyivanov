@@ -24,6 +24,7 @@ jobs:
     name: Compare all core files across multiple modules
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         comparison:
           - {
@@ -57,12 +58,9 @@ jobs:
               file1: "src/lua/write_one.lua",
               file2: "f-locations/lua/write_one.lua",
             }
-
-      # This ensures all comparisons run even if one fails
-      fail-fast: false
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Compare file hashes - ${{ matrix.comparison.name }}
         id: compare
         run: |

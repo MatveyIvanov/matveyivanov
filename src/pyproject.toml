@@ -21,6 +21,7 @@ dependency-injector = "^4.46.0"
 boto3 = "1.38.20"
 pytz = "^2025.2"
 aiofiles = "24.1.0"
+types-aiofiles = "^24.1.0.20250606"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.1"
@@ -40,6 +41,7 @@ types-pytz = "^2025.2.0.20250516"
 types-python-dateutil = "^2.9.0.20250516"
 types-boto3 = "1.38.20"
 types-boto3-sqs = "1.38.0"
+types-aiofiles = "24.1.0.20250606"
 
 [tool.pytest.ini_options]
 python_files = "test_*.py"
