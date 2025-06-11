@@ -13,7 +13,7 @@ from src.types import IPEvent, Location
 
 
 @inject
-async def handle(  # type:ignore[no-any-unimported]
+async def handle(
     event: IPEvent,
     redis: Redis = Provide[Container.redis],
     ring_buffer: IRingBuffer[dict[str, Any]] = Provide[Container.ring_buffer],
