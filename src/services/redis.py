@@ -1,5 +1,6 @@
 import pickle
 
+import aiofiles
 from redis.asyncio import Redis
 from redis.commands.core import AsyncScript
 
@@ -46,102 +47,19 @@ class RedisRingBuffer[T](IRingBuffer[T]):
         if not await self.__redis.exists(self.__head_key):
             await self.__redis.set(self.__head_key, 0)
 
+        async def load(path: str) -> str:
+            async with aiofiles.open(path, "r") as file:
+                content = await file.read()
+            return content
+
         self.__write = self.__redis.register_script(
-            """
-            local head = tonumber(redis.call('GET', KEYS[1]) or "0")
-            local position = head % tonumber(ARGV[1])
-
-            -- Store the value at the calculated position
-            redis.call('HSET', KEYS[2], position, ARGV[2])
-
-            -- Increment head and store it
-            head = head + 1
-            redis.call('SET', KEYS[1], head)
-
-            return head
-            """
+            await load("lua/hset/write_one.lua")
         )
-        self.__size = self.__redis.register_script(
-            """
-            local head = tonumber(redis.call('GET', KEYS[1]) or "0")
-            local max_size = tonumber(ARGV[1])
-            return math.min(head, max_size)
-            """
-        )
-        self.__clear = self.__redis.register_script(
-            """
-            redis.call('DEL', KEYS[2])
-            redis.call('SET', KEYS[1], 0)
-            return 1
-            """
-        )
-        self.__latest = self.__redis.register_script(
-            """
-            local head = tonumber(redis.call('GET', KEYS[1]) or "0")
-            local max_size = tonumber(ARGV[1])
-            local count = tonumber(ARGV[2])
-            local result = {}
-
-            -- If empty buffer
-            if head == 0 then
-                return result
-            end
-
-            -- Calculate how many items to fetch (min of requested count, actual items)
-            local items_to_fetch = math.min(count, math.min(head, max_size))
-
-            -- Get the latest items in reverse order (newest first)
-            for i = 0, items_to_fetch - 1 do
-                local pos = (head - i - 1) % max_size
-                local value = redis.call('HGET', KEYS[2], tostring(pos))
-                if value then
-                    table.insert(result, value)
-                end
-            end
-
-            return result
-            """
-        )
+        self.__size = self.__redis.register_script(await load("lua/hset/size.lua"))
+        self.__clear = self.__redis.register_script(await load("lua/hset/clear.lua"))
+        self.__latest = self.__redis.register_script(await load("lua/hset/latest.lua"))
         self.__all_ordered = self.__redis.register_script(
-            """
-            local head = tonumber(redis.call('GET', KEYS[1]) or "0")
-            local max_size = tonumber(ARGV[1])
-            local result = {}
-
-            -- Get actual size (min of head or max_size)
-            local size = math.min(head, max_size)
-
-            -- If buffer has wrapped, get items in correct order (oldest to newest)
-            if head > max_size then
-                local start_pos = head % max_size
-
-                -- First collect from start_pos to max_size - 1
-                for i = start_pos, max_size - 1 do
-                    local value = redis.call('HGET', KEYS[2], tostring(i))
-                    if value then
-                        table.insert(result, {tostring(i), value})
-                    end
-                end
-
-                -- Then collect from 0 to start_pos - 1
-                for i = 0, start_pos - 1 do
-                    local value = redis.call('HGET', KEYS[2], tostring(i))
-                    if value then
-                        table.insert(result, {tostring(i), value})
-                    end
-                end
-            else
-                -- If buffer hasn't wrapped, get items in index order
-                for i = 0, size - 1 do
-                    local value = redis.call('HGET', KEYS[2], tostring(i))
-                    if value then
-                        table.insert(result, {tostring(i), value})
-                    end
-                end
-            end
-
-            return result
-            """
+            await load("lua/hset/all.lua")
         )
 
         self.__initialized = True

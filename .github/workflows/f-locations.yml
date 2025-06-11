@@ -14,6 +14,8 @@ jobs:
     uses: ./.github/workflows/core-compare.yml
   linters:
     uses: ./.github/workflows/linting.yml
+  luacheck:
+    uses: ./.github/workflows/linting.yml
   build:
     name: Deploy new locations function version 
     runs-on: ubuntu-latest

@@ -32,6 +32,32 @@ jobs:
               file2: "f-locations/src/redis.py",
               start_line_no: 9,
             }
+          - {
+              name: "Lua.Hset.All",
+              file1: "src/lua/all.lua",
+              file2: "f-locations/lua/all.lua",
+            }
+          - {
+              name: "Lua.Hset.Clear",
+              file1: "src/lua/clear.lua",
+              file2: "f-locations/lua/clear.lua",
+            }
+          - {
+              name: "Lua.Hset.Latest",
+              file1: "src/lua/latest.lua",
+              file2: "f-locations/lua/latest.lua",
+            }
+          - {
+              name: "Lua.Hset.Size",
+              file1: "src/lua/size.lua",
+              file2: "f-locations/lua/size.lua",
+            }
+          - {
+              name: "Lua.Hset.WriteOne",
+              file1: "src/lua/write_one.lua",
+              file2: "f-locations/lua/write_one.lua",
+            }
+
       # This ensures all comparisons run even if one fails
       fail-fast: false
     steps:
