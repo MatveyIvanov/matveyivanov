@@ -44,7 +44,7 @@ class Container(containers.DeclarativeContainer):
         key=settings.GITHUB_CREATE_WEBHOOK_TOKEN,
     )
 
-    _sqs_locations_session = providers.Resource(  # type:ignore
+    _sqs_locations_session = providers.Resource(
         boto3.session.Session,
         aws_access_key_id=settings.SQS_LOCATIONS_ACCESS_KEY,
         aws_secret_access_key=settings.SQS_LOCATIONS_SECRET_KEY,

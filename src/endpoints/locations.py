@@ -7,6 +7,7 @@ from typing import Any
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from sse_starlette.sse import EventSourceResponse
+from types_boto3_sqs.service_resource import Queue
 
 from config import settings
 from config.di import Container
@@ -18,12 +19,12 @@ router = APIRouter(prefix="/locations", tags=["locations"])
 
 @router.get("", response_model=Locations)
 @inject
-async def locations(  # type:ignore[no-untyped-def]
+async def locations(
     request: Request,
     ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
         Provide[Container.locations_ring_buffer]
     ),
-    queue=Depends(Provide[Container.sqs_locations_queue]),
+    queue: Queue = Depends(Provide[Container.sqs_locations_queue]),
 ) -> dict[str, Any]:
     if request.client and settings.PROD:
         queue.send_message(

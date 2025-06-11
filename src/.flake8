@@ -13,7 +13,6 @@ exclude =
     .env.example
     utils/routing.py
     utils/app.py
-    utils/pygettext.py
     alembic.ini
     migrations/*
 per-file-ignores = 
