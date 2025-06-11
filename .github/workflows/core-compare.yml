@@ -35,28 +35,28 @@ jobs:
             }
           - {
               name: "Lua.Hset.All",
-              file1: "src/lua/all.lua",
-              file2: "f-locations/lua/all.lua",
+              file1: "src/lua/hset/all.lua",
+              file2: "f-locations/lua/hset/all.lua",
             }
           - {
               name: "Lua.Hset.Clear",
-              file1: "src/lua/clear.lua",
-              file2: "f-locations/lua/clear.lua",
+              file1: "src/lua/hset/clear.lua",
+              file2: "f-locations/lua/hset/clear.lua",
             }
           - {
               name: "Lua.Hset.Latest",
-              file1: "src/lua/latest.lua",
-              file2: "f-locations/lua/latest.lua",
+              file1: "src/lua/hset/latest.lua",
+              file2: "f-locations/lua/hset/latest.lua",
             }
           - {
               name: "Lua.Hset.Size",
-              file1: "src/lua/size.lua",
-              file2: "f-locations/lua/size.lua",
+              file1: "src/lua/hset/size.lua",
+              file2: "f-locations/lua/hset/size.lua",
             }
           - {
               name: "Lua.Hset.WriteOne",
-              file1: "src/lua/write_one.lua",
-              file2: "f-locations/lua/write_one.lua",
+              file1: "src/lua/hset/write_one.lua",
+              file2: "f-locations/lua/hset/write_one.lua",
             }
     steps:
       - name: Checkout code
