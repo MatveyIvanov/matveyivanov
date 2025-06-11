@@ -8,7 +8,6 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import endpoints
 from config import di, settings
 from utils.logging import get_config
-from utils.middleware import TranslationMiddleware
 
 # fmt: off
 logging.config.dictConfig(
@@ -32,7 +31,6 @@ __app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=settings.ALLOWED_HOSTS,
 )
-__app.add_middleware(TranslationMiddleware)  # type:ignore[arg-type]
 __app.add_middleware(
     ProxyHeadersMiddleware,  # type:ignore[arg-type]
     trusted_hosts=settings.PROXY_TRUSTED_HOSTS,
