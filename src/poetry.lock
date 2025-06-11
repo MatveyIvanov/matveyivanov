@@ -2024,7 +2024,7 @@ version = "24.1.0.20250606"
 description = "Typing stubs for aiofiles"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "types_aiofiles-24.1.0.20250606-py3-none-any.whl", hash = "sha256:e568c53fb9017c80897a9aa15c74bf43b7ee90e412286ec1e0912b6e79301aee"},
     {file = "types_aiofiles-24.1.0.20250606.tar.gz", hash = "sha256:48f9e26d2738a21e0b0f19381f713dcdb852a36727da8414b1ada145d40a18fe"},
@@ -2707,4 +2707,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "f6d05805718d6f369a13b34d0b6cc034d493f547fe6344306266871f9bd72c98"
+content-hash = "54d12ee3d59711564c4669cd2f41239af73ad91bcea8bda73013793f8d1c62e6"
