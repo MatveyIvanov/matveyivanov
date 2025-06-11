@@ -34,6 +34,12 @@ jobs:
               start_line_no: 9,
             }
           - {
+              name: "Interfaces",
+              file1: "src/services/interfaces.py",
+              file2: "f-locations/src/interfaces.py",
+              end_line_no: 79,
+            }
+          - {
               name: "Lua.Hset.All",
               file1: "src/lua/hset/all.lua",
               file2: "f-locations/lua/hset/all.lua",
