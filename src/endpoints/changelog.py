@@ -90,8 +90,7 @@ async def webhook(
             id=hook.ref,
             title=hook.ref,
             type="feature" if bugfix == "0" else "bugfix",
-            description=hook.description
-            or settings.CHANGELOG_VERSION_DEFAULT_DESCRIPTION,
+            description=f'<a href="https://github.com/MatveyIvanov/matveyivanov/releases/{hook.ref}" target="_blank">{hook.ref}</a>',  # noqa:E501
             version=hook.ref,
             date=str(datetime.now().timestamp()),
         ).model_dump()

@@ -119,7 +119,6 @@ jobs:
             cd /var/www/matveyivanov/build && echo "TIMEZONE=${{ secrets.YC_WEB_VM_TIMEZONE }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "VISITORS_SSE_INTERVAL_SECONDS=${{ secrets.YC_WEB_VM_VISITORS_SSE_INTERVAL_SECONDS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_SSE_INTERVAL_SECONDS=${{ secrets.YC_WEB_VM_CHANGELOG_SSE_INTERVAL_SECONDS }}" >> docker/.env
-            cd /var/www/matveyivanov/build && echo "CHANGELOG_VERSION_DEFAULT_DESCRIPTION=${{ secrets.YC_WEB_VM_CHANGELOG_VERSION_DEFAULT_DESCRIPTION }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_BUFFER_NAME=${{ secrets.CHANGELOG_BUFFER_NAME }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "CHANGELOG_BUFFER_MAX_SIZE=${{ secrets.CHANGELOG_BUFFER_MAX_SIZE }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "LOCATIONS_SSE_INTERVAL_SECONDS=${{ secrets.YC_WEB_VM_LOCATIONS_SSE_INTERVAL_SECONDS }}" >> docker/.env
