@@ -49,6 +49,5 @@ jobs:
       with:
         node-version: 18
     - run: |
-        npm install eslint
-        ./node_modules/.bin/eslint --init
-        ./node_modules/.bin/eslint src/static/js
+        npm init @eslint/config@latest -- --config eslint-config-xo
+        npx eslint src/static/js
