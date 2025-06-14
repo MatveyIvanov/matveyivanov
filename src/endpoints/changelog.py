@@ -3,7 +3,7 @@ import json
 import re
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any
+from typing import cast
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Response
@@ -11,7 +11,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from config import settings
 from config.di import Container
-from schemas.changelog import Changelog, ChangelogItem
+from schemas.changelog import Changelog, ChangelogItem, ChangelogItemDict
 from schemas.webhooks import GitHubCreateHook
 from services.interfaces import IHashAndCompare, IRingBuffer
 
@@ -21,21 +21,34 @@ router = APIRouter(prefix="/changelog", tags=["changelog"])
 @router.get("", response_model=Changelog)
 @inject
 async def changelog(
-    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+    ring_buffer: IRingBuffer[ChangelogItemDict] = Depends(
         Provide[Container.changelog_ring_buffer]
     ),
-) -> dict[str, Any]:
-    return {"updates": await ring_buffer.all()}
+) -> Changelog:
+    items = await ring_buffer.all()
+    return Changelog(
+        updates=[
+            ChangelogItem(
+                id=item["id"],
+                title=item["title"],
+                type=item["type"],
+                description=item["description"],
+                version=item["version"],
+                date=item["date"],
+            )
+            for item in items
+        ]
+    )
 
 
 @router.get("/stream")
 @inject
 async def stream(
     request: Request,
-    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+    ring_buffer: IRingBuffer[ChangelogItemDict] = Depends(
         Provide[Container.changelog_ring_buffer]
     ),
-) -> dict[str, str]:
+) -> EventSourceResponse:
     async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
@@ -48,7 +61,7 @@ async def stream(
 
             await asyncio.sleep(settings.CHANGELOG_SSE_INTERVAL_SECONDS)
 
-    return EventSourceResponse(generator())  # type:ignore[return-value]
+    return EventSourceResponse(generator())
 
 
 @router.post("/webhook")
@@ -56,7 +69,7 @@ async def stream(
 async def webhook(
     request: Request,
     hook: GitHubCreateHook,
-    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+    ring_buffer: IRingBuffer[ChangelogItemDict] = Depends(
         Provide[Container.changelog_ring_buffer]
     ),
     hash_n_compare: IHashAndCompare = Depends(
@@ -86,13 +99,16 @@ async def webhook(
         return "OK"
 
     _ = await ring_buffer.put(
-        ChangelogItem(
-            id=hook.ref,
-            title=hook.ref,
-            type="feature" if bugfix == "0" else "bugfix",
-            description="",
-            version=hook.ref,
-            date=str(datetime.now().timestamp()),
-        ).model_dump()
+        cast(
+            ChangelogItemDict,
+            ChangelogItem(
+                id=hook.ref,
+                title=hook.ref,
+                type="feature" if bugfix == "0" else "bugfix",
+                description="",
+                version=hook.ref,
+                date=str(datetime.now().timestamp()),
+            ).model_dump(),
+        )
     )
     return "OK"
