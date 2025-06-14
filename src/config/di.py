@@ -1,11 +1,11 @@
 # fmt: off
-from typing import Any
-
 import boto3
 from dependency_injector import containers, providers
 from redis.asyncio import Redis, StrictRedis
 
 from config import settings
+from schemas.changelog import ChangelogItemDict
+from schemas.locations import LocationDict
 from services.github import hash_github_payload_and_compare
 from services.redis import RedisRingBuffer
 
@@ -22,7 +22,7 @@ class Container(containers.DeclarativeContainer):
         socket_connect_timeout=settings.REDIS_SOCKET_CONNECTION_TIMEOUT,
     )
 
-    changelog_ring_buffer: providers.Singleton[RedisRingBuffer[dict[str, Any]]] = (
+    changelog_ring_buffer: providers.Singleton[RedisRingBuffer[ChangelogItemDict]] = (
         providers.Singleton(
             RedisRingBuffer,
             redis=redis,
@@ -30,7 +30,7 @@ class Container(containers.DeclarativeContainer):
             max_size=settings.CHANGELOG_BUFFER_MAX_SIZE,
         )
     )
-    locations_ring_buffer: providers.Singleton[RedisRingBuffer[dict[str, Any]]] = (
+    locations_ring_buffer: providers.Singleton[RedisRingBuffer[LocationDict]] = (
         providers.Singleton(
             RedisRingBuffer,
             redis=redis,

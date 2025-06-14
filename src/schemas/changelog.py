@@ -1,4 +1,15 @@
+from typing import TypedDict
+
 from pydantic import BaseModel, Field
+
+
+class ChangelogItemDict(TypedDict):
+    id: str
+    title: str
+    type: str
+    description: str
+    version: str
+    date: str
 
 
 class ChangelogItem(BaseModel):

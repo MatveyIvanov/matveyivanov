@@ -9,19 +9,20 @@ from sse_starlette.sse import EventSourceResponse
 
 from config import settings
 from config.di import Container
+from schemas.visitors import Visitors
 from utils.contexts import no_exc
 
 router = APIRouter(prefix="/visitors", tags=["visitors"])
 
 
-@router.get("")
+@router.get("", response_model=Visitors)
 @inject
 async def count(
     redis: Redis = Depends(Provide[Container.redis]),
-) -> dict[str, int]:
+) -> Visitors:
     count = await redis.get(settings.REDIS_VISITORS_COUNTER_KEY)
     count = int(count) if count else 0
-    return {"count": count}
+    return Visitors(count=count)
 
 
 @router.get("/stream")
@@ -30,7 +31,7 @@ async def stream(
     request: Request,
     background_tasks: BackgroundTasks,
     redis: Redis = Depends(Provide[Container.redis]),
-) -> dict[str, str]:
+) -> EventSourceResponse:
     async def update(increment: int = 0) -> int:
         pipe = redis.pipeline(transaction=True)
         await pipe.incr(settings.REDIS_VISITORS_COUNTER_KEY, increment)
@@ -65,7 +66,4 @@ async def stream(
 
     background_tasks.add_task(cleanup)
 
-    return EventSourceResponse(  # type:ignore[return-value]
-        generator(),
-        background=background_tasks,
-    )
+    return EventSourceResponse(generator(), background=background_tasks)

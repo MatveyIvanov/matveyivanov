@@ -1,4 +1,11 @@
+from typing import TypedDict
+
 from pydantic import BaseModel
+
+
+class LocationDict(TypedDict):
+    locaiton: str
+    timestamp: str
 
 
 class Location(BaseModel):

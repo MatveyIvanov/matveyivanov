@@ -2,7 +2,6 @@ import asyncio
 import json
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
@@ -11,7 +10,7 @@ from types_boto3_sqs.service_resource import Queue
 
 from config import settings
 from config.di import Container
-from schemas.locations import IPEvent, Locations
+from schemas.locations import IPEvent, Location, LocationDict, Locations
 from services.interfaces import IRingBuffer
 
 router = APIRouter(prefix="/locations", tags=["locations"])
@@ -21,11 +20,11 @@ router = APIRouter(prefix="/locations", tags=["locations"])
 @inject
 async def locations(
     request: Request,
-    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+    ring_buffer: IRingBuffer[LocationDict] = Depends(
         Provide[Container.locations_ring_buffer]
     ),
     queue: Queue = Depends(Provide[Container.sqs_locations_queue]),
-) -> dict[str, Any]:
+) -> Locations:
     if request.client and settings.PROD:
         queue.send_message(
             MessageBody=json.dumps(
@@ -36,17 +35,27 @@ async def locations(
             ),
             MessageGroupId="default",
         )
-    return {"locations": await ring_buffer.all()}
+
+    _locations = await ring_buffer.all()
+    return Locations(
+        locations=[
+            Location(
+                location=location["locaiton"],
+                timestamp=location["timestamp"],
+            )
+            for location in _locations
+        ]
+    )
 
 
 @router.get("/stream")
 @inject
 async def stream(
     request: Request,
-    ring_buffer: IRingBuffer[dict[str, Any]] = Depends(
+    ring_buffer: IRingBuffer[LocationDict] = Depends(
         Provide[Container.locations_ring_buffer]
     ),
-) -> dict[str, str]:
+) -> EventSourceResponse:
     async def generator() -> AsyncGenerator[dict[str, str]]:
         while True:
             if await request.is_disconnected():
@@ -59,4 +68,4 @@ async def stream(
 
             await asyncio.sleep(settings.LOCATIONS_SSE_INTERVAL_SECONDS)
 
-    return EventSourceResponse(generator())  # type:ignore[return-value]
+    return EventSourceResponse(generator())
