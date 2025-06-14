@@ -17,7 +17,12 @@ logging.config.dictConfig(
 
 container = di.Container()
 
-__app = FastAPI(debug=settings.DEBUG)
+__app = FastAPI(
+    debug=settings.DEBUG,
+    docs_url="/docs" if not settings.PROD else None,
+    redoc_url="/redoc" if not settings.PROD else None,
+    openapi_url="/openapi.json" if not settings.PROD else None,
+)
 __app.container = container  # type:ignore[attr-defined]
 for router in endpoints.get_routers():
     __app.include_router(router, tags=router.tags)

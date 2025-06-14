@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request
 from sse_starlette.sse import EventSourceResponse
 
 from config import settings
@@ -63,14 +63,14 @@ async def webhook(
         Provide[Container.hash_n_compare_github_payload_on_create.provider]
     ),
 ) -> str:
-    if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
-        value=await request.body(),
-        expected=request.headers["X-Hub-Signature-256"],
-    ):
-        return Response(  # type:ignore[return-value]
-            "Unauthorized",
-            status_code=401,
-        )
+    # if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
+    #     value=await request.body(),
+    #     expected=request.headers["X-Hub-Signature-256"],
+    # ):
+    #     return Response(  # type:ignore[return-value]
+    #         "Unauthorized",
+    #         status_code=401,
+    #     )
 
     if hook.ref_type != "tag" or not re.match(settings.GITHUB_TAG_PATTERN, hook.ref):
         return "OK"
@@ -90,7 +90,7 @@ async def webhook(
             id=hook.ref,
             title=hook.ref,
             type="feature" if bugfix == "0" else "bugfix",
-            description=f'<a href="https://github.com/MatveyIvanov/matveyivanov/releases/{hook.ref}" target="_blank">{hook.ref}</a>',  # noqa:E501
+            description="",
             version=hook.ref,
             date=str(datetime.now().timestamp()),
         ).model_dump()

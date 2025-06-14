@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const descriptionElement = document.createElement('div');
       descriptionElement.className = CSS_CLASSES.UPDATE_DESCRIPTION;
-      descriptionElement.textContent = update.description;
+      descriptionElement.innerHTML = update.description;
 
       const metaDiv = document.createElement('div');
       metaDiv.className = CSS_CLASSES.UPDATE_META;
