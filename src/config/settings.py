@@ -96,11 +96,6 @@ CHANGELOG_SSE_INTERVAL_SECONDS: int = load(
     cast_to=int,
     ensure_not_empty=True,
 )
-CHANGELOG_VERSION_DEFAULT_DESCRIPTION: str = load(
-    "CHANGELOG_VERSION_DEFAULT_DESCRIPTION",
-    "No description provided.",
-    ensure_not_empty=True,
-)
 CHANGELOG_BUFFER_NAME: str = load(
     "CHANGELOG_BUFFER_NAME",
     "changelog",
