@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from sse_starlette.sse import EventSourceResponse
 
 from config import settings
@@ -63,14 +63,14 @@ async def webhook(
         Provide[Container.hash_n_compare_github_payload_on_create.provider]
     ),
 ) -> str:
-    # if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
-    #     value=await request.body(),
-    #     expected=request.headers["X-Hub-Signature-256"],
-    # ):
-    #     return Response(  # type:ignore[return-value]
-    #         "Unauthorized",
-    #         status_code=401,
-    #     )
+    if "X-Hub-Signature-256" not in request.headers or not hash_n_compare(
+        value=await request.body(),
+        expected=request.headers["X-Hub-Signature-256"],
+    ):
+        return Response(  # type:ignore[return-value]
+            "Unauthorized",
+            status_code=401,
+        )
 
     if hook.ref_type != "tag" or not re.match(settings.GITHUB_TAG_PATTERN, hook.ref):
         return "OK"
