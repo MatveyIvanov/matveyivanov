@@ -49,5 +49,7 @@ jobs:
       with:
         node-version: 18
     - run: |
+        npm init
+        cat package.json
         npm init @eslint/config@latest -- --config eslint-config-xo
         npx eslint src/static/js
