@@ -1,0 +1,13 @@
+{
+    "name": "matveyivanov",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {},
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "eslint": ">=9.25.0"
+    }
+}
