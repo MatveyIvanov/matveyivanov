@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let timestampRefreshInterval = null;
   let initialDataFetched = false;
   let widgetInitialized = false;
-  let maxRetryAttempts = 3;
+  const maxRetryAttempts = 3;
   let retryCount = 0;
 
   function decodeHTMLEntities(text) {

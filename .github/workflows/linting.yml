@@ -40,3 +40,14 @@ jobs:
         uses: lunarmodules/luacheck@v1
         with:
             args: ${{ matrix.dir }}
+  jslint:
+    name: Run JS linter
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - run: |
+        npm install -y
+        npx eslint src/static/js

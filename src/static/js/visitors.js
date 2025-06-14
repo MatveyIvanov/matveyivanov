@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let circleCount = null;
   let initialDataFetched = false;
   let initialCountValue = null;
-  let maxRetryAttempts = 3;
+  const maxRetryAttempts = 3;
   let retryCount = 0;
   let widgetInitialized = false;
 

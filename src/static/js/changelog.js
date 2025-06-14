@@ -61,11 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
   let updatesCache = [];
   let initialUpdatesCache = null;
   let connectionFailed = false;
-  let seenUpdateIds = new Set();
+  const seenUpdateIds = new Set();
   let eventSource = null; // Store the eventSource reference globally for cleanup
   let initialDataFetched = false;
   let widgetInitialized = false;
-  let maxRetryAttempts = 3;
+  const maxRetryAttempts = 3;
   let retryCount = 0;
 
   // ===== UTILITY FUNCTIONS =====
