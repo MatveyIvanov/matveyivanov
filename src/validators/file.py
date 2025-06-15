@@ -4,9 +4,9 @@ from typing import Any
 from validators.interfaces import IValidator
 
 
-class FileValidator(IValidator):
+class TemplateValidator(IValidator):
     def __call__(self, value: Any) -> bool:
         if not isinstance(value, str):
             return False
 
-        return Path(value).is_file()
+        return Path(f"templates/{value}").is_file()

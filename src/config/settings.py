@@ -17,9 +17,9 @@ from schemas.project import Project
 from schemas.python import Python
 from schemas.stack import Stack
 from validators import (
-    validator_file,
     validator_int,
     validator_int_boolean,
+    validator_template,
     validator_timezone,
     validator_url,
     validator_url_path,
@@ -232,43 +232,43 @@ HTML_FOR_HOME = load(
     "HTML_FOR_HOME",
     "home.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_EXPERIENCE = load(
     "HTML_FOR_EXPERIENCE",
     "experience.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_STACK = load(
     "HTML_FOR_STACK",
     "stack.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_PYTHON = load(
     "HTML_FOR_PYTHON",
     "python.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_BOOKS = load(
     "HTML_FOR_BOOKS",
     "books.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_PROJECTS = load(
     "HTML_FOR_PROJECTS",
     "projects.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 HTML_FOR_ERROR = load(
     "HTML_FOR_ERROR",
     "error.html",
     ensure_not_empty=True,
-    validator=validator_file,
+    validator=validator_template,
 )
 
 TEMPLATE_CONTEXT_BASE: dict[str, Any] = {
