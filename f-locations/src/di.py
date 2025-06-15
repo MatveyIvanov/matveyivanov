@@ -1,3 +1,4 @@
+# fmt: off
 import logging
 from copy import deepcopy
 from typing import Any
@@ -10,9 +11,7 @@ from src import config
 from src.redis import RedisRingBuffer
 
 
-def _validate_provider[
-    T: providers.Provider
-](  # type:ignore[type-arg]
+def _validate_provider[T: providers.Provider](  # type:ignore[type-arg]
     provider: T,
     *,
     panic: bool = False,

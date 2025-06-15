@@ -1,3 +1,4 @@
+# fmt: off
 import logging
 from copy import deepcopy
 
@@ -12,9 +13,7 @@ from services.github import hash_github_payload_and_compare
 from services.redis import RedisRingBuffer
 
 
-def _validate_provider[
-    T: providers.Provider
-](  # type:ignore[type-arg]
+def _validate_provider[T: providers.Provider](  # type:ignore[type-arg]
     provider: T,
     *,
     panic: bool = False,
