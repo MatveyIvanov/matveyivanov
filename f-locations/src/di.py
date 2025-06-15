@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from typing import Any
 
 import ipinfo
@@ -18,16 +19,16 @@ def _validate_provider[
     fallback_to: T | None = None,
 ) -> T:
     ok, error = True, None
+    copy = deepcopy(provider)
     try:
-        provider()
+        copy()
     except Exception as e:
         logging.error(f"Error providing {provider} - {str(e)}")
         ok, error = False, e
 
     if not ok and panic and error:
         raise error
-
-    return fallback_to or provider
+    return (fallback_to or provider) if not ok else provider
 
 
 class RedisFallback:
