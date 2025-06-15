@@ -64,6 +64,36 @@ jobs:
               file1: "src/lua/hset/write_one.lua",
               file2: "f-locations/lua/hset/write_one.lua",
             }
+          - {
+              name: "Validators.Init",
+              file1: "src/validators/__init__.py",
+              file2: "f-locations/src/validators/__init__.py",
+          }
+          - {
+              name: "Validators.File",
+              file1: "src/validators/file.py",
+              file2: "f-locations/src/validators/file.py",
+          }
+          - {
+              name: "Validators.Int",
+              file1: "src/validators/int.py",
+              file2: "f-locations/src/validators/int.py",
+          }
+          - {
+              name: "Validators.Interfaces",
+              file1: "src/validators/interfaces.py",
+              file2: "f-locations/src/validators/interfaces.py",
+          }
+          - {
+              name: "Validators.Regex",
+              file1: "src/validators/regex.py",
+              file2: "f-locations/src/validators/regex.py",
+          }
+          - {
+              name: "Validators.Timezone",
+              file1: "src/validators/timezone.py",
+              file2: "f-locations/src/validators/timezone.py",
+          }
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

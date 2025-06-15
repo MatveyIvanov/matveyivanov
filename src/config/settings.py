@@ -40,7 +40,10 @@ def load[
     value = os.environ.get(key, default)
     if not value and ensure_not_empty:
         return default
-    casted = value if cast_to is None else cast_to(value)
+    try:
+        casted = value if cast_to is None else cast_to(value)
+    except ValueError:
+        casted = value
     if validator and not validator(casted):
         logging.warning(f"Value {casted} is not valid for {key}... using default.")
         return default
