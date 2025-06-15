@@ -2,11 +2,16 @@ import asyncio
 import json
 from collections.abc import AsyncGenerator
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from sse_starlette.sse import EventSourceResponse
-from types_boto3_sqs.service_resource import Queue
+
+if TYPE_CHECKING:
+    from types_boto3_sqs.service_resource import Queue
+else:
+    Queue: TypeAlias = Any
 
 from config import settings
 from config.di import Container
