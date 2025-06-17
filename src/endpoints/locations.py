@@ -45,7 +45,7 @@ async def locations(
     return Locations(
         locations=[
             Location(
-                location=location["locaiton"],
+                location=location["location"],
                 timestamp=location["timestamp"],
             )
             for location in _locations
