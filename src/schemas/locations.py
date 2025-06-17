@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class LocationDict(TypedDict):
-    locaiton: str
+    location: str
     timestamp: str
 
 
