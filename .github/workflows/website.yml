@@ -15,8 +15,6 @@ jobs:
     uses: ./.github/workflows/core-compare.yml
   linters:
     uses: ./.github/workflows/linting.yml
-  luacheck:
-    uses: ./.github/workflows/linting.yml
   build:
     name: Build new website version
     runs-on: ubuntu-latest
