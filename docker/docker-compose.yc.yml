@@ -2,6 +2,10 @@ networks:
   network:
     name: ${PROJECT_NAME}-network
 
+volumes:
+  redis-data:
+    name: ${PROJECT_NAME}-redis-data
+
 services:
   asgi:
     extends:
