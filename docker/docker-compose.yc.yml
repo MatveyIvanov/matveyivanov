@@ -11,3 +11,25 @@ services:
     platform: linux/amd64
     env_file:
       - .env
+
+  redis:
+    container_name: ${PROJECT_NAME}-redis
+    image: redis:${REDIS_VERSION}
+    command:
+      - "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - redis-data:/data
+    networks:
+      - network
+    ports:
+      # Must be in private network with configured firewall to be secure
+      - ${REDIS_PORT}:${REDIS_PORT}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    cpus: ${REDIS_CPUS:-0.000}
+    mem_limit: ${REDIS_MEM_LIMIT:-1G}
+    mem_reservation: ${REDIS_MEM_RESERVATION:-500M}
