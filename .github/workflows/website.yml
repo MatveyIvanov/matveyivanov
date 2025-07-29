@@ -39,6 +39,7 @@ jobs:
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ASGI_TARGET: ${{ secrets.ASGI_TARGET }}
           ASGI_PORT: ${{ secrets.ASGI_PORT }}
+          REDIS_VERSION: ${{ secrets.REDIS_VERSION }}
         run: |
           echo "${{ secrets.YC_WEB_VM_ENV }}" > docker/.env
           make publish
@@ -52,16 +53,11 @@ jobs:
       fail-fast: true
       matrix:
         vm:
-          - id: "Web VM #1"
+          - id: "VM #1"
             host_secret_name: YC_WEB_VM_1_SSH_HOST
             username_secret_name: YC_WEB_VM_1_SSH_USERNAME
             key_secret_name: YC_WEB_VM_1_SSH_PRIVATE_KEY
             port_secret_name: YC_WEB_VM_1_SSH_PORT
-          - id: "Web VM #2"
-            host_secret_name: YC_WEB_VM_2_SSH_HOST
-            username_secret_name: YC_WEB_VM_2_SSH_USERNAME
-            key_secret_name: YC_WEB_VM_2_SSH_PRIVATE_KEY
-            port_secret_name: YC_WEB_VM_2_SSH_PORT
     steps:
       - name: Pull image and restart the web server
         uses: appleboy/ssh-action@v1
@@ -101,6 +97,7 @@ jobs:
             cd /var/www/matveyivanov/build && echo "ABSOLUTE_URL=${{ secrets.YC_WEB_VM_ABSOLUTE_URL }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "ALLOWED_HOSTS=${{ secrets.YC_WEB_VM_ALLOWED_HOSTS }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "PROXY_TRUSTED_HOSTS=${{ secrets.YC_WEB_VM_PROXY_TRUSTED_HOSTS }}" >> docker/.env
+            cd /var/www/matveyivanov/build && echo "REDIS_VERSION=${{ secrets.REDIS_VERSION }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker/.env
             cd /var/www/matveyivanov/build && echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> docker/.env
